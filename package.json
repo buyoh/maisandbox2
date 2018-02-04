@@ -1,0 +1,21 @@
+{
+  "name": "maisandbox2",
+  "version": "0.1.0",
+  "description": "maisan",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node.exe main.js",
+    "build": "browserify src/front/app.js > build/bundle.js",
+    "install-service": "winser -i -a",
+    "uninstall-service": "winser -r -x"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "file-type": "^7.5.0",
+    "jquery": "^3.3.1",
+    "socket.io": "^2.0.4",
+    "winser": "^1.0.3"
+  }
+}
