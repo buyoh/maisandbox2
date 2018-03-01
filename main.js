@@ -3,6 +3,17 @@ const socketio = require('socket.io');
 const fs = require('fs');
 const filetype = require('file-type')
 
+const portno = 11450;
+
+function isExistFile(path){
+    try{
+        fs.statSync(path);
+        return true;
+    }catch(err){
+        return false;
+    }
+}
+
 let server = http.createServer(function(request, responce) {
     request.on('error', function(e){
         console.error(e);
@@ -19,15 +30,38 @@ let server = http.createServer(function(request, responce) {
         path = "build/" + m[1];
     }
     console.error("requested: "+request.url);
-    console.error("requested: lookup "+path);
 
-    if (!request.url.match(/\.\./) && fs.existsSync(path)){
-        responce.writeHead(200, filetype(request.url));
-        responce.end(fs.readFileSync(path, 'utf-8'));
-    }else{
+    let ok = false;
+
+    try{
+        if (!request.url.match(/\.\./)){
+            responce.writeHead(200, filetype(request.url));
+            responce.end(fs.readFileSync(path, 'utf-8'));
+            ok = true;
+        }
+    }catch(err){}
+
+    if (!ok) {
         responce.statusCode = 404;
         responce.end("404");
     }
-}).listen(11450);  // ポート競合の場合は値を変更
+    console.error("requested: lookup "+path+" => "+ok);
+}).listen(portno);  // ポート競合の場合は値を変更
  
-console.log("port: 11450");
+console.log("port: "+portno);
+
+let soio = socketio.listen(server);
+
+soio.sockets.on('connection', function(socket) {
+    console.log("join "+socket.id);
+
+    socket.on('c2s_echo', function(data) {
+        console.log("echo :" + data.msg);
+        socket.emit('s2c_echo', {msg: !data.msg ? "Hello!" : data.msg.toUpperCase()});
+    });
+
+    socket.on('disconnect', function() {
+    });
+});
+
+

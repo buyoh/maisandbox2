@@ -1,4 +1,7 @@
+
 var $ = require('jQuery');
+var socket = io.connect();
+
 
 $(document).ready(function(){
 	
@@ -57,6 +60,7 @@ $(document).ready(function(){
 	});
 });
 
+
 function initializeAce(){
 	aceditor = ace.edit("aceditor");
 	aceditor.setTheme("ace/theme/monokai");
@@ -72,4 +76,18 @@ function initializeAce(){
 	$( "#aceditorEdge" ).on("onresize",function(){
 		aceditor.resize();
 	});
+
+	$("#btn_exec").on("click", buttonExecute);
 }
+
+
+function buttonExecute(){
+	const stdin = $("#txt_editstdin").val();
+
+	socket.emit("c2s_echo", {msg:stdin});
+}
+
+
+socket.on("s2c_echo", function(data){
+	console.log("echo:" + data.msg);
+});

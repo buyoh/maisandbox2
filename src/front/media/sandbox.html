@@ -7,14 +7,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script type="text/javascript" src="ext/jquery-3.1.0.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="_/bundle.js"></script>
 <script src="ext/ace.js"></script>
 <script src="ext/ext-language_tools.js"></script>
 
 <link rel="stylesheet" href="ext/slate_bootstrap.min.css" />
 <link rel="stylesheet" href="sandbox.css" />
 
-<script src="_/bundle.js"></script>
 
 </head>
 <body>
@@ -40,24 +40,24 @@
 				</div> -->
 				<div style="display:inline-block;" id="div_storageselector">
 					<div class="border_lr" style="display:inline-block; margin:2px 2px 4px 12px;">
-						<input type="button" class="btn btn-primary btn-sm" value="&utrif;" onclick="saveStorage(1);">
-						<input type="button" class="btn btn-primary btn-sm" value="&dtrif;" onclick="loadStorage(1);">
+						<buton class="btn btn-primary btn-sm" onclick="buttonSaveStorage(1);">&utrif;</buton>
+						<buton class="btn btn-primary btn-sm" onclick="buttonLoadStorage(1);">&dtrif;</buton>
 					</div>
 					<div class="border_lr" style="display:inline-block; margin:2px 2px 4px 12px;">
-						<input type="button" class="btn btn-primary btn-sm" value="&utrif;" onclick="saveStorage(2);">
-						<input type="button" class="btn btn-primary btn-sm" value="&dtrif;" onclick="loadStorage(2);">
+						<buton class="btn btn-primary btn-sm" onclick="buttonSaveStorage(2);">&utrif;</buton>
+						<buton class="btn btn-primary btn-sm" onclick="buttonLoadStorage(2);">&dtrif;</buton>
 					</div>
 					<div class="border_lr" style="display:inline-block; margin:2px 2px 4px 12px;">
-						<input type="button" class="btn btn-primary btn-sm" value="&utrif;" onclick="saveStorage(3);">
-						<input type="button" class="btn btn-primary btn-sm" value="&dtrif;" onclick="loadStorage(3);">
+						<buton class="btn btn-primary btn-sm" onclick="buttonSaveStorage(3);">&utrif;</buton>
+						<buton class="btn btn-primary btn-sm" onclick="buttonLoadStorage(3);">&dtrif;</buton>
 					</div>
 					<div class="border_lr" style="display:inline-block; margin:2px 2px 4px 12px;">
-						<input type="button" class="btn btn-primary btn-sm" value="&utrif;" onclick="saveStorage(4);">
-						<input type="button" class="btn btn-primary btn-sm" value="&dtrif;" onclick="loadStorage(4);">
+						<buton class="btn btn-primary btn-sm" onclick="buttonSaveStorage(4);">&utrif;</buton>
+						<buton class="btn btn-primary btn-sm" onclick="buttonLoadStorage(4);">&dtrif;</buton>
 					</div>
 					<div class="border_lr" style="display:inline-block; margin:2px 2px 4px 12px;">
-						<input type="button" class="btn btn-primary btn-sm" value="&utrif;" onclick="saveStorage(5);">
-						<input type="button" class="btn btn-primary btn-sm" value="&dtrif;" onclick="loadStorage(5);">
+						<buton class="btn btn-primary btn-sm" onclick="buttonSaveStorage(5);">&utrif;</buton>
+						<buton class="btn btn-primary btn-sm" onclick="buttonLoadStorage(5);">&dtrif;</buton>
 					</div>
 				</div>
 			</div>
@@ -71,7 +71,7 @@
 						</a>
 					</li>-->
 					<li class="nav-item" id="div_tablist_add">
-						<a class="nav-link" href="#" onclick="createNewTab()">&plus;</a>
+						<a class="nav-link" href="#" onclick="buttonCreateNewTab()">&plus;</a>
 					</li>
 				</ul>
 			</div>
@@ -97,9 +97,8 @@
 				Timeout(sec)<input type="text" class="form-control form-control-sm" value="3" id="input_timeout">
 			</div>
 			<div style="display:inline-block;margin:4px 4px 4px 40px;">
-				<input type="button" class="btn btn-primary" value="execute" onclick="execute()" id="btn_exec">
-				<input type="button" class="btn btn-primary" value="redo(only cygwin)" onclick="executeRedo()" id="btn_exec_redo">
-				<input type="button" class="btn btn-primary" value="e(prototype)" onclick="execute_proto()" id="btn_exec2">
+				<button class="btn btn-primary" id="btn_exec">execute</button>
+				<button class="btn btn-primary" id="btn_exec_redo">redo(only cygwin)</button>
 			</div>
 			<div style="display:inline-block;margin:4px 4px 4px 40px;">
 				<label>disableTempCleaning<input type="checkbox" class="form-check-input" id="disableCleaning"></label>
@@ -156,13 +155,6 @@
 	</div>
 	<hr>
 
-	<hr>
-
-	<div class="border">
-		<div>Graphical Debugger</div>
-		<!-- 余裕が出来たら作り始める -->
-		<!-- 得られるstderrを基にグラフとか表とか図を生成 -->
-	</div>
 </div>
 <p>Rubyで日本語を使う:<code>puts gets.force_encoding("UTF-8")</code></p>
 

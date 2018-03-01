@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node.exe main.js",
     "build": "browserify src/front/app.js > build/bundle.js",
+    "go": "npm run build && npm run start",
     "install-service": "winser -i -a",
     "uninstall-service": "winser -r -x"
   },
