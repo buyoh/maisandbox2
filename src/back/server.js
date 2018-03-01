@@ -1,0 +1,67 @@
+const http = require('http');
+const socketio = require('socket.io');
+const fs = require('fs');
+const filetype = require('file-type')
+
+const portno = 11450;
+
+function isExistFile(path){
+    try{
+        fs.statSync(path);
+        return true;
+    }catch(err){
+        return false;
+    }
+}
+
+let server = http.createServer(function(request, responce) {
+    request.on('error', function(e){
+        console.error(e);
+        responce.statusCode = 400;
+        responce.end("400");
+    });
+    responce.on('error', function(e){
+        console.error(e);
+    });
+    // !unsafe!
+    let path = "src/front/media" + request.url;
+    if (request.url[1] == "_"){
+        let m = request.url.match(/^\/_\/(.*)$/);
+        path = "build/" + m[1];
+    }
+    console.error("requested: "+request.url);
+
+    let ok = false;
+
+    try{
+        if (!request.url.match(/\.\./)){
+            responce.writeHead(200, filetype(request.url));
+            responce.end(fs.readFileSync(path, 'utf-8'));
+            ok = true;
+        }
+    }catch(err){}
+
+    if (!ok) {
+        responce.statusCode = 404;
+        responce.end("404");
+    }
+    console.error("requested: lookup "+path+" => "+ok);
+}).listen(portno);  // ポート競合の場合は値を変更
+ 
+console.log("port: "+portno);
+
+let soio = socketio.listen(server);
+
+soio.sockets.on('connection', function(socket) {
+    console.log("join "+socket.id);
+
+    socket.on('c2s_echo', function(data) {
+        console.log("echo :" + data.msg);
+        socket.emit('s2c_echo', {msg: !data.msg ? "Hello!" : data.msg.toUpperCase()});
+    });
+
+    socket.on('disconnect', function() {
+    });
+});
+
+
