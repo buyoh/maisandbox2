@@ -58,6 +58,8 @@ $(document).ready(function(){
 			elem.setSelectionRange(pos + 1, pos + 1);
 		}
 	});
+
+	$("#btn_exec").on("click", buttonExecute);
 });
 
 
@@ -76,8 +78,25 @@ function initializeAce(){
 	$( "#aceditorEdge" ).on("onresize",function(){
 		aceditor.resize();
 	});
+}
 
-	$("#btn_exec").on("click", buttonExecute);
+function gatherInfo(){
+	return {
+		stdin_txt:   $("#txt_editstdin").val(),
+		code_txt:    aceditor.getValue(),
+		lang:        $("#selector_codelang option:selected").data("lang"),
+		environment: $("#selector_codelang option:selected").data("env"),
+		timelimit:   $("#input_timeout").val()
+	};
+	/*
+var flgDisableCleaning = $("#disableCleaning:checked").val();
+var flagWAll = $("#flagWAll:checked").val();
+var macro = $("#input_macro").val();
+var source = $("#selector_sourcechooser").val();
+var sourcepath = $("#input_filepath").val();
+var filestdin = $('#chk_filestdin:checked').val();
+var stdinpath = $('#input_stdinpath').val();
+	*/
 }
 
 
@@ -88,6 +107,8 @@ function buttonExecute(){
 }
 
 
+// connection test
 socket.on("s2c_echo", function(data){
 	console.log("echo:" + data.msg);
 });
+

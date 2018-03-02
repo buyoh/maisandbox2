@@ -15,22 +15,23 @@ function isExistFile(path){
 const testjs = require('../../src/back/exec.js');
 
 describe("test of exec.js", function(){
-
-    it("echoの実行結果が取得出来る(exec)", function(accept){
-        testjs.exec("echo HELLO", function(err, stdout, stderr){
-            assert.equal(stdout.trim(), "HELLO");
-            accept();
-        });
-    });
     
-    it("rubyの実行結果が取得出来る(exec)", function(accept){
+    it("rubyの実行結果が取得出来る(exec)", function(done){
         testjs.exec("ruby -e 'p 1+8'", function(err, stdout, stderr){
+            assert.equal(!!err, false);
             assert.equal(stdout.trim(), "9");
-            accept();
+            done();
         });
     });
 
-    it("ファイル操作が出来る(exec)", function(accept){
+    it("コマンドが存在しない時の挙動(exec)", function(done){
+        testjs.exec("my_nice_hoge", function(err, stdout, stderr){
+            assert.equal(!!err, true);
+            done();
+        });
+    });
+
+    it("ファイル操作が出来る(exec)", function(done){
         testjs.exec("rm ./__e_m_p_t_y__.txt", function(err, stdout, stderr){});
         testjs.exec("touch ./__e_m_p_t_y__.txt", function(err, stdout, stderr){
             assert.equal(!err, true, "touch");
@@ -38,18 +39,17 @@ describe("test of exec.js", function(){
             testjs.exec("rm ./__e_m_p_t_y__.txt", function(err, stdout, stderr){
                 assert.equal(!err, true, "rm");
                 assert.equal(isExistFile("./__e_m_p_t_y__.txt"), false, "removed");
-                accept();
+                done();
             });
         });
     });
 
-    it("標準入出力を伴う実行が出来る(spawn)", function(accept){
+    it("標準入出力を伴う実行が出来る(spawn_fileio)", function(done){
         fs.mkdir("./temp", function(err){});
         process.chdir("./temp");
         fs.writeFileSync("./test.rb","s=gets.chomp;puts s+'#out';STDERR.puts s+'#err'");
         fs.writeFileSync("./in.txt","hello");
-        testjs.exec_fileio("ruby", ["./test.rb"], "./in.txt", "./out.txt", "./err.txt", function(code, signal){
-            console.log(code);
+        testjs.spawn_fileio("ruby", ["./test.rb"], "./in.txt", "./out.txt", "./err.txt", function(code, signal){
             assert.equal(code, 0, "exitcode == 0");
             let stdout = fs.readFileSync("./out.txt", 'UTF-8');
             let stderr = fs.readFileSync("./err.txt", 'UTF-8');
@@ -58,7 +58,32 @@ describe("test of exec.js", function(){
             assert.equal(stderr.trim(), "hello#err", "check stderr");
 
             process.chdir("../");
-            accept();
+            done();
         });
     });
+
+    it("rubyの実行結果が取得出来る(spawn_buff)", function(done){
+        testjs.spawn_buff("ruby", ["-e","'p 8+1'"], "", function(err, code, signal, stdout, stderr){
+            assert.equal(err, null, "success");
+            assert.equal(code, 0, "exitcode == 0");
+            assert.equal(stdout.toString().trim(), "9", "check stdout");
+            assert.equal(stderr.toString().trim(), "", "check stderr");
+            done();
+        });
+    });
+
+    // it("標準入出力を伴う実行が出来る(exec_buff)", function(done){
+    //     fs.mkdir("./temp", function(err){});
+    //     process.chdir("./temp");
+    //     fs.writeFileSync("./test.rb","s=gets.chomp;puts s+'#out';STDERR.puts s+'#err'");
+    //     testjs.exec_buff("ruby", ["./test.rb"], "hello", function(err, code, signal, stdout, stderr){
+    //         assert.equal(err, null, "success");
+    //         assert.equal(code, 0, "exitcode == 0");
+    //         assert.equal(stdout.toString().trim(), "hello#out", "check stdout");
+    //         assert.equal(stderr.toString().trim(), "hello#err", "check stderr");
+// 
+    //         process.chdir("../");
+    //         done();
+    //     });
+    // });
 });
