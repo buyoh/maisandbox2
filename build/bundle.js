@@ -10449,8 +10449,8 @@ function initializeAce(){
 
 function gatherInfo(){
 	return {
-		stdin_txt:   $("#txt_editstdin").val(),
-		code_txt:    aceditor.getValue(),
+		txt_stdin:   $("#txt_editstdin").val(),
+		txt_code:    aceditor.getValue(),
 		lang:        $("#selector_codelang option:selected").data("lang"),
 		environment: $("#selector_codelang option:selected").data("env"),
 		timelimit:   $("#input_timeout").val()
@@ -10468,15 +10468,35 @@ var stdinpath = $('#input_stdinpath').val();
 
 
 function buttonExecute(){
-	const stdin = $("#txt_editstdin").val();
-
-	socket.emit("c2s_echo", {msg:stdin});
+	const info = gatherInfo();
+	socket.emit("c2s_submit", info);
 }
 
 
 // connection test
 socket.on("s2c_echo", function(data){
 	console.log("echo:" + data.msg);
+});
+
+// submitしたtaskの状況がサーバから送られてくる
+socket.on("s2c_progress", function(json){
+	// console.log(data);
+	if (json.type === "prepare"){
+
+	}
+	else if (json.type === "execute"){
+
+	}
+	else if (json.type === "success"){
+		$("#txt_viewstdout").val(json.data.stdout);
+		console.log(json.data);
+	}
+	else if (json.type === "error"){
+
+	}
+	else {
+		console.error(json);
+	}
 });
 
 

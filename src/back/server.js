@@ -3,6 +3,9 @@ const socketio = require('socket.io');
 const fs = require('fs');
 const filetype = require('file-type')
 
+const taskexecutor = require('./taskexecutor');
+const validator = require('./validator');
+
 const portno = 11450;
 
 function isExistFile(path){
@@ -23,7 +26,8 @@ let server = http.createServer(function(request, responce) {
     responce.on('error', function(e){
         console.error(e);
     });
-    // !unsafe!
+
+    // 必要に応じてurlを変換
     let path = "src/front/media" + request.url;
     if (request.url[1] == "_"){
         let m = request.url.match(/^\/_\/(.*)$/);
@@ -31,8 +35,8 @@ let server = http.createServer(function(request, responce) {
     }
     console.error("requested: "+request.url);
 
+    // 該当するファイルを探す
     let ok = false;
-
     try{
         if (!request.url.match(/\.\./)){
             responce.writeHead(200, filetype(request.url));
@@ -41,23 +45,35 @@ let server = http.createServer(function(request, responce) {
         }
     }catch(err){}
 
+    // 404
     if (!ok) {
         responce.statusCode = 404;
         responce.end("404");
     }
     console.error("requested: lookup "+path+" => "+ok);
+
 }).listen(portno);  // ポート競合の場合は値を変更
- 
 console.log("port: "+portno);
 
+
+
+// socketio
 let soio = socketio.listen(server);
 
 soio.sockets.on('connection', function(socket) {
     console.log("join "+socket.id);
 
+    // テスト用
     socket.on('c2s_echo', function(data) {
         console.log("echo :" + data.msg);
         socket.emit('s2c_echo', {msg: !data.msg ? "Hello!" : data.msg.toUpperCase()});
+    });
+
+    // コード提出
+    socket.on('c2s_submit', function(data){
+        taskexecutor.pushTask(data, function(type, json){
+            socket.emit('s2c_progress', {type:type, data:json});
+        });
     });
 
     socket.on('disconnect', function() {
