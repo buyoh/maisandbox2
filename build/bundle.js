@@ -10430,6 +10430,10 @@ $(document).ready(function(){
 });
 
 
+// _____________________________________________________
+// initialize component
+
+
 function initializeAce(){
 	aceditor = ace.edit("aceditor");
 	aceditor.setTheme("ace/theme/monokai");
@@ -10446,6 +10450,11 @@ function initializeAce(){
 		aceditor.resize();
 	});
 }
+
+
+// _____________________________________________________
+// utility
+
 
 function gatherInfo(){
 	return {
@@ -10467,10 +10476,38 @@ var stdinpath = $('#input_stdinpath').val();
 }
 
 
+/**
+ * 
+ * @param {string} message 
+ * @param {string} classtype success,info,warning,danger
+ */
+function displayProgress(message, classtype){
+	$("#div_progress")
+		.text(message)
+		.removeClass("alert-success alert-info alert-warning alert-danger")
+		.addClass("alert-"+classtype);
+}
+
+
+function displayStdout(message){
+	$("#txt_stdout").val(message);
+}
+function displayStderr(message){
+	$("#div_stderr").text(message);
+}
+
+// _____________________________________________________
+// events
+
+
 function buttonExecute(){
 	const info = gatherInfo();
 	socket.emit("c2s_submit", info);
 }
+
+
+// _____________________________________________________
+// socket
 
 
 // connection test
@@ -10482,17 +10519,19 @@ socket.on("s2c_echo", function(data){
 socket.on("s2c_progress", function(json){
 	// console.log(data);
 	if (json.type === "prepare"){
-
+		displayProgress("prepare", "info");
 	}
 	else if (json.type === "execute"){
-
+		displayProgress("execute", "info");
 	}
 	else if (json.type === "success"){
-		$("#txt_viewstdout").val(json.data.stdout);
 		console.log(json.data);
+		displayStdout(json.data.stdout);
+		displayStderr(json.data.stderr);
+		displayProgress("success(AC)", "success");
 	}
 	else if (json.type === "error"){
-
+		displayProgress("error", "danger");
 	}
 	else {
 		console.error(json);

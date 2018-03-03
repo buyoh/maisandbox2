@@ -88,7 +88,7 @@
 		</div>
 		<div class="border flexcontainer flexboxCol">
 			<div>Stdout</div>
-			<textarea id="txt_viewstdout" class="flexcontainer textarea enabletabs" rows="12"></textarea>
+			<textarea id="txt_stdout" class="flexcontainer textarea enabletabs" rows="12"></textarea>
 		</div>
 	</div>
 	<div class="border">
@@ -101,19 +101,13 @@
 				<button class="btn btn-primary" id="btn_exec_redo">redo(only cygwin)</button>
 			</div>
 			<div style="display:inline-block;margin:4px 4px 4px 40px;">
-				<label>disableTempCleaning<input type="checkbox" class="form-check-input" id="disableCleaning"></label>
-			</div>
-			<div style="display:inline-block;margin:4px 4px 4px 40px;">
-				<label>wALL<input type="checkbox" class="form-check-input" id="flagWAll"></label>
-			</div>
-			<div style="display:inline-block;margin:4px 4px 4px 40px;">
 				<label>mergeStdoutStderr<input type="checkbox" class="form-check-input" id="mergeOutErr"></label>
 			</div>
 		</div>
 		<div class="border">
 			
 			<div class="row">
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					SourceFile
 					<div class="flexboxRow">
 						<input type="text" class="flexcontainer form-control form-control-sm" style="flex-basis:auto;" id="input_filepath_1" value="D:/program/vs2015/Projects/LocalSandboxConsole/LocalSandboxConsole/Program.cs">
@@ -125,21 +119,22 @@
 						<input type="button" class="flexcontainer btn btn-primary btn-sm" id="btn_fileopen_2" value="open" onclick="fileOpen(2)">
 					</div>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					InputFile
-					<input type="text" class="form-control form-control-sm" size="32" id="input_stdinpath" value="X:/temp/in.txt">
-					<input type="button" class="btn btn-primary btn-sm" id="btn_stdload" value="[stdin]open" onclick="stdinOpen()">
+					<div>
+						<input type="file" class="form-control form-control-sm" id="sstdinpath">
+					</div>
 					<div style="display:inline-block;margin:4px 4px 4px 40px;">
 						<label>use file stdin(note: auto encoding)<input type="checkbox" id="chk_filestdin"></label>
 					</div>
 				</div>
-				<div class="col-sm-4">
-					OutputFile<!-- disableTempCleaningで十分では！？ -->
-					<input type="text" class="form-control form-control-sm" size="32" id="input_stdoutpath" value="X:/temp/out.txt">
-					<input type="button" class="btn btn-primary btn-sm" id="btn_stdsave" value="[stdout]save" onclick="fileSave()">
-				</div>
 			</div>
+			
+			<!--
 			<div>
+				<div style="display:inline-block;margin:4px 4px 4px 40px;">
+					<label>wALL<input type="checkbox" class="form-check-input" id="flagWAll"></label>
+				</div>
 				<div style="display:inline-block;margin:4px 4px 4px 40px;">
 					macro(gcc only)<input type="text" class="form-control form-control-sm" value="__MAI" id="input_macro">
 				</div>
@@ -147,11 +142,20 @@
 					<input type="button" class="btn btn-primary btn-sm" value="remove Non-ASCII" id="btn_rmnonascii" onclick="removeNonascii()">
 				</div>
 			</div>
+			-->
+		</div>
+		<div class="border">
+			<div class="" style="display:inline-block">
+				progress
+			</div>
+			<div id="div_progress" class="alert alert-success alert-sm" style="display:inline-block;padding-top:inherit;padding-bottom:inherit;margin:inherit;">
+				-
+			</div>
 		</div>
 	</div>
 	<div class="border" style="min-height: 300px;">
-		<div>Detail</div>
-		<pre id="responseDetail" style="white-space: pre-wrap;"></pre>
+		<div>Stderr</div>
+		<pre id="div_stderr" style="white-space: pre-wrap;"></pre>
 	</div>
 	<hr>
 
