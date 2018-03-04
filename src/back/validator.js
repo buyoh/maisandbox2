@@ -3,7 +3,7 @@
  * 
  * @param {JSON} json 
  */
-exports.checkJsonTaskQuery = function(json){
+exports.checkTaskSubmission = function(json){
     // TODO:
     return true;
 }

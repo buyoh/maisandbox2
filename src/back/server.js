@@ -27,13 +27,14 @@ let server = http.createServer(function(request, responce) {
         console.error(e);
     });
 
+    console.error("requested: "+request.url);
+
     // 必要に応じてurlを変換
-    let path = "src/front/media" + request.url;
+    let path = "./src/front/media" + request.url;
     if (request.url[1] == "_"){
         let m = request.url.match(/^\/_\/(.*)$/);
-        path = "build/" + m[1];
+        path = "./build/" + m[1];
     }
-    console.error("requested: "+request.url);
 
     // 該当するファイルを探す
     let ok = false;
@@ -77,6 +78,10 @@ soio.sockets.on('connection', function(socket) {
 
     // コード提出
     socket.on('c2s_submit', function(data){
+        if (!validator.checkTaskSubmission(data)){
+            socket.emit('s2c_progress', {type:'error', data:{}});
+            return;
+        }
         data.socketid = socket.id;
         taskexecutor.pushTask(data, function(type, json){
             socket.emit('s2c_progress', {type:type, data:json});
