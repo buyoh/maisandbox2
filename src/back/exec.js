@@ -15,14 +15,16 @@ exports.exec = child_process.exec;
  * @param {string} stderrpath 
  * @param {(code,signal)=>void} callback コマンド終了時に呼び出される
  */
-exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath, callback){
-    const stdin  = fs.openSync(stdinpath, 'r');
-    const stdout = fs.openSync(stdoutpath, 'w');
-    const stderr = fs.openSync(stderrpath, 'w');
+exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath, options, callback){
+    const stdin  = stdinpath  !== null ? fs.openSync(stdinpath,  'r') : 'ignore';
+    const stdout = stdoutpath !== null ? fs.openSync(stdoutpath, 'w') : 'ignore';
+    const stderr = stderrpath !== null ? fs.openSync(stderrpath, 'w') : 'ignore';
+    
+    //let env_old = options.path
 
-    const ps = child_process.spawn(command, args, {
+    const ps = child_process.spawn(command, args, Object.assign({
         stdio: [stdin, stdout, stderr]
-    });
+    }, options));
 
     ps.on("close", function(code, signal){
         callback.call(this, code, signal);
@@ -35,9 +37,9 @@ exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath
  * @param {string} stdin
  * @param {(err, code, signal, stdout, stderr)=>void} callback コマンド終了時に呼び出される
  */
-exports.spawn_buff = function(command, args, stdin, callback){
+exports.spawn_buff = function(command, args, stdin, options, callback){
 
-    const ps = child_process.spawn(command, args, {});
+    const ps = child_process.spawn(command, args, options);
     if (stdin !== null && stdin != "")
         ps.stdin.write(stdin);
     ps.stdin.end();
