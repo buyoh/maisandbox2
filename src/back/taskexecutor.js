@@ -1,11 +1,16 @@
 
 const fs = require('fs');
-//const child_process = require('child_process');
 const myexec = require('./exec');
 
-/** tempDir */
-const tempDir = "./temp";
+const task_ruby = require('./task/ruby');
+const task_cpp = require('./task/cpp');
 
+
+
+exports.taskTypeList = [
+    {name:'Ruby',   cmd:'Ruby', editor:'ruby'},
+    {name:'C++',    cmd:'C++',  editor:'c_cpp'}
+];
 
 
 /**
@@ -24,31 +29,15 @@ exports.pushTask = function(json, callback){
 
 
 function runTask(task){
-
-    try{
-
-        task.callback.call(null, "prepare", {});
-
-        setupTemp();
-        process.chdir(tempDir);
-    
-        fs.writeFileSync("./code.rb", task.json.txt_code);
-        fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
-    
-        myexec.spawn_fileio("ruby",["./code.rb"], "./stdin.txt", "./stdout.txt", "./stderr.txt", function(code, signal){
-            let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
-            let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
-            
-            task.callback.call(null, "success", {code:code, signal:signal, stdout:stdout, stderr:stderr});
-
-            process.chdir("../");
-        });
-        
-        task.callback.call(null, "execute", {});
-    }catch(e){
-        task.callback.call(null, "error", {err:e});
+    if (task.json.cmd === 'Ruby')
+        task_ruby.run(task);
+    else if (task.json.cmd === 'C++')
+        task_cpp.run(task);
+    else{
+        task.callback.call(null, 'error', 'unknown cmd');
     }
 }
+
 
 
 function setupTemp(){

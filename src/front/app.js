@@ -1,48 +1,11 @@
 
-var $ = require('jQuery');
-var socket = io.connect();
+let $ = require('jQuery');
+let socket = io.connect();
 
 
 $(document).ready(function(){
 	
 	initializeAce();
-
-	$("#selector_codelang")
-		.append("<option data-lang='Ruby' data-env='cyg'>Ruby/cgi(cygwin)</option>")
-		.append("<option data-lang='Ruby' data-env='win'>Ruby/cgi(cmd)</option>")
-		.append("<option data-lang='C++14' data-env='cyg'>C++14(opt)/cgi(cygwin)</option>")
-		//.append("<option data-lang='Rust' data-env='win'>Rust(opt)/cgi(cmd)</option>")
-		.append("<option data-lang='Rust' data-env='bash'>Rust(opt)/server(bash)</option>")
-		//.append("<option data-lang='Rust-D' data-env='bash'>Rust(dbg)/BoW</option>")
-		.append("<option data-lang='Brainfuck' data-env='win'>Brainfuck/cgi(cmd)</option>")
-		//.append("<option>C#</option>")
-		//.append("<option>Custom</option>")
-		.append("<option data-lang='PyPy' data-env='bash'>PyPy/server(bash)</option>")
-		.append("<option data-lang='Python' data-env='bash'>Python3/server(bash)</option>")
-		.append("<option data-lang='Crystal' data-env='bash'>Crystal/server(bash)</option>");
-	// .append("<option>Java</option>").append("<option>Crystal</option>")
-
-	$("#selector_codelang").change(function(e){
-		var clang=$("#selector_codelang option:selected").data("lang");
-		switch (clang){
-			case "Ruby":
-			case "Crystal":
-				aceditor.getSession().setMode("ace/mode/ruby");
-				break;
-			case "C++14":
-				aceditor.getSession().setMode("ace/mode/c_cpp");
-				break;
-			case "Rust":
-				aceditor.getSession().setMode("ace/mode/rust");
-				break;
-			case "Python":
-			case "PyPy":
-				aceditor.getSession().setMode("ace/mode/python");
-				break;
-			default:
-				break;
-		}
-	});
 
 	// loadBackup();
 	// $(window).on("unload",saveBackup);
@@ -59,7 +22,9 @@ $(document).ready(function(){
 		}
 	});
 
-	$("#btn_exec").on("click", buttonExecute);
+	initializeEvents();
+
+	socket.emit("c2s_getCatalog", {});
 });
 
 
@@ -85,6 +50,29 @@ function initializeAce(){
 }
 
 
+function initializeEvents(){
+
+	// button
+	$("#btn_exec").on("click", buttonExecute);
+
+	// another
+	$("#selector_codelang").change(function(e){
+		var edt = $("#selector_codelang option:selected").data("edt");
+		if (edt != "")
+			aceditor.getSession().setMode("ace/mode/"+edt);
+	});
+}
+
+
+function updateSelectorCodelang(catalog){
+	let dom = $("#selector_codelang");
+	
+	for (let i = 0; i < catalog.length; ++i){
+		let c = catalog[i];
+		dom.append("<option data-cmd='"+c.cmd+"' data-edt='"+c.editor+"'>"+c.name+"</option>");
+	}
+}
+
 // _____________________________________________________
 // utility
 
@@ -93,8 +81,7 @@ function gatherInfo(){
 	return {
 		txt_stdin:   $("#txt_editstdin").val(),
 		txt_code:    aceditor.getValue(),
-		lang:        $("#selector_codelang option:selected").data("lang"),
-		environment: $("#selector_codelang option:selected").data("env"),
+		cmd:         $("#selector_codelang option:selected").data("cmd"),
 		timelimit:   $("#input_timeout").val()
 	};
 	/*
@@ -148,6 +135,13 @@ socket.on("s2c_echo", function(data){
 	console.log("echo:" + data.msg);
 });
 
+
+// 
+socket.on("s2c_catalog", function(data){
+	updateSelectorCodelang(data.taskTypeList);
+});
+
+
 // submitしたtaskの状況がサーバから送られてくる
 socket.on("s2c_progress", function(json){
 	// console.log(data);
@@ -161,7 +155,13 @@ socket.on("s2c_progress", function(json){
 		console.log(json.data);
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
-		displayProgress("success(AC)", "success");
+		displayProgress("success("+json.data.code+")", "success");
+	}
+	else if (json.type === "failed"){
+		console.log(json.data);
+		displayStdout(json.data.stdout);
+		displayStderr(json.data.stderr);
+		displayProgress("failed", "warning");
 	}
 	else if (json.type === "error"){
 		displayProgress("error", "danger");
@@ -170,4 +170,3 @@ socket.on("s2c_progress", function(json){
 		console.error(json);
 	}
 });
-

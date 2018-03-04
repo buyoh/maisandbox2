@@ -69,8 +69,15 @@ soio.sockets.on('connection', function(socket) {
         socket.emit('s2c_echo', {msg: !data.msg ? "Hello!" : data.msg.toUpperCase()});
     });
 
+    socket.on('c2s_getCatalog', function(data) {
+        socket.emit('s2c_catalog', {
+            taskTypeList: taskexecutor.taskTypeList
+        });
+    });
+
     // コード提出
     socket.on('c2s_submit', function(data){
+        data.socketid = socket.id;
         taskexecutor.pushTask(data, function(type, json){
             socket.emit('s2c_progress', {type:type, data:json});
         });
