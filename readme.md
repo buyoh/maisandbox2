@@ -1,29 +1,34 @@
 
 # maisandbox 2
 
-## environment
+## maisandboxとは
+
+wandbox,ideoneのような即席のコーディング環境をローカルに構築します．
+
+## development environment
 
 - windows 10
-
-## clone
-
-- foo
-
-## install
-
-- launch cmd (administrator)
-- `npm run install-service`
-
-## uninstall
-
-- launch cmd (administrator)
-- `npm run uninstall-service`
+- nodejs
 
 ## usage
 
-- `localhost:11450/`
+- `npm run build`
+- `npm run start`
+- access `localhost:11450/`
+
+## windows サービスとして install
+
+- 未検証
+- launch cmd (administrator)
+- `npm run install-service`
+
+## windows サービスとして uninstall
+
+- 未検証
+- launch cmd (administrator)
+- `npm run uninstall-service`
 
 
-## 勉強に使用したリンク
+## winserすごいよね
 
 - https://qiita.com/Kazunori-Kimura/items/c40ce82e7c044869fd27
