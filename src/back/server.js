@@ -31,7 +31,9 @@ let server = http.createServer(function(request, responce) {
 
     // 必要に応じてurlを変換
     let path = "./src/front/media" + request.url;
-    if (request.url[1] == "_"){
+    if (request.url === "/"){
+        path = "./src/front/media/sandbox.html";
+    }else if (request.url[1] == "_"){
         let m = request.url.match(/^\/_\/(.*)$/);
         path = "./build/" + m[1];
     }

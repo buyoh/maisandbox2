@@ -6,10 +6,7 @@ let socket = io.connect();
 $(document).ready(function(){
 	
 	initializeAce();
-
-	// loadBackup();
-	// $(window).on("unload",saveBackup);
-	// setInterval(function(){saveBackup();},1000*600);
+	setupBackup();
 
 	$("textarea.enabletabs").keydown(function(e){
 		if (e.keyCode === 9) {
@@ -54,6 +51,8 @@ function initializeEvents(){
 
 	// button
 	$("#btn_exec").on("click", buttonExecute);
+	$("#btn_storeTemplate").on("click", buttonStoreTemplate);
+	$("#btn_loadTemplate").on("click", buttonLoadTemplate);
 
 	// another
 	$("#selector_codelang").change(function(e){
@@ -64,24 +63,44 @@ function initializeEvents(){
 }
 
 
+function setupBackup(){
+	restoreBackup();
+	$(window).on("unload", function(){storeBackup();});
+	setInterval(function(){storeBackup();},1000*600);
+}
+
+
 function updateSelectorCodelang(catalog){
 	let dom = $("#selector_codelang");
+
+	let appVal = dom.data("apply");
+	if (appVal) dom.data("apply", null);
 	
 	for (let i = 0; i < catalog.length; ++i){
 		let c = catalog[i];
 		dom.append("<option data-cmd='"+c.cmd+"' data-edt='"+c.editor+"'>"+c.name+"</option>");
 	}
+
+	if (appVal)
+		$("#selector_codelang option[data-cmd='"+appVal+"']").prop("selected", true);
+
 }
+
 
 // _____________________________________________________
 // utility
+
+
+function getChosenLang(){
+	return $("#selector_codelang option:selected").data("cmd");
+}
 
 
 function gatherInfo(){
 	return {
 		txt_stdin:   $("#txt_editstdin").val(),
 		txt_code:    aceditor.getValue(),
-		cmd:         $("#selector_codelang option:selected").data("cmd"),
+		cmd:         getChosenLang(),
 		timelimit:   $("#input_timeout").val()
 	};
 	/*
@@ -94,8 +113,6 @@ var filestdin = $('#chk_filestdin:checked').val();
 var stdinpath = $('#input_stdinpath').val();
 	*/
 }
-
-
 /**
  * 
  * @param {string} message 
@@ -115,6 +132,64 @@ function displayStdout(message){
 function displayStderr(message){
 	$("#div_stderr").text(message);
 }
+
+
+
+// _____________________________________________________
+// backup
+
+
+function restoreBackup(){
+	let stored = localStorage.getItem("backup");
+	if (!stored) return;
+	
+	let json = JSON.parse(stored);
+
+	$("#txt_editstdin").val(json.txt_stdin);
+	aceditor.setValue(json.txt_code, -1);
+
+	let dom = $("#selector_codelang option[data-cmd='"+json.cmd+"']");
+	if (dom.length > 0)
+		dom.prop("selected", true);
+	else
+		$("#selector_codelang").data("apply", json.cmd);
+	
+}
+
+
+function storeBackup(){
+	const json = {
+		txt_stdin:   $("#txt_editstdin").val(),
+		txt_code:    aceditor.getValue(),
+		cmd:         getChosenLang()
+	};
+	localStorage.setItem("backup", JSON.stringify(json));
+}
+
+
+// _____________________________________________________
+// template / snippet
+
+
+function buttonStoreTemplate(){
+	let stored = localStorage.getItem("template");
+	let json = !stored ? {} : JSON.parse(stored);
+	json[getChosenLang()] = aceditor.getValue();
+	localStorage.setItem("template", JSON.stringify(json));
+	console.log("complete store");
+}
+
+
+function buttonLoadTemplate(){
+	let stored = localStorage.getItem("template");
+	console.log(stored);
+	if (!stored) return;
+	let val = JSON.parse(stored)[getChosenLang()];
+	if (!val) return;
+	aceditor.setValue(val, -1);
+	console.log("complete load");
+}
+
 
 // _____________________________________________________
 // events
@@ -152,16 +227,16 @@ socket.on("s2c_progress", function(json){
 		displayProgress("execute", "info");
 	}
 	else if (json.type === "success"){
-		console.log(json.data);
+		// console.log(json.data);
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
 		displayProgress("success("+json.data.code+")", "success");
 	}
 	else if (json.type === "failed"){
-		console.log(json.data);
+		// console.log(json.data);
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
-		displayProgress("failed", "warning");
+		displayProgress("failed("+json.data.code+")", "warning");
 	}
 	else if (json.type === "error"){
 		displayProgress("error", "danger");
