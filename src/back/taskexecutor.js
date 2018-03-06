@@ -34,7 +34,7 @@ function runTask(task){
     else if (task.json.cmd === 'C++')
         task_cpp.run(task);
     else{
-        task.callback.call(null, 'error', 'unknown cmd');
+        task.callback('error', 'unknown cmd');
     }
 }
 

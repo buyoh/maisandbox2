@@ -6,7 +6,7 @@ exports.run = function(task){
     
     try{
 
-        task.callback.call(null, "prepare", {});
+        task.callback.call(null, "prepare", {killer: null});
 
         const lastCwd = process.cwd();
         common.setupTemp();
@@ -16,31 +16,33 @@ exports.run = function(task){
         fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
 
         
-        myexec.spawn_fileio("ruby",["-c", "./code.rb"], null, "./stdout.txt", "./stderr.txt", {}, function(code, signal){
+        let k1 = myexec.spawn_fileio("ruby",["-c", "./code.rb"], null, "./stdout.txt", "./stderr.txt", {}, function(code, signal){
             if (code != 0){
                 let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
                 let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
 
-                task.callback.call(null, "failed", {code:code, signal:signal, stdout:stdout, stderr:stderr});
+                task.callback.call(null, "failed", {code:code, signal:signal, stdout:stdout, stderr:stderr, killer: null});
     
                 process.chdir(lastCwd);
                 common.cleanTemp();
                 return;
             }
     
-            myexec.spawn_fileio("ruby",["./code.rb"], "./stdin.txt", "./stdout.txt", "./stderr.txt", {}, function(code, signal){
+            let k2 = myexec.spawn_fileio("ruby",["./code.rb"], "./stdin.txt", "./stdout.txt", "./stderr.txt", {}, function(code, signal){
                 let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
                 let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
                 
-                task.callback.call(null, "success", {code:code, signal:signal, stdout:stdout, stderr:stderr});
+                task.callback.call(null, "success", {code:code, signal:signal, stdout:stdout, stderr:stderr, killer: null});
     
                 process.chdir(lastCwd);
                 common.cleanTemp();
             });
-            task.callback.call(null, "execute", {});
+            task.callback.call(null, "execute", {killer: k2});
         });
         
+        task.callback.call(null, "compile", {killer: k1});
+        
     }catch(e){
-        task.callback.call(null, "error", {err:e});
+        task.callback.call(null, "error", {err:e, killer: null});
     }
 }

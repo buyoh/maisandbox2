@@ -10418,6 +10418,7 @@ function initializeEvents(){
 
 	// button
 	$("#btn_exec").on("click", buttonExecute);
+	$("#btn_halt").on("click", buttonHalt);
 	$("#btn_storeTemplate").on("click", buttonStoreTemplate);
 	$("#btn_loadTemplate").on("click", buttonLoadTemplate);
 
@@ -10452,7 +10453,6 @@ function updateSelectorCodelang(catalog){
 		$("#selector_codelang option[data-cmd='"+appVal+"']").prop("selected", true);
 
 }
-
 
 // _____________________________________________________
 // utility
@@ -10500,6 +10500,12 @@ function displayStderr(message){
 	$("#div_stderr").text(message);
 }
 
+
+function changeStateExecButton(enabled = true){
+	$("#btn_exec").prop("disabled", !enabled);
+	$("#btn_exec_redo").prop("disabled", !enabled);
+	$("#btn_halt").prop("disabled", !!enabled);
+}
 
 
 // _____________________________________________________
@@ -10567,6 +10573,10 @@ function buttonExecute(){
 	socket.emit("c2s_submit", info);
 }
 
+function buttonHalt(){
+	const info = gatherInfo();
+	socket.emit("c2s_halt", info);
+}
 
 // _____________________________________________________
 // socket
@@ -10588,18 +10598,26 @@ socket.on("s2c_catalog", function(data){
 socket.on("s2c_progress", function(json){
 	// console.log(data);
 	if (json.type === "prepare"){
+		changeStateExecButton(false);
+		displayProgress("prepare", "info");
+	}
+	else if (json.type === "compile"){
+		changeStateExecButton(false);
 		displayProgress("prepare", "info");
 	}
 	else if (json.type === "execute"){
+		changeStateExecButton(false);
 		displayProgress("execute", "info");
 	}
 	else if (json.type === "success"){
+		changeStateExecButton(true);
 		// console.log(json.data);
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
 		displayProgress("success("+json.data.code+")", "success");
 	}
 	else if (json.type === "failed"){
+		changeStateExecButton(true);
 		// console.log(json.data);
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
@@ -10608,7 +10626,11 @@ socket.on("s2c_progress", function(json){
 	else if (json.type === "error"){
 		displayProgress("error", "danger");
 	}
+	else if (json.type === "log"){
+		console.log(log);
+	}
 	else {
+		changeStateExecButton(true);
 		console.error(json);
 	}
 });

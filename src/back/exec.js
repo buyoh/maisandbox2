@@ -27,8 +27,12 @@ exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath
     }, options));
 
     ps.on("close", function(code, signal){
-        callback.call(this, code, signal);
+        callback(code, signal);
     });
+
+    return function(){
+        if (!ps.killed) ps.kill();
+    }
 }
 /**
  * ファイルを介さずに実行
@@ -68,10 +72,10 @@ exports.spawn_buff = function(command, args, stdin, options, callback){
 
     function checkTermination(){
         if (endflg == 7)
-            callback.call(this, null, endcode, endsignal, buffstdout, buffstderr);
+            callback(null, endcode, endsignal, buffstdout, buffstderr);
     }
 
     ps.on("err", function(err){
-        callback.call(this, err, endcode, endsignal, buffstdout, buffstderr);
+        callback(err, endcode, endsignal, buffstdout, buffstderr);
     });
 }

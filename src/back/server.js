@@ -66,6 +66,8 @@ let soio = socketio.listen(server);
 soio.sockets.on('connection', function(socket) {
     console.log("join "+socket.id);
 
+    let killer = null;
+
     // テスト用
     socket.on('c2s_echo', function(data) {
         console.log("echo :" + data.msg);
@@ -85,9 +87,20 @@ soio.sockets.on('connection', function(socket) {
             return;
         }
         data.socketid = socket.id;
-        taskexecutor.pushTask(data, function(type, json){
+        killer = taskexecutor.pushTask(data, function(type, json){
+            if (json.killer !== undefined){
+                killer = json.killer;
+                json.killer = undefined;
+            }
             socket.emit('s2c_progress', {type:type, data:json});
         });
+    });
+    
+    // 中断
+    socket.on('c2s_halt', function(data){
+        if (killer !== null)
+            killer();
+        socket.emit('s2c_progress', {type:'log', msg:'accepted (halt)'});
     });
 
     socket.on('disconnect', function() {
