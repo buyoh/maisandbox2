@@ -13,7 +13,7 @@ exports.exec = child_process.exec;
  * @param {string} stdinpath 
  * @param {string} stdoutpath 
  * @param {string} stderrpath 
- * @param {(code,signal)=>void} callback コマンド終了時に呼び出される
+ * @param {(code,{signal:string, time:float})=>void} callback コマンド終了時に呼び出される
  */
 exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath, options, callback){
     const stdin  = stdinpath  !== null ? fs.openSync(stdinpath,  'r') : 'ignore';
@@ -22,12 +22,14 @@ exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath
     
     //let env_old = options.path
 
+    const time = Date.now();
+
     const ps = child_process.spawn(command, args, Object.assign({
         stdio: [stdin, stdout, stderr]
     }, options));
 
     ps.on("close", function(code, signal){
-        callback(code, signal);
+        callback(code, {signal: signal, time: Date.now()-time});
     });
 
     return function(){

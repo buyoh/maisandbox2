@@ -56,7 +56,7 @@ describe("test of exec.js", function(){
         process.chdir("./temp");
         fs.writeFileSync("./test.rb","s=gets.chomp;puts s+'#out';STDERR.puts s+'#err'");
         fs.writeFileSync("./in.txt","hello");
-        testjs.spawn_fileio("ruby", ["./test.rb"], "./in.txt", "./out.txt", "./err.txt", {}, function(code, signal){
+        testjs.spawn_fileio("ruby", ["./test.rb"], "./in.txt", "./out.txt", "./err.txt", {}, function(code, json){
             assert.equal(code, 0, "exitcode == 0");
             let stdout = fs.readFileSync("./out.txt", 'UTF-8');
             let stderr = fs.readFileSync("./err.txt", 'UTF-8');
@@ -99,12 +99,12 @@ describe("test of exec.js", function(){
         fs.writeFileSync("./test.cpp",'#include<iostream>\nusing namespace std;\nint main(){string str;cin>>str;cout<<str<<" world"<<endl;return 0;}');
         fs.writeFileSync("./in.txt","hello");
 
-        testjs.spawn_fileio("g++", ["./test.cpp","-std=gnu++14","-o","./test.out"], null, null, "./err.txt", options, function(code, signal){
+        testjs.spawn_fileio("g++", ["./test.cpp","-std=gnu++14","-o","./test.out"], null, null, "./err.txt", options, function(code, json){
             assert.equal(code, 0, "(compile) exitcode == 0");
             assert.ok(isExistFile("./test.out"), "generated");
             //let stderr = fs.readFileSync("./err.txt", 'UTF-8');
             
-            testjs.spawn_fileio("./test.out", [], "./in.txt", "./out.txt", "./err.txt", options, function(code, signal){
+            testjs.spawn_fileio("./test.out", [], "./in.txt", "./out.txt", "./err.txt", options, function(code, json){
                 assert.equal(code, 0, "exitcode == 0");
                 let stdout = fs.readFileSync("./out.txt", 'UTF-8');
                 let stderr = fs.readFileSync("./err.txt", 'UTF-8');

@@ -126,6 +126,9 @@ function displayProgress(message, classtype){
 		.removeClass("alert-success alert-info alert-warning alert-danger")
 		.addClass("alert-"+classtype);
 }
+function displayProgressNote(message){
+	$("#div_progress_note").text(message);
+}
 
 
 function displayStdout(message){
@@ -235,10 +238,11 @@ socket.on("s2c_progress", function(json){
 	if (json.type === "prepare"){
 		changeStateExecButton(false);
 		displayProgress("prepare", "info");
+		displayProgressNote("");
 	}
 	else if (json.type === "compile"){
 		changeStateExecButton(false);
-		displayProgress("prepare", "info");
+		displayProgress("compile", "info");
 	}
 	else if (json.type === "execute"){
 		changeStateExecButton(false);
@@ -250,6 +254,7 @@ socket.on("s2c_progress", function(json){
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
 		displayProgress("success("+json.data.code+")", "success");
+		displayProgressNote("compilation time: "+0.001*json.data.time.compile+", execution time: "+0.001*json.data.time.execute);
 	}
 	else if (json.type === "failed"){
 		changeStateExecButton(true);
@@ -257,6 +262,7 @@ socket.on("s2c_progress", function(json){
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
 		displayProgress("failed("+json.data.code+")", "warning");
+		displayProgressNote("compilation time: "+0.001*json.data.time.compile+", execution time: "+0.001*json.data.time.execute);
 	}
 	else if (json.type === "error"){
 		displayProgress("error", "danger");
