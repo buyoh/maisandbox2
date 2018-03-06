@@ -10449,8 +10449,10 @@ function updateSelectorCodelang(catalog){
 		dom.append("<option data-cmd='"+c.cmd+"' data-edt='"+c.editor+"'>"+c.name+"</option>");
 	}
 
-	if (appVal)
+	if (appVal){
 		$("#selector_codelang option[data-cmd='"+appVal+"']").prop("selected", true);
+		$("#selector_codelang").change();
+	}
 
 }
 
