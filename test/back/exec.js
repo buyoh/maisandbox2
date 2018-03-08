@@ -117,6 +117,33 @@ describe("test of exec.js", function(){
             });
         });
     });
+    
+    it("rubyの実行結果が取得出来る(exec, bash)", function(done){
+        testjs.exec("bash -c 'ruby -e \"p 8+1\"'", function(err, stdout, stderr){
+            assert.equal(!!err, false);
+            assert.equal(stdout.trim(), "9");
+            done();
+        });
+    });
+    
+    it("標準入出力を伴う実行が出来る(spawn_fileio, bash)", function(done){
+        fs.mkdir("./temp", function(err){});
+        process.chdir("./temp");
+        fs.writeFileSync("./test.rb","s=gets.chomp;puts s+'#out';STDERR.puts s+'#err'");
+        fs.writeFileSync("./in.txt","hello");
+        testjs.spawn_fileio("bash", ["-c", "ruby ./test.rb < in.txt 1> out.txt 2> err.txt"], null, null, null, {}, function(code, json){
+            assert.equal(code, 0, "exitcode == 0");
+            let stdout = fs.readFileSync("./out.txt", 'UTF-8');
+            let stderr = fs.readFileSync("./err.txt", 'UTF-8');
+
+            assert.equal(stdout.trim(), "hello#out", "check stdout");
+            assert.equal(stderr.trim(), "hello#err", "check stderr");
+
+            process.chdir("../");
+            done();
+        });
+    });
+
 
     // it("標準入出力を伴う実行が出来る(exec_buff)", function(done){
     //     fs.mkdir("./temp", function(err){});
