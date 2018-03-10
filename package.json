@@ -12,10 +12,11 @@
     "uninstall-service": "winser -r -x"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Unlicense",
   "dependencies": {
     "file-type": "^7.5.0",
     "jquery": "^3.3.1",
+    "mktmpdir": "^0.1.1",
     "socket.io": "^2.0.4",
     "winser": "^1.0.3"
   }

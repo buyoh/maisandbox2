@@ -18,13 +18,11 @@ wandbox,ideoneのような即席のコーディング環境をローカルに構
 
 ## windows サービスとして install
 
-- 未検証
 - launch cmd (administrator)
 - `npm run install-service`
 
 ## windows サービスとして uninstall
 
-- 未検証
 - launch cmd (administrator)
 - `npm run uninstall-service`
 
