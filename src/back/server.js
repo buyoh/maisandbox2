@@ -74,6 +74,7 @@ soio.sockets.on('connection', function(socket) {
         socket.emit('s2c_echo', {msg: !data.msg ? "Hello!" : data.msg.toUpperCase()});
     });
 
+    // 言語情報等を取得する
     socket.on('c2s_getCatalog', function(data) {
         socket.emit('s2c_catalog', {
             taskTypeList: taskexecutor.taskTypeList

@@ -51,6 +51,8 @@ function initializeEvents(){
 
 	// button
 	$("#btn_exec").on("click", buttonExecute);
+	$("#btn_exec_build").on("click", buttonBuild);
+	$("#btn_exec_run").on("click", buttonRun);
 	$("#btn_halt").on("click", buttonHalt);
 	$("#btn_storeTemplate").on("click", storeTemplate);
 	$("#btn_loadTemplate").on("click", loadTemplate);
@@ -141,7 +143,8 @@ function displayStderr(message){
 
 function changeStateExecButton(enabled = true){
 	$("#btn_exec").prop("disabled", !enabled);
-	$("#btn_exec_redo").prop("disabled", !enabled);
+	$("#btn_exec_build").prop("disabled", !enabled);
+	$("#btn_exec_run").prop("disabled", !enabled);
 	$("#btn_halt").prop("disabled", !!enabled);
 }
 
@@ -282,6 +285,19 @@ function closeTab(id){
 
 function buttonExecute(){
 	const info = gatherInfo();
+	info.query = "run";
+	socket.emit("c2s_submit", info);
+}
+
+function buttonBuild(){
+	const info = gatherInfo();
+	info.query = "build";
+	socket.emit("c2s_submit", info);
+}
+
+function buttonRun(){
+	const info = gatherInfo();
+	info.query = "execute";
 	socket.emit("c2s_submit", info);
 }
 
@@ -339,10 +355,11 @@ socket.on("s2c_progress", function(json){
 		displayProgressNote("compilation time: "+0.001*json.data.time.compile+", execution time: "+0.001*json.data.time.execute);
 	}
 	else if (json.type === "error"){
+		console.log(json);
 		displayProgress("error", "danger");
 	}
 	else if (json.type === "log"){
-		console.log(log);
+		console.log(json);
 	}
 	else {
 		changeStateExecButton(true);

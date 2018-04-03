@@ -10418,9 +10418,11 @@ function initializeEvents(){
 
 	// button
 	$("#btn_exec").on("click", buttonExecute);
+	$("#btn_exec_build").on("click", buttonBuild);
+	$("#btn_exec_run").on("click", buttonRun);
 	$("#btn_halt").on("click", buttonHalt);
-	$("#btn_storeTemplate").on("click", buttonStoreTemplate);
-	$("#btn_loadTemplate").on("click", buttonLoadTemplate);
+	$("#btn_storeTemplate").on("click", storeTemplate);
+	$("#btn_loadTemplate").on("click", loadTemplate);
 
 	// another
 	$("#selector_codelang").change(function(e){
@@ -10508,7 +10510,8 @@ function displayStderr(message){
 
 function changeStateExecButton(enabled = true){
 	$("#btn_exec").prop("disabled", !enabled);
-	$("#btn_exec_redo").prop("disabled", !enabled);
+	$("#btn_exec_build").prop("disabled", !enabled);
+	$("#btn_exec_run").prop("disabled", !enabled);
 	$("#btn_halt").prop("disabled", !!enabled);
 }
 
@@ -10549,7 +10552,7 @@ function storeBackup(){
 // template / snippet
 
 
-function buttonStoreTemplate(){
+function storeTemplate(){
 	let stored = localStorage.getItem("template");
 	let json = !stored ? {} : JSON.parse(stored);
 	json[getChosenLang()] = aceditor.getValue();
@@ -10558,14 +10561,88 @@ function buttonStoreTemplate(){
 }
 
 
-function buttonLoadTemplate(){
+function loadTemplate(){
 	let stored = localStorage.getItem("template");
-	console.log(stored);
 	if (!stored) return;
 	let val = JSON.parse(stored)[getChosenLang()];
 	if (!val) return;
 	aceditor.setValue(val, -1);
 	console.log("complete load");
+}
+
+
+
+// _____________________________________________________
+// tabs
+
+
+function storeTabJson(json){
+	localStorage.setItem("tabs", JSON.stringify(json));
+}
+
+
+function restoreTabJson(){
+	let stored = localStorage.getItem("tabs");
+	return !stored ? [] : JSON.parse(stored);
+}
+
+
+function unusedTabId(json){
+	let ids = [];
+	json.forEach(function(e,i,a){ if (e.id) ids.push(e.id); });
+	let unusedId = null;
+	ids.sort().forEach(function(e,i,a){ if (!unusedId && e !== i+1) unusedId = i; });
+
+	return !unusedId ? ids.size()+1 : unusedId;
+}
+
+
+function createNewTabDom(id){
+	let tabName = 'tab'+id;
+	let li = $('<li></li>').addClass("nav-item");
+	let a = $('<a href="#"></a>').addClass("nav-link");
+	let close = $('<button></button>')
+		.addClass("close")
+		.text('&times;')
+		.data("id", id)
+		.on("click", function(){ closeTab($(this).data("id")); });
+	
+	a
+		.append($('<span></span>').text(tabName))
+		.append(close)
+		.data("id", id)
+		.on("click", function(){ switchTab($(this).data("id")); });
+
+	$("#div_tablist").append(li.append(a));
+}
+
+
+function createNewTab(){
+	let tab = {
+		id: unusedTabId(),
+		txt_code: '',
+		cmd: getChosenLang()
+	};
+
+	let tabs = restoreTabJson();
+	tabs.push(tab);
+	storeTabJson(tabs);
+
+	createNewTabDom(tab.id);
+}
+
+
+function switchTab(id){
+	// 現在のタブを拾う
+	// jsonを更新
+	// idのタブを拾う
+	// jsonを拾う
+	// 更新する
+}
+
+
+function closeTab(id){
+
 }
 
 
@@ -10575,6 +10652,19 @@ function buttonLoadTemplate(){
 
 function buttonExecute(){
 	const info = gatherInfo();
+	info.query = "run";
+	socket.emit("c2s_submit", info);
+}
+
+function buttonBuild(){
+	const info = gatherInfo();
+	info.query = "build";
+	socket.emit("c2s_submit", info);
+}
+
+function buttonRun(){
+	const info = gatherInfo();
+	info.query = "execute";
 	socket.emit("c2s_submit", info);
 }
 
@@ -10632,10 +10722,11 @@ socket.on("s2c_progress", function(json){
 		displayProgressNote("compilation time: "+0.001*json.data.time.compile+", execution time: "+0.001*json.data.time.execute);
 	}
 	else if (json.type === "error"){
+		console.log(json);
 		displayProgress("error", "danger");
 	}
 	else if (json.type === "log"){
-		console.log(log);
+		console.log(json);
 	}
 	else {
 		changeStateExecButton(true);
