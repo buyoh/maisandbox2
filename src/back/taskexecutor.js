@@ -4,15 +4,18 @@ const myexec = require('./exec');
 
 const task_ruby = require('./task/ruby');
 const task_cpp = require('./task/cpp');
+const task_py = require('./task/python');
 
 const langTask = {
     "Ruby": task_ruby,
-    "C++" : task_cpp
+    "C++" : task_cpp,
+    "Python": task_py
 };
 
 exports.langList = [
     {name:'Ruby',   cmd:'Ruby', editor:'ruby'},
-    {name:'C++',    cmd:'C++',  editor:'c_cpp'}
+    {name:'C++',    cmd:'C++',  editor:'c_cpp'},
+    {name:'Python',    cmd:'Python',  editor:'python'}
 ];
 
 

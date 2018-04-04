@@ -10417,9 +10417,9 @@ function initializeAce(){
 function initializeEvents(){
 
 	// button
-	$("#btn_exec").on("click", buttonExecute);
+	$("#btn_exec").on("click", buttonRun);
 	$("#btn_exec_build").on("click", buttonBuild);
-	$("#btn_exec_run").on("click", buttonRun);
+	$("#btn_exec_run").on("click", buttonExecute);
 	$("#btn_halt").on("click", buttonHalt);
 	$("#btn_storeTemplate").on("click", storeTemplate);
 	$("#btn_loadTemplate").on("click", loadTemplate);
@@ -10650,7 +10650,7 @@ function closeTab(id){
 // events
 
 
-function buttonExecute(){
+function buttonRun(){
 	const info = gatherInfo();
 	info.query = "run";
 	socket.emit("c2s_submit", info);
@@ -10662,7 +10662,7 @@ function buttonBuild(){
 	socket.emit("c2s_submit", info);
 }
 
-function buttonRun(){
+function buttonExecute(){
 	const info = gatherInfo();
 	info.query = "execute";
 	socket.emit("c2s_submit", info);
