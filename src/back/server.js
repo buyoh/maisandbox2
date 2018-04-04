@@ -77,7 +77,7 @@ soio.sockets.on('connection', function(socket) {
     // 言語情報等を取得する
     socket.on('c2s_getCatalog', function(data) {
         socket.emit('s2c_catalog', {
-            taskTypeList: taskexecutor.taskTypeList
+            taskTypeList: taskexecutor.langList
         });
     });
 

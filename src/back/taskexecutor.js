@@ -5,9 +5,12 @@ const myexec = require('./exec');
 const task_ruby = require('./task/ruby');
 const task_cpp = require('./task/cpp');
 
+const langTask = {
+    "Ruby": task_ruby,
+    "C++" : task_cpp
+};
 
-
-exports.taskTypeList = [
+exports.langList = [
     {name:'Ruby',   cmd:'Ruby', editor:'ruby'},
     {name:'C++',    cmd:'C++',  editor:'c_cpp'}
 ];
@@ -30,42 +33,25 @@ exports.pushTask = function(json, callback){
 
 function runTask(task){
 
-    // runとexecuteの用語が雑になっているので統一する
+    // 
+    if (langTask[task.json.cmd] === undefined){
+        task.callback('error', 'unknown cmd');
+        return;
+    }
     
     if (task.json.query === 'run'){
         
-        // TODO: クラス化
-        if (task.json.cmd === 'Ruby')
-            task_ruby.run(task);
-        else if (task.json.cmd === 'C++')
-            task_cpp.run(task);
-        else{
-            task.callback('error', 'unknown cmd');
-        }
+        langTask[task.json.cmd].run(task);
+    }
+    else if (task.json.query === 'build'){
+
+        langTask[task.json.cmd].build(task);
+    }
+    else if (task.json.query === 'execute'){
         
-    }else if (task.json.query === 'build'){
-
-        // TODO: クラス化
-        if (task.json.cmd === 'Ruby')
-            task_ruby.build(task);
-        else if (task.json.cmd === 'C++')
-            task_cpp.build(task);
-        else{
-            task.callback('error', 'unknown cmd');
-        }
-
-    }else if (task.json.query === 'execute'){
-        
-        // TODO: クラス化
-        if (task.json.cmd === 'Ruby')
-            task_ruby.execute(task);
-        else if (task.json.cmd === 'C++')
-            task_cpp.execute(task);
-        else{
-            task.callback('error', 'unknown cmd');
-        }
-
-    }else{
+        langTask[task.json.cmd].execute(task);
+    }
+    else{
         task.callback('error', 'unknown query');
 
     }
