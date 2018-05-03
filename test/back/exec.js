@@ -50,7 +50,7 @@ describe("test of exec.js", function(){
     it("ファイル操作が出来る(exec)", function(done){
         testjs.exec("rm ./__e_m_p_t_y__.txt", function(err, stdout, stderr){});
         testjs.exec("touch ./__e_m_p_t_y__.txt", function(err, stdout, stderr){
-            assert.equal(!err, true, "touch");
+            assert.equal(!err, true, "touch(windowsにtouchは無い)");
             assert.equal(isExistFile("./__e_m_p_t_y__.txt"), true, "touched");
             testjs.exec("rm ./__e_m_p_t_y__.txt", function(err, stdout, stderr){
                 assert.equal(!err, true, "rm");
@@ -103,7 +103,8 @@ describe("test of exec.js", function(){
         });
     });
 
-    it("cygwin環境でC++11をコンパイル・実行出来る", function(done){
+    it("cygwin環境でC++をコンパイル・実行出来る", function(done){
+        this.timeout(120000);
         process.chdir("./temp");
         mktmpdir(function(err, tempdir) {
             if (err) throw err;
@@ -166,6 +167,43 @@ describe("test of exec.js", function(){
                 testjs.exec("rm -rf " + tempdir, function(err, stdout, stderr){});
                 process.chdir("../");
                 done();
+            });
+        });
+    });
+
+    
+    it("bash環境でC++をコンパイル・実行出来る", function(done){
+        this.timeout(120000);
+        process.chdir("./temp");
+        mktmpdir(function(err, tempdir) {
+            if (err) throw err;
+            process.chdir(tempdir);
+        
+            let options = {
+                env: {PATH: cygwin_env_path}
+            };
+        
+            fs.writeFileSync("./bashcpp.cpp",'#include<iostream>\nusing namespace std;\nint main(){string str;cin>>str;cout<<str<<" world"<<endl;return 0;}');
+            fs.writeFileSync("./in_bashcpp.txt","hello");
+
+            testjs.spawn_fileio("bash", ["-c", "g++ -std=gnu++14 ./bashcpp.cpp -o ./bashcpp.out 1> out_bashcpp.txt 2> err_bashcpp.txt"], null, null, null, options, function(code, json){
+                assert.equal(code, 0, "(compile) exitcode == 0");
+                assert.ok(isExistFile("./bashcpp.out"), "generated");
+                //let stderr = fs.readFileSync("./err.txt", 'UTF-8');
+                
+                testjs.spawn_fileio("bash", ["-c", "./bashcpp.out < ./in_bashcpp.txt 1> out_bashcpp.txt 2> err_bashcpp.txt"], null, null, null, options, function(code, json){
+                    assert.equal(code, 0, "exitcode == 0");
+                    let stdout = fs.readFileSync("./out_bashcpp.txt", 'UTF-8');
+                    let stderr = fs.readFileSync("./err_bashcpp.txt", 'UTF-8');
+        
+                    assert.equal(stdout.trim(), "hello world", "check stdout");
+                    // assert.equal(stderr.trim(), "hello#err", "check stderr");
+        
+                    process.chdir("../");
+                    testjs.exec("rm -rf " + tempdir, function(err, stdout, stderr){});
+                    process.chdir("../");
+                    done();
+                });
             });
         });
     });
