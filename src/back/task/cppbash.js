@@ -4,7 +4,7 @@ const common = require('./common');
 
 // -------------------------------------
 
-const uniqueName = "cppCyg";
+const uniqueName = "cppBash";
 
 // -------------------------------------
 
@@ -12,8 +12,6 @@ const uniqueName = "cppCyg";
 exports.build = function(task){
 
     try{
-
-        compilerName = "g++"; // g++
 
         task.callback.call(null, "prepare", {killer: null});
 
@@ -27,7 +25,7 @@ exports.build = function(task){
         fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
         
         // step3
-        let k1 = myexec.spawn_fileio(compilerName,["-std=gnu++14", "-O3", "./code.cpp", "-o", "./code.out"], null, "./stdout.txt", "./stderr.txt", {env:{PATH:common.cygwinEnvPath,LANG:"ja_JP.UTF-8"}}, function(code, json){
+        let k1 = myexec.spawn_fileio("bash", ["-c", "g++ -std=gnu++14 -O3 ./code.cpp -o ./code.out 1> ./stdout.txt 2> ./stderr.txt"], null, null, null, {}, function(code, json){
 
             // step4
             let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
@@ -68,7 +66,7 @@ exports.execute = function(task){
         fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
         
         // step3
-        let k1 = myexec.spawn_fileio("./code.out",[], "./stdin.txt", "./stdout.txt", "./stderr.txt", {env:{PATH:common.cygwinEnvPath,LANG:"ja_JP.UTF-8"}}, function(code, json){
+        let k1 = myexec.spawn_fileio("bash",["-c", "./code.out < ./stdin.txt 1> ./stdout.txt 2> ./stderr.txt"], null, null, null, {}, function(code, json){
 
             // step4
             let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
@@ -92,7 +90,6 @@ exports.execute = function(task){
 exports.run = function(task){
     
     try{
-        compilerName = "g++"; // g++
 
         task.callback.call(null, "prepare", {killer: null});
 
@@ -106,7 +103,7 @@ exports.run = function(task){
         fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
         
         // step3
-        let k1 = myexec.spawn_fileio(compilerName,["-std=gnu++14", "./code.cpp", "-o", "./code.out"], null, "./stdout.txt", "./stderr.txt", {env:{PATH:common.cygwinEnvPath}}, function(code, json){
+        let k1 = myexec.spawn_fileio("bash", ["-c", "g++ -std=gnu++14 -O3 ./code.cpp -o ./code.out 1> ./stdout.txt 2> ./stderr.txt"], null, null, null, {}, function(code, json){
 
             const compileTime = json.time;
 
@@ -123,7 +120,7 @@ exports.run = function(task){
             }
     
             // step5
-            let k2 = myexec.spawn_fileio("./code.out",[], "./stdin.txt", "./stdout.txt", "./stderr.txt", {env:{PATH:common.cygwinEnvPath}}, function(code, json){
+            let k2 = myexec.spawn_fileio("bash",["-c", "./code.out < ./stdin.txt 1> ./stdout.txt 2> ./stderr.txt"], null, null, null, {}, function(code, json){
 
                 // ste6
                 let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
