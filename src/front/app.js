@@ -357,6 +357,7 @@ socket.on("s2c_progress", function(json){
 	else if (json.type === "error"){
 		console.log(json);
 		displayProgress("error", "danger");
+		changeStateExecButton(true);
 	}
 	else if (json.type === "log"){
 		console.log(json);
