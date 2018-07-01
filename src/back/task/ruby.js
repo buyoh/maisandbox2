@@ -97,14 +97,22 @@ exports.run = function(task){
         const lastCwd = process.cwd();
         common.setupTemp(uniqueName);
         process.chdir(common.tempDir(uniqueName));
-    
-        // step2
-        fs.writeFileSync("./code.rb", task.json.txt_code);
-        fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
 
-        let compileTime = -1;
+        const finalize = ()=>{
+            process.chdir(lastCwd);
+            common.cleanTemp(uniqueName);
+        };
+    
 
         Promise.resolve().then(()=>{
+            return new Promise((resolve, reject)=>{
+                // step2
+                fs.writeFileSync("./code.rb", task.json.txt_code);
+                fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
+                resolve();
+            });
+
+        }).then(()=>{
             return new Promise((resolve, reject)=>{
                 // step3
                 let killer = myexec.spawn_fileio("ruby",["-c", "./code.rb"], null, "./stdout.txt", "./stderr.txt", {}, (code, json)=>{
@@ -116,44 +124,47 @@ exports.run = function(task){
         }).then(([code, json])=>{
             return new Promise((resolve, reject)=>{
                 // step4
-                compileTime = json.time;
                 if (code != 0){
                     let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
                     let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
     
-                    task.callback.call(null, "failed", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, killer: null, time: {compile: compileTime}});
+                    task.callback.call(null, "failed", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, killer: null, time: {compile: json.time}});
         
-                    process.chdir(lastCwd);
-                    common.cleanTemp(uniqueName);
+                    finalize();
                     reject(false);
                     return;
                 }
                 // step 5
-                let killer = myexec.spawn_fileio("ruby",["./code.rb"], "./stdin.txt", "./stdout.txt", "./stderr.txt", {}, (code, json)=>{
-                    resolve([code, json]);
+                let killer = myexec.spawn_fileio("ruby",["./code.rb"], "./stdin.txt", "./stdout.txt", "./stderr.txt", {}, (new_code, new_json)=>{
+                    new_json.compileTime = json.time;
+                    resolve([new_code, new_json]);
                 });
-                task.callback.call(null, "execute", {killer: killer, time: {compile: compileTime}});
+                task.callback.call(null, "execute", {killer: killer, time: {compile: json.time}});
             });
-            
-        }).then(([code, json])=>{
-            // step6
-            let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
-            let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
-            
-            // step7
-            task.callback.call(null, "success", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, killer: null, time: {compile: compileTime, execute: json.time}});
 
-            process.chdir(lastCwd);
-            common.cleanTemp(uniqueName);
-            return;
+        }).then(([code, json])=>{
+            return new Promise((resolve, reject)=>{
+                // step6
+                let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
+                let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
+                
+                // step7
+                task.callback.call(null, "success", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, killer: null, time: {compile: json.compileTime, execute: json.time}});
+
+                finalize();
+                resolve();
+                return;
+            });
 
         }).catch((e)=>{
             if (e !== false)
                 console.error(e),
                 task.callback.call(null, "error", {err:e, killer: null});
+            finalize();
         });
         
     }catch(e){
         task.callback.call(null, "error", {err:e, killer: null});
+        finalize();
     }
 }

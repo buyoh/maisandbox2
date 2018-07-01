@@ -92,7 +92,7 @@ exports.execute = function(task){
 exports.run = function(task){
     
     try{
-        compilerName = "g++"; // g++
+        const compilerName = "g++"; // g++
 
         task.callback.call(null, "prepare", {killer: null});
 
@@ -100,48 +100,77 @@ exports.run = function(task){
         const lastCwd = process.cwd();
         common.setupTemp(uniqueName);
         process.chdir(common.tempDir(uniqueName));
-    
-        // step2
-        fs.writeFileSync("./code.cpp", task.json.txt_code);
-        fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
+
+        const finalize = ()=>{
+            process.chdir(lastCwd);
+            common.cleanTemp(uniqueName);
+        };
+
+
+        Promise.resolve().then(()=>{
+            return new Promise((resolve, reject)=>{
+                // step2
+                fs.writeFileSync("./code.cpp", task.json.txt_code);
+                fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
+                resolve();
+            });
+
+        }).then(()=>{
+            return new Promise((resolve, reject)=>{
+                // step 3
+                let killer = myexec.spawn_fileio(compilerName,["-std=gnu++14", "./code.cpp", "-o", "./code.out"], null, "./stdout.txt", "./stderr.txt", {env:{PATH:common.cygwinEnvPath}}, function(code, json){
+                    resolve([code, json]);
+                });
+                task.callback.call(null, "compile", {killer: killer});
+            });
+
+        }).then(([code, json])=>{
+            return new Promise((resolve, reject)=>{
+                // step4
+                if (code != 0){
+                    let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
+                    let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
+
+                    task.callback.call(null, "failed", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, time:{compile:json.time}, killer: null});
         
-        // step3
-        let k1 = myexec.spawn_fileio(compilerName,["-std=gnu++14", "./code.cpp", "-o", "./code.out"], null, "./stdout.txt", "./stderr.txt", {env:{PATH:common.cygwinEnvPath}}, function(code, json){
+                    finalize();
+                    reject();
+                    return;
+                }
+                
+                // step5
+                let killer = myexec.spawn_fileio("./code.out",[], "./stdin.txt", "./stdout.txt", "./stderr.txt", {env:{PATH:common.cygwinEnvPath}}, function(new_code, new_json){
+                    new_json.compileTime = json.time;
+                    resolve([new_code, new_json]);
+                });
+                task.callback.call(null, "execute", {time:{compile:json.time}, killer: killer});
+            });
 
-            const compileTime = json.time;
-
-            // step4
-            if (code != 0){
-                let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
-                let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
-
-                task.callback.call(null, "failed", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, time:{compile:compileTime}, killer: null});
-    
-                process.chdir(lastCwd);
-                common.cleanTemp(uniqueName);
-                return;
-            }
-    
-            // step5
-            let k2 = myexec.spawn_fileio("./code.out",[], "./stdin.txt", "./stdout.txt", "./stderr.txt", {env:{PATH:common.cygwinEnvPath}}, function(code, json){
-
+        }).then(([code, json])=>{
+            return new Promise((resolve, reject)=>{
                 // ste6
                 let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
                 let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
                 
                 // step7
-                task.callback.call(null, "success", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, time:{compile:compileTime, execute: json.time}, killer: null});
+                task.callback.call(null, "success", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, time:{compile:json.compileTime, execute: json.time}, killer: null});
     
-                process.chdir(lastCwd);
-                common.cleanTemp(uniqueName);
+                finalize();
+                resolve();
             });
-            task.callback.call(null, "execute", {time:{compile:compileTime}, killer: k2});
-        });
 
-        task.callback.call(null, "compile", {killer: k1});
+        }).catch((e)=>{
+            if (e !== false){
+                task.callback.call(null, "error", {err:e, killer: null});
+            }
+            finalize();
+        });
+    
+
         
     }catch(e){
         task.callback.call(null, "error", {err:e, killer: null});
+        finalize();
     }
 };
 
