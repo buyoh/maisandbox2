@@ -104,16 +104,16 @@ exports.run = function(task){
 
         let compileTime = -1;
 
-        new Promise((resolve, reject)=>{
-            // step3
-            let killer = myexec.spawn_fileio("ruby",["-c", "./code.rb"], null, "./stdout.txt", "./stderr.txt", {}, (code, json)=>{
-                console.log([code, json]);
-                resolve([code, json]);
+        Promise.resolve().then(()=>{
+            return new Promise((resolve, reject)=>{
+                // step3
+                let killer = myexec.spawn_fileio("ruby",["-c", "./code.rb"], null, "./stdout.txt", "./stderr.txt", {}, (code, json)=>{
+                    resolve([code, json]);
+                });
+                task.callback.call(null, "compile", {killer: killer});
             });
-            task.callback.call(null, "compile", {killer: killer});
 
         }).then(([code, json])=>{
-            console.log(code, json);
             return new Promise((resolve, reject)=>{
                 // step4
                 compileTime = json.time;
