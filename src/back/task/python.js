@@ -10,12 +10,12 @@ const uniqueName = "python3";
 
 exports.build = function(task){
 
+    const lastCwd = process.cwd();
     try{
 
         task.callback.call(null, "prepare", {killer: null});
 
         // step1
-        const lastCwd = process.cwd();
         common.setupTemp(uniqueName);
         process.chdir(common.tempDir(uniqueName));
     
@@ -44,6 +44,7 @@ exports.build = function(task){
         
     }catch(e){
         task.callback.call(null, "error", {err:e, killer: null});
+        process.chdir(lastCwd);
     }
 }
 
