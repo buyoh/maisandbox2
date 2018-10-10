@@ -92,54 +92,80 @@ exports.execute = function(task){
 exports.run = function(task){
     
     try{
-
         task.callback.call(null, "prepare", {killer: null});
 
         // step1
         const lastCwd = process.cwd();
         common.setupTemp(uniqueName);
         process.chdir(common.tempDir(uniqueName));
+
+        const finalize = ()=>{
+            process.chdir(lastCwd);
+            common.cleanTemp(uniqueName);
+        };
     
-        // step2
-        fs.writeFileSync("./code.rb", task.json.txt_code);
-        fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
 
-        // step3
-        let k1 = myexec.spawn_fileio("ruby",["-c", "./code.rb"], null, "./stdout.txt", "./stderr.txt", {}, function(code, json){
+        Promise.resolve().then(()=>{
+            return new Promise((resolve, reject)=>{
+                // step2
+                fs.writeFileSync("./code.rb", task.json.txt_code);
+                fs.writeFileSync("./stdin.txt", task.json.txt_stdin);
+                resolve();
+            });
 
-            const compileTime = json.time;
+        }).then(()=>{
+            return new Promise((resolve, reject)=>{
+                // step3
+                let killer = myexec.spawn_fileio("ruby",["-c", "./code.rb"], null, "./stdout.txt", "./stderr.txt", {}, (code, json)=>{
+                    resolve([code, json]);
+                });
+                task.callback.call(null, "compile", {killer: killer});
+            });
 
-            // step4
-            if (code != 0){
-                let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
-                let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
-
-                task.callback.call(null, "failed", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, killer: null, time: {compile: compileTime}});
+        }).then(([code, json])=>{
+            return new Promise((resolve, reject)=>{
+                // step4
+                if (code != 0){
+                    let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
+                    let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
     
-                process.chdir(lastCwd);
-                common.cleanTemp(uniqueName);
-                return;
-            }
-    
-            // step5
-            let k2 = myexec.spawn_fileio("ruby",["./code.rb"], "./stdin.txt", "./stdout.txt", "./stderr.txt", {}, function(code, json){
+                    task.callback.call(null, "failed", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, killer: null, time: {compile: json.time}});
+        
+                    finalize();
+                    reject(false);
+                    return;
+                }
+                // step 5
+                let killer = myexec.spawn_fileio("ruby",["./code.rb"], "./stdin.txt", "./stdout.txt", "./stderr.txt", {}, (new_code, new_json)=>{
+                    new_json.compileTime = json.time;
+                    resolve([new_code, new_json]);
+                });
+                task.callback.call(null, "execute", {killer: killer, time: {compile: json.time}});
+            });
 
+        }).then(([code, json])=>{
+            return new Promise((resolve, reject)=>{
                 // step6
                 let stdout = fs.readFileSync("./stdout.txt", 'UTF-8');
                 let stderr = fs.readFileSync("./stderr.txt", 'UTF-8');
                 
                 // step7
-                task.callback.call(null, "success", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, killer: null, time: {compile: compileTime, execute: json.time}});
-    
-                process.chdir(lastCwd);
-                common.cleanTemp(uniqueName);
+                task.callback.call(null, "success", {code:code, signal:json.signal, stdout:stdout, stderr:stderr, killer: null, time: {compile: json.compileTime, execute: json.time}});
+
+                finalize();
+                resolve();
+                return;
             });
-            task.callback.call(null, "execute", {killer: k2, time: {compile: compileTime}});
+
+        }).catch((e)=>{
+            if (e !== false)
+                console.error(e),
+                task.callback.call(null, "error", {err:e, killer: null});
+            finalize();
         });
-        
-        task.callback.call(null, "compile", {killer: k1});
         
     }catch(e){
         task.callback.call(null, "error", {err:e, killer: null});
+        finalize();
     }
 }
