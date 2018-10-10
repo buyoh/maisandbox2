@@ -30,3 +30,13 @@ wandbox,ideoneのような即席のコーディング環境をローカルに構
 ## winserすごいよね
 
 - https://qiita.com/Kazunori-Kimura/items/c40ce82e7c044869fd27
+
+## トラブルシューティング
+
+### WSL(bash on ubuntu on windows)系のコマンドが正しく動かない
+
+- 「コンピュータの管理」から「サービス」を開きます．
+- 「maisandbox2」のプロパティを開きます．
+- 「ログオン」「アカウント」を選んで，maisandbox2を管理しているユーザ名とパスワードを入力．
+- 「maisandbox2」サービスを再起動する．
+
