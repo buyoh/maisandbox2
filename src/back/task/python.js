@@ -8,6 +8,18 @@ const uniqueName = "python3";
 
 // -------------------------------------
 
+exports.recipes = {
+    "compile > run":{
+        tasks: ["setup", "compile", "run"]
+    },
+    "run(no update)":{
+        tasks: ["run"]
+    }
+};
+
+
+// -------------------------------------
+
 exports.build = function(task){
 
     const lastCwd = process.cwd();

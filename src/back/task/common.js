@@ -44,3 +44,16 @@ exports.isExistFile = function(filename){
     }
     return true;
 }
+
+
+exports.chdir = function(directory, proc){
+    const lastCwd = process.cwd();
+    process.chdir(directory);
+    try{
+        proc();
+    }catch (e){
+        throw e;
+    }finally{
+        process.chdir(lastCwd);
+    }
+}

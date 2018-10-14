@@ -6,16 +6,41 @@ const filetype = require('file-type')
 const taskexecutor = require('./taskexecutor');
 const validator = require('./validator');
 
-const portno = 11450;
+const settings = {
+    portno: 11450
+};
+
+for (let i = 2, m = null; i < process.argv.length; ++i){
+    const arg = process.argv[i];
+    if (arg == "--port") m = 1;
+    else if (m == 1) settings.portno = +arg;
+}
+
 
 function isExistFile(path){
     try{
         fs.statSync(path);
         return true;
-    }catch(err){
+    }
+    catch(err){
         return false;
     }
 }
+
+
+function rewritePath(url){
+    if (url === "/"){
+        return "./src/front/media/sandbox.html";
+    }
+    else if (url[1] == "_"){
+        let m = url.match(/^\/_\/(.*)$/);
+        return "./build/" + m[1];
+    }
+    else{
+        return "./src/front/media" + url;
+    }
+}
+
 
 let server = http.createServer(function(request, responce) {
     request.on('error', function(e){
@@ -30,33 +55,23 @@ let server = http.createServer(function(request, responce) {
     console.error("requested: "+request.url);
 
     // 必要に応じてurlを変換
-    let path = "./src/front/media" + request.url;
-    if (request.url === "/"){
-        path = "./src/front/media/sandbox.html";
-    }else if (request.url[1] == "_"){
-        let m = request.url.match(/^\/_\/(.*)$/);
-        path = "./build/" + m[1];
-    }
+    let path = rewritePath(request.url);
 
     // 該当するファイルを探す
-    let ok = false;
     try{
-        if (!request.url.match(/\.\./)){
-            responce.writeHead(200, filetype(request.url));
-            responce.end(fs.readFileSync(path, 'utf-8'));
-            ok = true;
-        }
-    }catch(err){}
-
-    // 404
-    if (!ok) {
+        if (request.url.match(/\.\./)) throw 1;
+        responce.writeHead(200, filetype(request.url));
+        responce.end(fs.readFileSync(path, 'utf-8'));
+        console.error("requested: lookup "+path+" => ok");
+    }
+    catch(err){
         responce.statusCode = 404;
         responce.end("404");
+        console.error("requested: lookup "+path+" => ng");
     }
-    console.error("requested: lookup "+path+" => "+ok);
 
-}).listen(portno);  // ポート競合の場合は値を変更
-console.log("port: "+portno);
+}).listen(settings.portno);  // ポート競合の場合は値を変更
+console.log("port: "+settings.portno);
 
 
 
@@ -77,7 +92,8 @@ soio.sockets.on('connection', function(socket) {
     // 言語情報等を取得する
     socket.on('c2s_getCatalog', function(data) {
         socket.emit('s2c_catalog', {
-            taskTypeList: taskexecutor.langList
+            taskTypeList: taskexecutor.langList,
+            recipes: taskexecutor.getAllRecipe()
         });
     });
 

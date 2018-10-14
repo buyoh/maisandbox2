@@ -59,9 +59,11 @@ function initializeEvents(){
 
 	// another
 	$("#selector_codelang").change(function(e){
-		var edt = $("#selector_codelang option:selected").data("edt");
+		let dom = $("#selector_codelang option:selected");
+		let cmd = dom.data("cmd");
+		let edt = dom.data("edt");
 		if (edt != "")
-			aceditor.getSession().setMode("ace/mode/"+edt);
+			changeCodeLang(cmd, edt);
 	});
 }
 
@@ -81,18 +83,57 @@ function updateSelectorCodelang(catalog){
 	
 	for (let i = 0; i < catalog.length; ++i){
 		let c = catalog[i];
-		dom.append("<option data-cmd='"+c.cmd+"' data-edt='"+c.editor+"'>"+c.name+"</option>");
+		$("<option></option")
+			.data("cmd", c.cmd)
+			.data("edt", c.editor)
+			.text(c.name)
+			.appendTo(dom);
 	}
 
 	if (appVal){
-		$("#selector_codelang option[data-cmd='"+appVal+"']").prop("selected", true);
-		$("#selector_codelang").change();
+		$("#selector_codelang option")
+			.filter((i,e)=>($(e).data("cmd")==appVal))
+			.prop("selected", true);
 	}
-
 }
 
+
+function updateRecipes(recipes){
+	let domr = $("#div_recipes");
+	domr.empty();
+	for (let lang in recipes){
+		let domc = $("<div></div>").data("cmd", lang);
+		for (let name in recipes[lang]) {
+			domc.append(
+				$("<button></button>")
+				.text(name)
+				.on("click", {recipe: name}, buttonRecipe)
+			);
+		}
+		domr.append(domc);
+	}
+}
+
+
+function changeCodeLangEditor(cmd, edt){
+	aceditor.getSession().setMode("ace/mode/"+edt);
+}
+
+
+function changeVisibleRecipes(cmd, edt){
+	$("#div_recipes > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("invisible");
+	$("#div_recipes > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("invisible");
+}
+
+
+function changeCodeLang(cmd, edt){
+	changeCodeLangEditor(cmd, edt);
+	changeVisibleRecipes(cmd, edt);
+}
+
+
 // _____________________________________________________
-// utility
+// getter
 
 
 function getChosenLang(){
@@ -117,6 +158,22 @@ var filestdin = $('#chk_filestdin:checked').val();
 var stdinpath = $('#input_stdinpath').val();
 	*/
 }
+
+
+// _____________________________________________________
+// display
+
+
+function chooseLang(cmd){
+	let dom = $("#selector_codelang option").filter((i,e)=>($(e).data("cmd")==cmd));
+	if (dom.length > 0)
+		dom.prop("selected", true);
+	else
+		$("#selector_codelang").data("apply", cmd);
+
+	$("#selector_codelang").change();
+}
+
 /**
  * 
  * @param {string} message 
@@ -141,6 +198,29 @@ function displayStderr(message){
 }
 
 
+function clearResultLogs(){
+	$("#div_resultlogs").empty();
+}
+function appendResultLog(title, message, classtype, isProgressing = false){
+	const domrl = $("#div_resultlogs");
+	if (domrl.last().data("isprog")){
+		domrl.last().remove();
+	}
+	domrl.append(
+		$("<div></div>")
+		.data("isprog", isProgressing)
+		.append(
+			$("<div></div>").text(title)
+			.removeClass("alert-success alert-info alert-warning alert-danger")
+			.addClass("alert-"+classtype)
+		)
+		.append(
+			$("<div></div>").text(message)
+		)
+	);
+}
+
+
 function changeStateExecButton(enabled = true){
 	$("#btn_exec").prop("disabled", !enabled);
 	$("#btn_exec_build").prop("disabled", !enabled);
@@ -162,12 +242,7 @@ function restoreBackup(){
 	$("#txt_editstdin").val(json.txt_stdin);
 	aceditor.setValue(json.txt_code, -1);
 
-	let dom = $("#selector_codelang option[data-cmd='"+json.cmd+"']");
-	if (dom.length > 0)
-		dom.prop("selected", true);
-	else
-		$("#selector_codelang").data("apply", json.cmd);
-	
+	chooseLang(json.cmd);
 }
 
 
@@ -283,27 +358,40 @@ function closeTab(id){
 // events
 
 
+// Legacy
 function buttonRun(){
 	const info = gatherInfo();
 	info.query = "run";
 	socket.emit("c2s_submit", info);
 }
 
+// Legacy
 function buttonBuild(){
 	const info = gatherInfo();
 	info.query = "build";
 	socket.emit("c2s_submit", info);
 }
 
+// Legacy
 function buttonExecute(){
 	const info = gatherInfo();
 	info.query = "execute";
 	socket.emit("c2s_submit", info);
 }
 
+// Legacy
 function buttonHalt(){
 	const info = gatherInfo();
 	socket.emit("c2s_halt", info);
+}
+
+
+function buttonRecipe(e){
+	const recipe = e.data.recipe;
+	const info = gatherInfo();
+	info.recipe = recipe;
+	clearResultLogs();
+	socket.emit("c2s_submit", info);
 }
 
 // _____________________________________________________
@@ -319,12 +407,15 @@ socket.on("s2c_echo", function(data){
 // 
 socket.on("s2c_catalog", function(data){
 	updateSelectorCodelang(data.taskTypeList);
+	updateRecipes(data.recipes);
+	$("#selector_codelang").change();
 });
 
 
 // submitしたtaskの状況がサーバから送られてくる
 socket.on("s2c_progress", function(json){
-	// console.log(data);
+	// console.log(json);
+	// appendResultLog(json.type, json.data.stderr, "info", false);
 	if (json.type === "prepare"){
 		changeStateExecButton(false);
 		displayProgress("prepare", "info");
@@ -355,15 +446,15 @@ socket.on("s2c_progress", function(json){
 		displayProgressNote("compilation time: "+Math.round(json.data.time.compile)+"ms, execution time: "+Math.round(json.data.time.execute)+"ms");
 	}
 	else if (json.type === "error"){
-		console.log(json);
+		//console.log(json);
 		displayProgress("error", "danger");
 		changeStateExecButton(true);
 	}
 	else if (json.type === "log"){
-		console.log(json);
+		//console.log(json);
 	}
 	else {
 		changeStateExecButton(true);
-		console.error(json);
+		//console.error(json);
 	}
 });

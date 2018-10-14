@@ -8,6 +8,18 @@ const uniqueName = "ruby";
 
 // -------------------------------------
 
+exports.recipes = {
+    "compile > run":{
+        tasks: ["setup", "compile", "run"]
+    },
+    "run(no update)":{
+        tasks: ["run"]
+    }
+};
+
+
+// -------------------------------------
+
 exports.build = function(task){
 
     const lastCwd = process.cwd();

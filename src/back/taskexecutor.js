@@ -15,11 +15,30 @@ const langTask = {
 };
 
 exports.langList = [
-    {name:'Ruby',   cmd:'Ruby', editor:'ruby'},
-    {name:'C++',    cmd:'C++',  editor:'c_cpp'},
-    {name:'C++Bash',    cmd:'C++Bash',  editor:'c_cpp'},
-    {name:'Python',    cmd:'Python',  editor:'python'}
+    {name:'Ruby Win',   cmd:'Ruby', editor:'ruby'},
+    {name:'C++ Cyg',    cmd:'C++',  editor:'c_cpp'},
+    {name:'C++ Bash',    cmd:'C++Bash',  editor:'c_cpp'},
+    {name:'Python Win',    cmd:'Python',  editor:'python'}
 ];
+
+/**
+ * レシピを拾う
+ */
+exports.getAllRecipe = function(){
+    const recipes = {};
+    for(let lang in langTask) {
+        const task = langTask[lang];
+        recipes[lang] = task.recipes;
+    }
+    return recipes;
+}
+// /**
+//  * レシピを拾う
+//  * @param {String} lang 
+//  */
+// exports.getRecipe = function(lang){
+//     return langTask[lang].recipes;
+// }
 
 
 /**
@@ -32,12 +51,40 @@ exports.pushTask = function(json, callback){
         json:json,
         callback:callback
     };
-    setTimeout(function(t){runTask(t);}, 0, task);
+    if (json.recipe !== undefined)
+        setTimeout(function(t){runTaskRecipe(t);}, 0, task);
+    else
+        setTimeout(function(t){runTaskLegacy(t);}, 0, task);
+}
+
+
+function runTaskRecipe(task){
+    const lt = langTask[task.json.cmd];
+    if (lt === undefined){
+        task.callback.call(null, 'error', 'unknown cmd'); return;
+    }
+    const recipe = lt.recipes[task.json.recipe];
+    if (recipe === undefined){
+        task.callback.call(null, 'error', 'unknown recipe'); return;
+    }
+    
+    const process = function(taskIndex){
+        if (taskIndex >= recipe.tasks.length){
+            task.callback.call(null, 'success', {});
+            return;
+        }
+        lt.command[recipe.tasks[taskIndex]](task, (msg, json)=>{
+            task.callback.call(null, msg, json);
+            if (msg == 'continue')
+                process(taskIndex + 1);
+        })
+    };
+    process(0);
 }
 
 
 
-function runTask(task){
+function runTaskLegacy(task){
 
     // 
     if (langTask[task.json.cmd] === undefined){

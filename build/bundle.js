@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.3.1
  * https://jquery.com/
@@ -10426,9 +10426,11 @@ function initializeEvents(){
 
 	// another
 	$("#selector_codelang").change(function(e){
-		var edt = $("#selector_codelang option:selected").data("edt");
+		let dom = $("#selector_codelang option:selected");
+		let cmd = dom.data("cmd");
+		let edt = dom.data("edt");
 		if (edt != "")
-			aceditor.getSession().setMode("ace/mode/"+edt);
+			changeCodeLang(cmd, edt);
 	});
 }
 
@@ -10448,18 +10450,57 @@ function updateSelectorCodelang(catalog){
 	
 	for (let i = 0; i < catalog.length; ++i){
 		let c = catalog[i];
-		dom.append("<option data-cmd='"+c.cmd+"' data-edt='"+c.editor+"'>"+c.name+"</option>");
+		$("<option></option")
+			.data("cmd", c.cmd)
+			.data("edt", c.editor)
+			.text(c.name)
+			.appendTo(dom);
 	}
 
 	if (appVal){
-		$("#selector_codelang option[data-cmd='"+appVal+"']").prop("selected", true);
-		$("#selector_codelang").change();
+		$("#selector_codelang option")
+			.filter((i,e)=>($(e).data("cmd")==appVal))
+			.prop("selected", true);
 	}
-
 }
 
+
+function updateRecipes(recipes){
+	let domr = $("#div_recipes");
+	domr.empty();
+	for (let lang in recipes){
+		let domc = $("<div></div>").data("cmd", lang);
+		for (let name in recipes[lang]) {
+			domc.append(
+				$("<button></button>")
+				.text(name)
+				.on("click", {recipe: name}, buttonRecipe)
+			);
+		}
+		domr.append(domc);
+	}
+}
+
+
+function changeCodeLangEditor(cmd, edt){
+	aceditor.getSession().setMode("ace/mode/"+edt);
+}
+
+
+function changeVisibleRecipes(cmd, edt){
+	$("#div_recipes > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("invisible");
+	$("#div_recipes > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("invisible");
+}
+
+
+function changeCodeLang(cmd, edt){
+	changeCodeLangEditor(cmd, edt);
+	changeVisibleRecipes(cmd, edt);
+}
+
+
 // _____________________________________________________
-// utility
+// getter
 
 
 function getChosenLang(){
@@ -10484,6 +10525,22 @@ var filestdin = $('#chk_filestdin:checked').val();
 var stdinpath = $('#input_stdinpath').val();
 	*/
 }
+
+
+// _____________________________________________________
+// display
+
+
+function chooseLang(cmd){
+	let dom = $("#selector_codelang option").filter((i,e)=>($(e).data("cmd")==cmd));
+	if (dom.length > 0)
+		dom.prop("selected", true);
+	else
+		$("#selector_codelang").data("apply", cmd);
+
+	$("#selector_codelang").change();
+}
+
 /**
  * 
  * @param {string} message 
@@ -10508,6 +10565,29 @@ function displayStderr(message){
 }
 
 
+function clearResultLogs(){
+	$("#div_resultlogs").empty();
+}
+function appendResultLog(title, message, classtype, isProgressing = false){
+	const domrl = $("#div_resultlogs");
+	if (domrl.last().data("isprog")){
+		domrl.last().remove();
+	}
+	domrl.append(
+		$("<div></div>")
+		.data("isprog", isProgressing)
+		.append(
+			$("<div></div>").text(title)
+			.removeClass("alert-success alert-info alert-warning alert-danger")
+			.addClass("alert-"+classtype)
+		)
+		.append(
+			$("<div></div>").text(message)
+		)
+	);
+}
+
+
 function changeStateExecButton(enabled = true){
 	$("#btn_exec").prop("disabled", !enabled);
 	$("#btn_exec_build").prop("disabled", !enabled);
@@ -10529,12 +10609,7 @@ function restoreBackup(){
 	$("#txt_editstdin").val(json.txt_stdin);
 	aceditor.setValue(json.txt_code, -1);
 
-	let dom = $("#selector_codelang option[data-cmd='"+json.cmd+"']");
-	if (dom.length > 0)
-		dom.prop("selected", true);
-	else
-		$("#selector_codelang").data("apply", json.cmd);
-	
+	chooseLang(json.cmd);
 }
 
 
@@ -10650,27 +10725,40 @@ function closeTab(id){
 // events
 
 
+// Legacy
 function buttonRun(){
 	const info = gatherInfo();
 	info.query = "run";
 	socket.emit("c2s_submit", info);
 }
 
+// Legacy
 function buttonBuild(){
 	const info = gatherInfo();
 	info.query = "build";
 	socket.emit("c2s_submit", info);
 }
 
+// Legacy
 function buttonExecute(){
 	const info = gatherInfo();
 	info.query = "execute";
 	socket.emit("c2s_submit", info);
 }
 
+// Legacy
 function buttonHalt(){
 	const info = gatherInfo();
 	socket.emit("c2s_halt", info);
+}
+
+
+function buttonRecipe(e){
+	const recipe = e.data.recipe;
+	const info = gatherInfo();
+	info.recipe = recipe;
+	clearResultLogs();
+	socket.emit("c2s_submit", info);
 }
 
 // _____________________________________________________
@@ -10686,12 +10774,15 @@ socket.on("s2c_echo", function(data){
 // 
 socket.on("s2c_catalog", function(data){
 	updateSelectorCodelang(data.taskTypeList);
+	updateRecipes(data.recipes);
+	$("#selector_codelang").change();
 });
 
 
 // submitしたtaskの状況がサーバから送られてくる
 socket.on("s2c_progress", function(json){
-	// console.log(data);
+	console.log(json);
+	appendResultLog(json.type, json.data.stderr, "info", false);
 	if (json.type === "prepare"){
 		changeStateExecButton(false);
 		displayProgress("prepare", "info");
@@ -10711,7 +10802,7 @@ socket.on("s2c_progress", function(json){
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
 		displayProgress("success("+json.data.code+")", "success");
-		displayProgressNote("compilation time: "+0.001*json.data.time.compile+", execution time: "+0.001*json.data.time.execute);
+		displayProgressNote("compilation time: "+Math.round(json.data.time.compile)+"ms, execution time: "+Math.round(json.data.time.execute)+"ms");
 	}
 	else if (json.type === "failed"){
 		changeStateExecButton(true);
@@ -10719,19 +10810,19 @@ socket.on("s2c_progress", function(json){
 		displayStdout(json.data.stdout);
 		displayStderr(json.data.stderr);
 		displayProgress("failed("+json.data.code+")", "warning");
-		displayProgressNote("compilation time: "+0.001*json.data.time.compile+", execution time: "+0.001*json.data.time.execute);
+		displayProgressNote("compilation time: "+Math.round(json.data.time.compile)+"ms, execution time: "+Math.round(json.data.time.execute)+"ms");
 	}
 	else if (json.type === "error"){
-		console.log(json);
+		//console.log(json);
 		displayProgress("error", "danger");
 		changeStateExecButton(true);
 	}
 	else if (json.type === "log"){
-		console.log(json);
+		//console.log(json);
 	}
 	else {
 		changeStateExecButton(true);
-		console.error(json);
+		//console.error(json);
 	}
 });
 

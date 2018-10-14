@@ -78,3 +78,7 @@ pre{
 	border-color: #777;
 	padding:1px;
 }
+
+.invisible{
+	display: none !important;
+}
