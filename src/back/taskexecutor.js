@@ -74,6 +74,7 @@ function runTaskRecipe(task){
             return;
         }
         lt.command[recipe.tasks[taskIndex]](task, (msg, json)=>{
+            json.taskName = recipe.tasks[taskIndex];
             task.callback.call(null, msg, json);
             if (msg == 'continue')
                 process(taskIndex + 1);

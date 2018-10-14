@@ -10417,9 +10417,9 @@ function initializeAce(){
 function initializeEvents(){
 
 	// button
-	$("#btn_exec").on("click", buttonRun);
-	$("#btn_exec_build").on("click", buttonBuild);
-	$("#btn_exec_run").on("click", buttonExecute);
+	// $("#btn_exec").on("click", buttonRun);
+	// $("#btn_exec_build").on("click", buttonBuild);
+	// $("#btn_exec_run").on("click", buttonExecute);
 	$("#btn_halt").on("click", buttonHalt);
 	$("#btn_storeTemplate").on("click", storeTemplate);
 	$("#btn_loadTemplate").on("click", loadTemplate);
@@ -10473,6 +10473,7 @@ function updateRecipes(recipes){
 		for (let name in recipes[lang]) {
 			domc.append(
 				$("<button></button>")
+				.addClass("btn btn-sm btn-primary")
 				.text(name)
 				.on("click", {recipe: name}, buttonRecipe)
 			);
@@ -10488,8 +10489,8 @@ function changeCodeLangEditor(cmd, edt){
 
 
 function changeVisibleRecipes(cmd, edt){
-	$("#div_recipes > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("invisible");
-	$("#div_recipes > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("invisible");
+	$("#div_recipes > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("d-none");
+	$("#div_recipes > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("d-none");
 }
 
 
@@ -10568,23 +10569,44 @@ function displayStderr(message){
 function clearResultLogs(){
 	$("#div_resultlogs").empty();
 }
+
 function appendResultLog(title, message, classtype, isProgressing = false){
-	const domrl = $("#div_resultlogs");
-	if (domrl.last().data("isprog")){
-		domrl.last().remove();
+	if ($("#div_resultlogs > div").first().data("isprog")){
+		$("#div_resultlogs > div").first().remove();
 	}
-	domrl.append(
+	const dom = 
 		$("<div></div>")
+		.addClass("border")
 		.data("isprog", isProgressing)
 		.append(
 			$("<div></div>").text(title)
-			.removeClass("alert-success alert-info alert-warning alert-danger")
-			.addClass("alert-"+classtype)
-		)
-		.append(
-			$("<div></div>").text(message)
-		)
-	);
+			.addClass("alert-"+classtype+" resultLogTitle")
+		);
+	if (typeof message === "object"){
+		for (const key in message){
+			const msg = ""+message[key];
+			if (msg.match(/\n/)){
+				const keydom = $("<div></div>").text(key);
+				const valdom = $("<pre></pre>").text(message[key]).data("key", key);
+				keydom.on("click", {fr:valdom}, (e)=>{ $(e.data.fr).toggleClass("d-none"); });
+				dom.append(keydom).append(valdom);
+			}
+			else{
+				dom.append(
+					$("<div></div>")
+					.addClass("keypair")
+					.append($("<div></div>").addClass("key").text(key))
+					.append($("<div></div>").addClass("val").text(msg).data("key", key))
+				);
+			}
+		}
+	}
+	else{
+		dom.append(
+			$("<pre></pre>").text(message)
+		);
+	}
+	$("#div_resultlogs").prepend(dom);
 }
 
 
@@ -10725,27 +10747,27 @@ function closeTab(id){
 // events
 
 
-// Legacy
-function buttonRun(){
-	const info = gatherInfo();
-	info.query = "run";
-	socket.emit("c2s_submit", info);
-}
-
-// Legacy
-function buttonBuild(){
-	const info = gatherInfo();
-	info.query = "build";
-	socket.emit("c2s_submit", info);
-}
-
-// Legacy
-function buttonExecute(){
-	const info = gatherInfo();
-	info.query = "execute";
-	socket.emit("c2s_submit", info);
-}
-
+// // Legacy
+// function buttonRun(){
+// 	const info = gatherInfo();
+// 	info.query = "run";
+// 	socket.emit("c2s_submit", info);
+// }
+// 
+// // Legacy
+// function buttonBuild(){
+// 	const info = gatherInfo();
+// 	info.query = "build";
+// 	socket.emit("c2s_submit", info);
+// }
+// 
+// // Legacy
+// function buttonExecute(){
+// 	const info = gatherInfo();
+// 	info.query = "execute";
+// 	socket.emit("c2s_submit", info);
+// }
+// 
 // Legacy
 function buttonHalt(){
 	const info = gatherInfo();
@@ -10781,49 +10803,33 @@ socket.on("s2c_catalog", function(data){
 
 // submitしたtaskの状況がサーバから送られてくる
 socket.on("s2c_progress", function(json){
-	console.log(json);
-	appendResultLog(json.type, json.data.stderr, "info", false);
-	if (json.type === "prepare"){
-		changeStateExecButton(false);
-		displayProgress("prepare", "info");
-		displayProgressNote("");
+	// console.log(json);
+
+	if (json.type === "halted"){
+		appendResultLog("halted", "", "info");
+		return;
 	}
-	else if (json.type === "compile"){
-		changeStateExecButton(false);
-		displayProgress("compile", "info");
+
+	if (json.type === "success"){
+		displayStdout(
+			$("#div_resultlogs > div").first().children()
+			.filter((i,e)=>($(e).data("key")=="stdout"))
+			.text()
+		);
 	}
-	else if (json.type === "execute"){
-		changeStateExecButton(false);
-		displayProgress("execute", "info");
-	}
-	else if (json.type === "success"){
-		changeStateExecButton(true);
-		// console.log(json.data);
-		displayStdout(json.data.stdout);
-		displayStderr(json.data.stderr);
-		displayProgress("success("+json.data.code+")", "success");
-		displayProgressNote("compilation time: "+Math.round(json.data.time.compile)+"ms, execution time: "+Math.round(json.data.time.execute)+"ms");
-	}
-	else if (json.type === "failed"){
-		changeStateExecButton(true);
-		// console.log(json.data);
-		displayStdout(json.data.stdout);
-		displayStderr(json.data.stderr);
-		displayProgress("failed("+json.data.code+")", "warning");
-		displayProgressNote("compilation time: "+Math.round(json.data.time.compile)+"ms, execution time: "+Math.round(json.data.time.execute)+"ms");
-	}
-	else if (json.type === "error"){
-		//console.log(json);
-		displayProgress("error", "danger");
-		changeStateExecButton(true);
-	}
-	else if (json.type === "log"){
-		//console.log(json);
-	}
-	else {
-		changeStateExecButton(true);
-		//console.error(json);
-	}
+	
+	const state = 
+		json.type === "continue" || json.type === "success" ? "success" :
+		json.type === "failed" ? "warning" : 
+		json.type === "error" ? "error" : 
+		"info";
+
+	appendResultLog(
+		json.data.taskName ? json.data.taskName + ":"+json.type : json.type,
+		json.data, state, json.type === "progress"
+	);
+
+
 });
 
 },{"jQuery":1}]},{},[2]);

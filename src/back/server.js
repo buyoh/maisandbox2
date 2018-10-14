@@ -117,7 +117,7 @@ soio.sockets.on('connection', function(socket) {
     socket.on('c2s_halt', function(data){
         if (killer !== null)
             killer();
-        socket.emit('s2c_progress', {type:'log', msg:'accepted (halt)'});
+        socket.emit('s2c_progress', {type:'halted', msg:'accepted (halt)'});
     });
 
     socket.on('disconnect', function() {

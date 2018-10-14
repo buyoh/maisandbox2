@@ -79,6 +79,34 @@ pre{
 	padding:1px;
 }
 
-.invisible{
-	display: none !important;
+.resultLogTitle{
+	width: 50%;
+	border-radius: 3px;
+	padding: 4px;
+}
+
+.keypair{
+	display: inline-block;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #777;
+	padding: 1px;
+	margin: 2px 4px;
+}
+
+.keypair > .key{
+	display: inline-block;
+	
+	border-width: 1px;
+	border-style: solid;
+	border-color: #777;
+	padding: 2px;
+	margin-right: 2px;
+	padding: 1px 3px;
+}
+
+.keypair > .val{
+	display: inline-block;
+	
+	padding: 1px 3px;
 }
