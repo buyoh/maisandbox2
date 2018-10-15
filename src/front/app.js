@@ -161,6 +161,24 @@ var stdinpath = $('#input_stdinpath').val();
 }
 
 
+
+// _____________________________________________________
+// util
+
+/**
+ * buttondom を event すると class をトグルする
+ * @param {string} event 
+ * @param {JQuery} buttondom 
+ * @param {JQuery} hiddendom 
+ */
+function bindToggler(event, buttondom, hiddendom, buttondomClass = "", hiddendomClass = "d-none"){
+	buttondom.on(event, {fr: buttondom, to: hiddendom}, (e)=>{
+		$(e.data.fr).toggleClass(buttondomClass);
+		$(e.data.to).toggleClass(hiddendomClass);
+	});
+}
+
+
 // _____________________________________________________
 // display
 
@@ -207,25 +225,23 @@ function appendResultLog(title, message, classtype, isProgressing = false){
 	if ($("#div_resultlogs > div").first().data("isprog")){
 		$("#div_resultlogs > div").first().remove();
 	}
-	const dom = 
-		$("<div></div>")
-		.addClass("border")
-		.data("isprog", isProgressing)
-		.append(
-			$("<div></div>").text(title)
-			.addClass("alert-"+classtype+" resultLogTitle")
-		);
+	const titledom = $("<div></div>").text(title)
+		.addClass("alert-"+classtype+" title")
+	const bodydom = $("<div></div>")
+		.addClass("body")
+		.addClass("d-none");
+
 	if (typeof message === "object"){
 		for (const key in message){
 			const msg = ""+message[key];
 			if (msg.match(/\n/)){
-				const keydom = $("<div></div>").text(key);
-				const valdom = $("<pre></pre>").text(message[key]).data("key", key);
-				keydom.on("click", {fr:valdom}, (e)=>{ $(e.data.fr).toggleClass("d-none"); });
-				dom.append(keydom).append(valdom);
+				const keydom = $("<div></div>").addClass("key").text(key);
+				const valdom = $("<pre></pre>").addClass("val").text(message[key]).data("key", key);
+				bindToggler("click", keydom, valdom);
+				bodydom.append(keydom).append(valdom);
 			}
 			else{
-				dom.append(
+				bodydom.prepend(
 					$("<div></div>")
 					.addClass("keypair")
 					.append($("<div></div>").addClass("key").text(key))
@@ -235,11 +251,17 @@ function appendResultLog(title, message, classtype, isProgressing = false){
 		}
 	}
 	else{
-		dom.append(
+		bodydom.append(
 			$("<pre></pre>").text(message)
 		);
 	}
-	$("#div_resultlogs").prepend(dom);
+	bindToggler("click", titledom, bodydom);
+	$("#div_resultlogs").prepend(
+		$("<div></div>")
+		.addClass("resultLog")
+		.data("isprog", isProgressing)
+		.append(titledom).append(bodydom)
+	);
 }
 
 
@@ -445,7 +467,7 @@ socket.on("s2c_progress", function(json){
 
 	if (json.type === "success"){
 		displayStdout(
-			$("#div_resultlogs > div").first().children()
+			$("#div_resultlogs > div").first().find(".val")
 			.filter((i,e)=>($(e).data("key")=="stdout"))
 			.text()
 		);
@@ -458,7 +480,7 @@ socket.on("s2c_progress", function(json){
 		"info";
 
 	appendResultLog(
-		json.data.taskName ? json.data.taskName + ":"+json.type : json.type,
+		json.data.taskName ? "[" + json.data.taskName + "]"+json.type : json.type,
 		json.data, state, json.type === "progress"
 	);
 

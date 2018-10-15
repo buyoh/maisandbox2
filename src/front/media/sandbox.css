@@ -79,7 +79,16 @@ pre{
 	padding:1px;
 }
 
-.resultLogTitle{
+.resultLog{
+	margin-bottom: 3px;
+}
+
+.resultLog .title{
+	width: 50%;
+	border-radius: 3px;
+	padding: 4px;
+}
+.resultLog .body{
 	width: 50%;
 	border-radius: 3px;
 	padding: 4px;
@@ -100,13 +109,12 @@ pre{
 	border-width: 1px;
 	border-style: solid;
 	border-color: #777;
-	padding: 2px;
 	margin-right: 2px;
-	padding: 1px 3px;
+	padding: 1px 6px;
 }
 
 .keypair > .val{
 	display: inline-block;
 	
-	padding: 1px 3px;
+	padding: 1px 6px;
 }
