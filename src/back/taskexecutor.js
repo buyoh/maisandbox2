@@ -73,6 +73,10 @@ function runTaskRecipe(task){
             task.callback.call(null, 'success', {});
             return;
         }
+        if (!lt.command[recipe.tasks[taskIndex]]){
+            task.callback.call(null, 'error', {reason: 'not found the task['+recipe.tasks[taskIndex]+']'});
+            return;
+        }
         lt.command[recipe.tasks[taskIndex]](task, (msg, json)=>{
             json.taskName = recipe.tasks[taskIndex];
             task.callback.call(null, msg, json);

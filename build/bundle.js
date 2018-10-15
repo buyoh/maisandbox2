@@ -10843,7 +10843,7 @@ socket.on("s2c_progress", function(json){
 	const state = 
 		json.type === "continue" || json.type === "success" ? "success" :
 		json.type === "failed" ? "warning" : 
-		json.type === "error" ? "error" : 
+		json.type === "error" ? "danger" : 
 		"info";
 
 	appendResultLog(

@@ -6,16 +6,14 @@ const common = require('./common');
 
 const uniqueName = "cppCyg";
 
-const compilerName = "g++";
-
 // -------------------------------------
 
 exports.recipes = {
     "compile > run":{
-        tasks: ["setup", "compile", "run"]
+        tasks: ["setupAll", "compile", "run"]
     },
     "run(no update)":{
-        tasks: ["run"]
+        tasks: ["setupIO", "run"]
     }
 };
 
@@ -24,11 +22,20 @@ exports.recipes = {
 
 exports.command = {
     /** setup files */
-    setup: function(task, callback){
+    setupAll: function(task, callback){
         common.setupTemp(uniqueName);
         const cwdir = common.tempDir(uniqueName);
 
         fs.writeFileSync(cwdir+"/code.cpp", task.json.txt_code);
+        fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
+
+        callback.call(null, "continue", {});
+    },
+    
+    setupIO: function(task, callback){
+        common.setupTemp(uniqueName);
+        const cwdir = common.tempDir(uniqueName);
+
         fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
 
         callback.call(null, "continue", {});
@@ -41,7 +48,7 @@ exports.command = {
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
                 let killer = myexec.spawn_fileio(
-                    compilerName,
+                    "g++",
                     ["-std=gnu++14", "./code.cpp", "-o", "./code.out"],
                     null, cwdir+"/stdout.txt", cwdir+"/stderr.txt",
                     {env:{PATH:common.cygwinEnvPath}, cwd: cwdir},

@@ -10,10 +10,10 @@ const uniqueName = "ruby";
 
 exports.recipes = {
     "check > run":{
-        tasks: ["setup", "check", "run"]
+        tasks: ["setupAll", "check", "run"]
     },
     "run(no update)":{
-        tasks: ["run"]
+        tasks: ["setupIO","run"]
     }
 };
 
@@ -21,11 +21,20 @@ exports.recipes = {
 
 exports.command = {
     /** setup files */
-    setup: function(task, callback){
+    setupAll: function(task, callback){
         common.setupTemp(uniqueName);
         const cwdir = common.tempDir(uniqueName);
 
         fs.writeFileSync(cwdir+"/code.rb", task.json.txt_code);
+        fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
+
+        callback.call(null, "continue", {});
+    },
+    
+    setupIO: function(task, callback){
+        common.setupTemp(uniqueName);
+        const cwdir = common.tempDir(uniqueName);
+
         fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
 
         callback.call(null, "continue", {});
