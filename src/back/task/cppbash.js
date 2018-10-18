@@ -8,6 +8,19 @@ const uniqueName = "cppBash";
 
 // -------------------------------------
 
+exports.info = {
+    name: "C++ Bash",
+    editor: "c_cpp",
+};
+
+const options = {
+    optimization: ["default", "-O3"],
+    std: ["-std=gnu++14", "-std=gnu++17", "-std=c++14", "-std=c++17"]
+};
+exports.options = options;
+
+// -------------------------------------
+
 exports.recipes = {
     "compile > run":{
         tasks: ["setupAll", "compile", "run"]
@@ -46,10 +59,15 @@ exports.command = {
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
+                let param = "g++ ./code.cpp";
+
+                if (task.json.options.optimization === "-O3") param += " -O3";
+                if (options.std.includes(task.json.options.std)) param += " "+task.json.options.std; else param += " -std=gnu++14";
+
+                param += " -o ./code.out 1> ./stdout.txt 2> ./stderr.txt";
 
                 let killer = myexec.spawn_fileio(
-                    "bash",
-                    ["-c", "g++ -std=gnu++14 -O3 ./code.cpp -o ./code.out 1> ./stdout.txt 2> ./stderr.txt"],
+                    "bash", ["-c", param],
                     null, null, null,
                     {cwd: cwdir},
                     function(code, json){ resolve([code, json]); });

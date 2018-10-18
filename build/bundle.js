@@ -10466,16 +10466,43 @@ function updateSelectorCodelang(catalog){
 
 
 function updateRecipes(recipes){
-	let domr = $("#div_recipes");
+	const domr = $("#div_recipes");
 	domr.empty();
 	for (let lang in recipes){
-		let domc = $("<div></div>").data("cmd", lang);
+		const domc = $("<div></div>").data("cmd", lang);
 		for (let name in recipes[lang]) {
 			domc.append(
 				$("<button></button>")
 				.addClass("btn btn-sm btn-primary")
 				.text(name)
 				.on("click", {recipe: name}, buttonRecipe)
+			);
+		}
+		domr.append(domc);
+	}
+}
+
+
+function updateOptions(options){
+	const domr = $("#div_options");
+	domr.empty();
+	for (let lang in options){
+		const domc = $("<div></div>").data("cmd", lang);
+		for (let name in options[lang]) {
+			const dom = $("<select></select>")
+				.data("key", name)
+				.addClass("form-control form-control-sm")
+				.css("width", "inherit");
+			for (let val of options[lang][name])
+				dom.append(
+					$("<option></option>")
+					.text(val)
+					.val(val)
+				);
+			domc.append(
+				$("<div></div>").addClass("keypair")
+				.append($("<div></div>").addClass("key").text(name))
+				.append(dom.addClass("val"))
 			);
 		}
 		domr.append(domc);
@@ -10494,9 +10521,16 @@ function changeVisibleRecipes(cmd, edt){
 }
 
 
+function changeVisibleOptions(cmd, edt){
+	$("#div_options > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("d-none");
+	$("#div_options > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("d-none");
+}
+
+
 function changeCodeLang(cmd, edt){
 	changeCodeLangEditor(cmd, edt);
 	changeVisibleRecipes(cmd, edt);
+	changeVisibleOptions(cmd, edt);
 }
 
 
@@ -10510,12 +10544,20 @@ function getChosenLang(){
 
 
 function gatherInfo(){
+	const cmd = getChosenLang();
+	const options = {};
+	$("#div_options > div")
+		.filter((i,e)=>($(e).data("cmd")==cmd))
+		.find("select")
+		.each((i,e)=>{ options[$(e).data("key")] = $(e).val(); });
+
 	return {
 		txt_stdin:   $("#txt_editstdin").val(),
 		txt_code:    aceditor.getValue(),
-		cmd:         getChosenLang(),
-		timelimit:   $("#input_timeout").val()
+		cmd:         cmd,
+		options:	 options
 	};
+	// timelimit:   $("#input_timeout").val()
 	/*
 var flgDisableCleaning = $("#disableCleaning:checked").val();
 var flagWAll = $("#flagWAll:checked").val();
@@ -10819,6 +10861,7 @@ socket.on("s2c_echo", function(data){
 socket.on("s2c_catalog", function(data){
 	updateSelectorCodelang(data.taskTypeList);
 	updateRecipes(data.recipes);
+	updateOptions(data.options);
 	$("#selector_codelang").change();
 });
 

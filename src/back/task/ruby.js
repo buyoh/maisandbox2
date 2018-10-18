@@ -8,6 +8,15 @@ const uniqueName = "ruby";
 
 // -------------------------------------
 
+exports.info = {
+    name: "Ruby Win",
+    editor: "ruby",
+};
+
+exports.options = {}
+
+// -------------------------------------
+
 exports.recipes = {
     "check > run":{
         tasks: ["setupAll", "check", "run"]

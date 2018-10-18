@@ -8,6 +8,15 @@ const uniqueName = "python3";
 
 // -------------------------------------
 
+exports.info = {
+    name: "Python Win",
+    editor: "python",
+};
+
+exports.options = {}
+
+// -------------------------------------
+
 exports.recipes = {
     "compile > run":{
         tasks: ["setupAll", "check", "run"]

@@ -8,6 +8,19 @@ const uniqueName = "cppCyg";
 
 // -------------------------------------
 
+exports.info = {
+    name: "C++ Cyg",
+    editor: "c_cpp",
+};
+
+const options = {
+    optimization: ["default", "-O3"],
+    std: ["-std=gnu++14", "-std=gnu++17", "-std=c++14", "-std=c++17"]
+};
+exports.options = options;
+
+// -------------------------------------
+
 exports.recipes = {
     "compile > run":{
         tasks: ["setupAll", "compile", "run"]
@@ -47,9 +60,14 @@ exports.command = {
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
+                let param = ["./code.cpp", "-o", "./code.out"];
+
+                if (task.json.options.optimization === "-O3") param.push("-O3");
+                if (options.std.includes(task.json.options.std)) param.push(task.json.options.std); else param.push("-std=gnu++14");
+
                 let killer = myexec.spawn_fileio(
                     "g++",
-                    ["-std=gnu++14", "./code.cpp", "-o", "./code.out"],
+                    param,
                     null, cwdir+"/stdout.txt", cwdir+"/stderr.txt",
                     {env:{PATH:common.cygwinEnvPath}, cwd: cwdir},
                     function(code, json){ resolve([code, json]); });

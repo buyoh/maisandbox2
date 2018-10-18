@@ -93,7 +93,8 @@ soio.sockets.on('connection', function(socket) {
     socket.on('c2s_getCatalog', function(data) {
         socket.emit('s2c_catalog', {
             taskTypeList: taskexecutor.langList,
-            recipes: taskexecutor.getAllRecipe()
+            recipes: taskexecutor.allRecipes,
+            options: taskexecutor.allOptions
         });
     });
 

@@ -14,31 +14,31 @@ const langTask = {
     "Python": task_py
 };
 
-exports.langList = [
-    {name:'Ruby Win',   cmd:'Ruby', editor:'ruby'},
-    {name:'C++ Cyg',    cmd:'C++',  editor:'c_cpp'},
-    {name:'C++ Bash',    cmd:'C++Bash',  editor:'c_cpp'},
-    {name:'Python Win',    cmd:'Python',  editor:'python'}
-];
+exports.langList = (()=>{
+    const a = [];
+    for (let key in langTask){
+        a.push(Object.assign(langTask[key].info, {cmd: key}));
+    }
+    return a;
+})();
 
-/**
- * レシピを拾う
- */
-exports.getAllRecipe = function(){
+exports.allRecipes = (()=>{
     const recipes = {};
     for(let lang in langTask) {
         const task = langTask[lang];
         recipes[lang] = task.recipes;
     }
     return recipes;
-}
-// /**
-//  * レシピを拾う
-//  * @param {String} lang 
-//  */
-// exports.getRecipe = function(lang){
-//     return langTask[lang].recipes;
-// }
+})();
+
+exports.allOptions = (()=>{
+    const options = {};
+    for(let lang in langTask) {
+        const task = langTask[lang];
+        options[lang] = task.options;
+    }
+    return options;
+})();
 
 
 /**
