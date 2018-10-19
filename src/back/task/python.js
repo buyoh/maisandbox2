@@ -4,10 +4,6 @@ const common = require('./common');
 
 // -------------------------------------
 
-const uniqueName = "python3";
-
-// -------------------------------------
-
 exports.info = {
     name: "Python Win",
     editor: "python",
@@ -31,8 +27,8 @@ exports.recipes = {
 exports.command = {
     /** setup files */
     setupAll: function(task, callback){
-        common.setupTemp(uniqueName);
-        const cwdir = common.tempDir(uniqueName);
+        common.setupTemp(task.uniqueName);
+        const cwdir = common.tempDir(task.uniqueName);
 
         fs.writeFileSync(cwdir+"/code.py", task.json.txt_code);
         fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
@@ -41,8 +37,8 @@ exports.command = {
     },
     
     setupIO: function(task, callback){
-        common.setupTemp(uniqueName);
-        const cwdir = common.tempDir(uniqueName);
+        common.setupTemp(task.uniqueName);
+        const cwdir = common.tempDir(task.uniqueName);
 
         fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
 
@@ -51,7 +47,7 @@ exports.command = {
 
     /** check syntax */
     check: function(task, callback){
-        const cwdir = common.tempDir(uniqueName);
+        const cwdir = common.tempDir(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -101,7 +97,7 @@ exports.command = {
 
     /** run compiled file */
     run: function(task, callback){
-        const cwdir = common.tempDir(uniqueName);
+        const cwdir = common.tempDir(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
