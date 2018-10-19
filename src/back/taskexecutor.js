@@ -68,7 +68,7 @@ function runTaskRecipe(task){
         task.callback.call(null, 'error', 'unknown recipe'); return;
     }
 
-    task.uniqueName = cmd;
+    task.uniqueName = task.json.cmd;
     
     const process = function(taskIndex){
         if (taskIndex >= recipe.tasks.length){
