@@ -6,12 +6,22 @@ const task_ruby = require('./task/ruby');
 const task_cpp = require('./task/cpp');
 const task_cppbash = require('./task/cppbash');
 const task_py = require('./task/python');
+const task_go = require('./task/go');
+const task_rust = require('./task/rust');
+const task_nodejs = require('./task/nodejs');
+const task_sh = require('./task/shWsl');
+const task_clay = require('./task/clay');
 
 const langTask = {
     "Ruby": task_ruby,
     "C++" : task_cpp,
     "C++Bash" : task_cppbash,
-    "Python": task_py
+    "Python": task_py,
+    "Go": task_go,
+    "Rust": task_rust,
+    "javascript(node)": task_nodejs,
+    "sh": task_sh,
+    "clay": task_clay
 };
 
 exports.langList = (()=>{

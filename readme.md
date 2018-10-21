@@ -10,6 +10,8 @@ wandbox,ideoneのような即席のコーディング環境をローカルに構
 - windows 10
 - nodejs
 
+`src/back/task` の中身をすべて書き換えれば `ubuntu` でも動くかもしれません．
+
 ## usage
 
 - `npm run build`
@@ -40,3 +42,7 @@ wandbox,ideoneのような即席のコーディング環境をローカルに構
 - 「ログオン」「アカウント」を選んで，maisandbox2を管理しているユーザ名とパスワードを入力．
 - 「maisandbox2」サービスを再起動する．
 
+## cLayが動かない
+
+- gitignoreしています
+- `tool/clay.exe` にコンパイルしたものを置いてください
