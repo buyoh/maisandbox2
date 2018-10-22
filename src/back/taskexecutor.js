@@ -79,6 +79,8 @@ function runTaskRecipe(task){
     }
 
     task.uniqueName = task.json.cmd;
+
+    const accepted = [];
     
     const process = function(taskIndex){
         if (taskIndex >= recipe.tasks.length){
@@ -92,8 +94,10 @@ function runTaskRecipe(task){
         lt.command[recipe.tasks[taskIndex]](task, (msg, json)=>{
             json.taskName = recipe.tasks[taskIndex];
             task.callback.call(null, msg, json);
-            if (msg == 'continue')
+            if (msg == 'continue' && !accepted[taskIndex]){
+                accepted[taskIndex] = true;
                 process(taskIndex + 1);
+            }
         })
     };
     process(0);
