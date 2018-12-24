@@ -92,6 +92,8 @@ soio.sockets.on('connection', function(socket) {
 
     // コード提出
     socket.on('c2s_submit', function(data){
+        if (killer !== null)
+            killer();
         if (!validator.checkTaskSubmission(data)){
             socket.emit('s2c_progress', {type:'error', data:{}});
             return;
