@@ -24,6 +24,29 @@ exports.recipes = {
 
 // -------------------------------------
 
+/**
+ * @param {string} msg 
+ */
+function pickupInformations(msg){
+    if (!msg) return [];
+    const infos = [];
+    for (let line of msg.split("\n")){
+        const m = line.match(/^\.\/code\.rb\:(\d+)\:/);
+        if (m) {
+            infos.push({
+                text: line,
+                row: +m[1]-1,
+                column: 0,
+                type: "error"
+            });
+        }
+    }
+    return infos;
+}
+
+// -------------------------------------
+
+
 exports.command = {
     /** setup files */
     setupAll: function(task, callback){
@@ -63,6 +86,7 @@ exports.command = {
             return new Promise((resolve, reject)=>{
                 let stdout = fs.readFileSync(cwdir+"/stdout.txt", 'UTF-8');
                 let stderr = fs.readFileSync(cwdir+"/stderr.txt", 'UTF-8');
+                const info = pickupInformations(stderr);
                 if (code != 0){
                     callback.call(null, "failed", {
                         code:   code,
@@ -70,6 +94,7 @@ exports.command = {
                         stdout: stdout,
                         stderr: stderr,
                         time:   json.time,
+                        info:   info,
                         killer: null
                     });
                     reject();
@@ -81,6 +106,7 @@ exports.command = {
                         stdout: stdout,
                         stderr: stderr,
                         time:   json.time,
+                        info:   info,
                         killer: null
                     });
                     resolve();
@@ -112,11 +138,12 @@ exports.command = {
                 
                 let stdout = fs.readFileSync(cwdir+"/stdout.txt", 'UTF-8');
                 let stderr = fs.readFileSync(cwdir+"/stderr.txt", 'UTF-8');
+                const info = pickupInformations(stderr);
                 
                 callback.call(null, code != 0 ? "failed" : "continue", {
                     code: code, signal: json.signal,
                     stdout: stdout, stderr: stderr,
-                    time: json.time, killer: null
+                    time: json.time, info: info, killer: null
                 });
     
                 if (code != 0) reject(); else resolve();
