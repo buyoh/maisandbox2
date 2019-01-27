@@ -58,14 +58,36 @@
 			<!-- <textarea id="editcode" class="flexcontainer" rows=18></textarea> -->
 		</div>
 	</div>
-	<div class="border flexboxRow">
-		<div class="border flexcontainer flexboxCol">
-			<div>Stdin</div>
-			<textarea id="txt_editstdin" class="flexcontainer textarea enabletabs" rows="12"></textarea>
+	<div id="div_stdios">
+		<div class="border flexboxRow">
+			<div class="border" style="flex: 0 0 30px">
+				<div><button class="btn btn-sm btn-primary" style="width: 30px;" title="minify">-</button></div>
+				<div><button class="btn btn-sm btn-primary" style="width: 30px;" title="open">+</button></div>
+				<div><button class="btn btn-sm btn-danger" style="width: 30px;" title="close">X</button></div>
+			</div>
+			<div class="border resizeableflexcontainer_left flexboxCol">
+				<div>Stdin</div>
+				<textarea id="txt_editstdin" class="flexcontainer textarea enabletabs" rows="12"></textarea>
+			</div>
+			<div class="border resizeableflexcontainer_right flexboxCol">
+				<div>Stdout</div>
+				<textarea id="txt_stdout" class="flexcontainer textarea enabletabs"></textarea>
+			</div>
 		</div>
-		<div class="border flexcontainer flexboxCol">
-			<div>Stdout</div>
-			<textarea id="txt_stdout" class="flexcontainer textarea enabletabs" rows="12"></textarea>
+		<div class="border flexboxRow">
+			<div class="border" style="flex: 0 0 30px">
+				<div><button class="btn btn-sm btn-primary" style="width: 30px;" title="minify">-</button></div>
+				<div><button class="btn btn-sm btn-primary" style="width: 30px;" title="open">+</button></div>
+				<div><button class="btn btn-sm btn-danger" style="width: 30px;" title="close">X</button></div>
+			</div>
+			<div class="border resizeableflexcontainer_left flexboxCol">
+				<div>Stdin</div>
+				<textarea id="" class="flexcontainer textarea enabletabs" rows="12"></textarea>
+			</div>
+			<div class="border resizeableflexcontainer_right flexboxCol">
+				<div>Stdout</div>
+				<textarea id="" class="flexcontainer textarea enabletabs"></textarea>
+			</div>
 		</div>
 	</div>
 	<div class="border">
@@ -81,7 +103,9 @@
 			</div>
 			<div style="display:inline-block;margin:4px 4px 4px 40px;">
 				<button class="btn btn-primary" id="btn_halt">halt</button>
+				<!--
 				<label>mergeStdoutStderr<input type="checkbox" class="form-check-input" id="mergeOutErr"></label>
+				-->
 			</div>
 		</div>
 	</div>

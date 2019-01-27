@@ -35,7 +35,7 @@ pre{
 }
 
 .flexboxRow{
-	display:flex;
+	display: flex;
 	flex-direction: row;
 }
 .flexboxCol{
@@ -47,20 +47,18 @@ pre{
 	flex: 1;
 }
 
-.flexcontainer.list{
-	flex: 0;
-	flex-basis: 160px;
+.resizeableflexcontainer_left{
+	flex: 0 0 auto;
+	resize: both;
+	overflow: hidden;
+}
+.resizeableflexcontainer_right{
+	flex: 1 1 auto;
+	resize: none;
+	overflow: hidden;
+	height: auto;
 }
 
-.fill{
-	width:100%;
-	height:100%;
-}
-
-.space{
-	padding:4px;
-
-}
 
 .border{
 	margin:2px;
