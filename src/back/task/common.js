@@ -14,9 +14,17 @@ exports.cygwinEnvPath = cygwinEnvPath;
 // --------------------------------
 
 
-exports.setupTemp = function(name){
-    fs.mkdir(tempDir, function(err){});
-    fs.mkdir(tempDir+"/"+name, function(err){});
+exports.setupTemp = function(name, callback){
+    try{ // TODO: nosync
+        fs.mkdirSync(tempDir);
+    }catch(e){}
+    let d = tempDir;
+    for (let f of ){
+        d += "/" + f;
+        try{ // TODO: nosync
+            fs.mkdirSync(d);
+        }catch(e){}
+    }
 }
 
 

@@ -78,7 +78,7 @@ function runTaskRecipe(task){
         task.callback.call(null, 'error', 'unknown recipe'); return;
     }
 
-    task.uniqueName = task.json.cmd;
+    task.uniqueName = task.json.socketid + "/" + task.json.cmd;
 
     const accepted = [];
     
