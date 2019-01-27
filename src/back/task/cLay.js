@@ -32,23 +32,22 @@ exports.recipes = {
 exports.command = {
     /** setup files */
     setupAll: function(task, callback){
-
-        common.setupTemp(task.uniqueName);
         const cwdir = common.tempDir(task.uniqueName);
+        common.setupTemp(task.uniqueName, ()=>{
+            fs.writeFileSync(cwdir+"/code.clay.cpp", task.json.txt_code);
+            fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
 
-        fs.writeFileSync(cwdir+"/code.clay.cpp", task.json.txt_code);
-        fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
-
-        callback.call(null, "continue", {});
+            callback.call(null, "continue", {});
+        });
     },
     
     setupIO: function(task, callback){
-        common.setupTemp(task.uniqueName);
         const cwdir = common.tempDir(task.uniqueName);
+        common.setupTemp(task.uniqueName, ()=>{
+            fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
 
-        fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
-
-        callback.call(null, "continue", {});
+            callback.call(null, "continue", {});
+        });
     },
 
     /** compile codes */

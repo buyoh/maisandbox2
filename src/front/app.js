@@ -259,21 +259,6 @@ function chooseLang(cmd){
     $("#selector_codelang").change();
 }
 
-/**
- * 
- * @param {string} message 
- * @param {string} classtype success,info,warning,danger
- */
-function displayProgress(message, classtype){
-    $("#div_progress")
-        .text(message)
-        .removeClass("alert-success alert-info alert-warning alert-danger")
-        .addClass("alert-"+classtype);
-}
-function displayProgressNote(message){
-    $("#div_progress_note").text(message);
-}
-
 
 function displayStdout(message){
     $("#txt_stdout").val(message);
@@ -394,107 +379,9 @@ function loadTemplate(){
 }
 
 
-
-// _____________________________________________________
-// tabs
-
-
-function storeTabJson(json){
-    localStorage.setItem("tabs", JSON.stringify(json));
-}
-
-
-function restoreTabJson(){
-    let stored = localStorage.getItem("tabs");
-    return !stored ? [] : JSON.parse(stored);
-}
-
-
-function unusedTabId(json){
-    let ids = [];
-    json.forEach((e,i,a)=>{ if (e.id) ids.push(e.id); });
-    let unusedId = null;
-    ids.sort().forEach((e,i,a)=>{ if (!unusedId && e !== i+1) unusedId = i; });
-
-    return !unusedId ? ids.size()+1 : unusedId;
-}
-
-
-function createNewTabDom(id){
-    let tabName = 'tab'+id;
-    let li = $('<li></li>').addClass("nav-item");
-    let a = $('<a href="#"></a>').addClass("nav-link");
-    let close = $('<button></button>')
-        .addClass("close")
-        .text('&times;')
-        .data("id", id)
-        .on("click", ()=>{ closeTab($(this).data("id")); });
-    
-    a
-        .append($('<span></span>').text(tabName))
-        .append(close)
-        .data("id", id)
-        .on("click", ()=>{ switchTab($(this).data("id")); });
-
-    $("#div_tablist").append(li.append(a));
-}
-
-
-function createNewTab(){
-    let tab = {
-        id: unusedTabId(),
-        txt_code: '',
-        cmd: getChosenLang()
-    };
-
-    let tabs = restoreTabJson();
-    tabs.push(tab);
-    storeTabJson(tabs);
-
-    createNewTabDom(tab.id);
-}
-
-
-function switchTab(id){
-    // 現在のタブを拾う
-    // jsonを更新
-    // idのタブを拾う
-    // jsonを拾う
-    // 更新する
-}
-
-
-function closeTab(id){
-
-}
-
-
 // _____________________________________________________
 // events
 
-
-// // Legacy
-// function buttonRun(){
-// 	const info = gatherInfo();
-// 	info.query = "run";
-// 	socket.emit("c2s_submit", info);
-// }
-// 
-// // Legacy
-// function buttonBuild(){
-// 	const info = gatherInfo();
-// 	info.query = "build";
-// 	socket.emit("c2s_submit", info);
-// }
-// 
-// // Legacy
-// function buttonExecute(){
-// 	const info = gatherInfo();
-// 	info.query = "execute";
-// 	socket.emit("c2s_submit", info);
-// }
-// 
-// Legacy
 function buttonHalt(){
     const info = gatherInfo();
     socket.emit("c2s_halt", info);
@@ -560,6 +447,5 @@ socket.on("s2c_progress", (json)=>{
         const s = aceditor.getSession();
         s.setAnnotations(json.data.info);
     }
-
 
 });
