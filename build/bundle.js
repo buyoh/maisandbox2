@@ -10368,7 +10368,7 @@ return jQuery;
 
 let $ = require('jQuery');
 let socket = io.connect();
-
+let aceditor = null;
 
 $(document).ready(function(){
     
@@ -10652,6 +10652,7 @@ function displayStderr(message){
 
 function clearResultLogs(){
     $("#div_resultlogs").empty();
+    aceditor.getSession().clearAnnotations();
 }
 
 function appendResultLog(title, message, classtype, isProgressing = false){
@@ -10921,6 +10922,11 @@ socket.on("s2c_progress", function(json){
         json.data.taskName ? "[" + json.data.taskName + "]"+json.type : json.type,
         json.data, state, json.type === "progress"
     );
+
+    if (json.data.info) {
+        const s = aceditor.getSession();
+        s.setAnnotations(json.data.info);
+    }
 
 
 });
