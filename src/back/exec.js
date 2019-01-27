@@ -28,11 +28,11 @@ exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath
         stdio: [stdin, stdout, stderr]
     }, options));
 
-    ps.on("close", function(code, signal){
+    ps.on("close", (code, signal)=>{
         callback(code, {signal: signal, time: Date.now()-time});
     });
 
-    return function(){
+    return ()=>{
         if (!ps.killed) ps.kill();
     }
 }
@@ -57,15 +57,15 @@ exports.spawn_buff = function(command, args, stdin, options, callback){
     let endcode = -1;
     let endsignal = "";
 
-    ps.stdout.on("data", function(data){
+    ps.stdout.on("data", (data)=>{
         buffstdout.write(data.toString());
     });
-    ps.stderr.on("data", function(data){
+    ps.stderr.on("data", (data)=>{
         buffstderr.write(data.toString());
     });
-    ps.stdout.on("end", function(){ endflg |= 1; checkTermination();});
-    ps.stderr.on("end", function(){ endflg |= 2; checkTermination();});
-    ps.on("close", function(code, signal){
+    ps.stdout.on("end", ()=>{ endflg |= 1; checkTermination();});
+    ps.stderr.on("end", ()=>{ endflg |= 2; checkTermination();});
+    ps.on("close", (code, signal)=>{
         endcode = code;
         endsignal = signal;
         endflg |= 4;
@@ -77,7 +77,7 @@ exports.spawn_buff = function(command, args, stdin, options, callback){
             callback(null, endcode, endsignal, buffstdout, buffstderr);
     }
 
-    ps.on("err", function(err){
+    ps.on("err", (err)=>{
         callback(err, endcode, endsignal, buffstdout, buffstderr);
     });
 }

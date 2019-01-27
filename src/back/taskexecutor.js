@@ -62,9 +62,9 @@ exports.pushTask = function(json, callback){
         callback:callback
     };
     if (json.recipe !== undefined)
-        setTimeout(function(t){runTaskRecipe(t);}, 0, task);
+        setTimeout((t)=>{runTaskRecipe(t);}, 0, task);
     else
-        setTimeout(function(t){runTaskLegacy(t);}, 0, task);
+        setTimeout((t)=>{runTaskLegacy(t);}, 0, task);
 }
 
 
@@ -131,11 +131,3 @@ function runTaskLegacy(task){
     }
 }
 
-
-
-function setupTemp(){
-    fs.mkdir(tempDir, function(err){});
-}
-function cleanTemp(){
-    // nop
-}

@@ -15,16 +15,18 @@ exports.cygwinEnvPath = cygwinEnvPath;
 
 
 exports.setupTemp = function(name, callback){
-    try{ // TODO: nosync
-        fs.mkdirSync(tempDir);
-    }catch(e){}
-    let d = tempDir;
-    for (let f of ){
-        d += "/" + f;
-        try{ // TODO: nosync
-            fs.mkdirSync(d);
-        }catch(e){}
+    let dirs = name.split("/");
+    let dir = tempDir;
+    function rec(err) {
+        if (dirs.length == 0) {
+            callback();
+        }
+        else{
+            dir += "/" + dirs.shift();
+            fs.mkdir(dir, rec);
+        }
     }
+    fs.mkdir(dir, rec);
 }
 
 

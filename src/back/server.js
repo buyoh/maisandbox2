@@ -34,13 +34,13 @@ function rewritePath(url){
 }
 
 
-let server = http.createServer(function(request, responce) {
-    request.on('error', function(e){
+let server = http.createServer((request, responce)=> {
+    request.on('error', (e)=>{
         console.error(e);
         responce.statusCode = 400;
         responce.end("400");
     });
-    responce.on('error', function(e){
+    responce.on('error', (e)=>{
         console.error(e);
     });
 
@@ -70,19 +70,19 @@ console.log("port: "+settings.portno);
 // socketio
 let soio = socketio.listen(server);
 
-soio.sockets.on('connection', function(socket) {
+soio.sockets.on('connection', (socket)=> {
     console.log("join "+socket.id);
 
     let killer = null;
 
     // テスト用
-    socket.on('c2s_echo', function(data) {
+    socket.on('c2s_echo', (data)=> {
         console.log("echo :" + data.msg);
         socket.emit('s2c_echo', {msg: !data.msg ? "Hello!" : data.msg.toUpperCase()});
     });
 
     // 言語情報等を取得する
-    socket.on('c2s_getCatalog', function(data) {
+    socket.on('c2s_getCatalog', (data)=> {
         socket.emit('s2c_catalog', {
             taskTypeList: taskexecutor.langList,
             recipes: taskexecutor.allRecipes,
@@ -91,7 +91,7 @@ soio.sockets.on('connection', function(socket) {
     });
 
     // コード提出
-    socket.on('c2s_submit', function(data){
+    socket.on('c2s_submit', (data)=> {
         if (killer !== null)
             killer();
         if (!validator.checkTaskSubmission(data)){
@@ -99,7 +99,7 @@ soio.sockets.on('connection', function(socket) {
             return;
         }
         data.socketid = socket.id;
-        killer = taskexecutor.pushTask(data, function(type, json){
+        killer = taskexecutor.pushTask(data, (type, json)=> {
             if (json.killer !== undefined){
                 killer = json.killer;
                 json.killer = undefined;
@@ -109,14 +109,13 @@ soio.sockets.on('connection', function(socket) {
     });
     
     // 中断
-    socket.on('c2s_halt', function(data){
+    socket.on('c2s_halt', (data)=> {
         if (killer !== null)
             killer();
         socket.emit('s2c_progress', {type:'halted', msg:'accepted (halt)'});
     });
 
-    socket.on('disconnect', function() {
-    });
+    socket.on('disconnect', ()=> { });
 });
 
 

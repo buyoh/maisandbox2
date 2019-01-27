@@ -3,12 +3,12 @@ let $ = require('jQuery');
 let socket = io.connect();
 let aceditor = null;
 
-$(document).ready(function(){
+$(document).ready(()=>{
     
     initializeAce();
     setupBackup();
 
-    $("textarea.enabletabs").keydown(function(e){
+    $("textarea.enabletabs").keydown((e)=>{
         if (e.keyCode === 9) {
             e.preventDefault(); // デフォルト動作の中止
             var elem = e.target;
@@ -41,7 +41,7 @@ function initializeAce(){
     aceditor.setShowInvisibles(true);
     aceditor.setFontSize(14);
 
-    $( "#aceditorEdge" ).on("onresize",function(){
+    $( "#aceditorEdge" ).on("onresize", ()=>{
         aceditor.resize();
     });
 }
@@ -58,7 +58,7 @@ function initializeEvents(){
     $("#btn_loadTemplate").on("click", loadTemplate);
 
     // another
-    $("#selector_codelang").change(function(e){
+    $("#selector_codelang").change((e)=>{
         let dom = $("#selector_codelang option:selected");
         let cmd = dom.data("cmd");
         let edt = dom.data("edt");
@@ -70,8 +70,8 @@ function initializeEvents(){
 
 function setupBackup(){
     restoreBackup();
-    $(window).on("unload", function(){storeBackup();});
-    setInterval(function(){storeBackup();},1000*600);
+    $(window).on("unload", ()=>{storeBackup();});
+    setInterval(()=>{storeBackup();},1000*600);
 }
 
 
@@ -412,9 +412,9 @@ function restoreTabJson(){
 
 function unusedTabId(json){
     let ids = [];
-    json.forEach(function(e,i,a){ if (e.id) ids.push(e.id); });
+    json.forEach((e,i,a)=>{ if (e.id) ids.push(e.id); });
     let unusedId = null;
-    ids.sort().forEach(function(e,i,a){ if (!unusedId && e !== i+1) unusedId = i; });
+    ids.sort().forEach((e,i,a)=>{ if (!unusedId && e !== i+1) unusedId = i; });
 
     return !unusedId ? ids.size()+1 : unusedId;
 }
@@ -428,13 +428,13 @@ function createNewTabDom(id){
         .addClass("close")
         .text('&times;')
         .data("id", id)
-        .on("click", function(){ closeTab($(this).data("id")); });
+        .on("click", ()=>{ closeTab($(this).data("id")); });
     
     a
         .append($('<span></span>').text(tabName))
         .append(close)
         .data("id", id)
-        .on("click", function(){ switchTab($(this).data("id")); });
+        .on("click", ()=>{ switchTab($(this).data("id")); });
 
     $("#div_tablist").append(li.append(a));
 }
@@ -514,13 +514,13 @@ function buttonRecipe(e){
 
 
 // connection test
-socket.on("s2c_echo", function(data){
+socket.on("s2c_echo", (data)=>{
     console.log("echo:" + data.msg);
 });
 
 
 // 
-socket.on("s2c_catalog", function(data){
+socket.on("s2c_catalog", (data)=>{
     updateSelectorCodelang(data.taskTypeList);
     updateRecipes(data.recipes);
     updateOptions(data.options);
@@ -529,7 +529,7 @@ socket.on("s2c_catalog", function(data){
 
 
 // submitしたtaskの状況がサーバから送られてくる
-socket.on("s2c_progress", function(json){
+socket.on("s2c_progress", (json)=>{
     // console.log(json);
 
     if (json.type === "halted"){
