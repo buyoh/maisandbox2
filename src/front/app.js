@@ -1,13 +1,11 @@
+const $ = require('jQuery');
+const Interface = require('./interface');
+const Editor = require('./aceditor');
+const Storage = require('./storage');
 
-let $ = require('jQuery');
-let socket = io.connect();
-let aceditor = null;
+const socket = io.connect();
 
-$(document).ready(()=>{
-    
-    initializeAce();
-    setupBackup();
-
+$(()=>{
     $("textarea.enabletabs").keydown((e)=>{
         if (e.keyCode === 9) {
             e.preventDefault(); // デフォルト動作の中止
@@ -28,53 +26,19 @@ $(document).ready(()=>{
 // _____________________________________________________
 // initialize component
 
-
-function initializeAce(){
-    aceditor = ace.edit("aceditor");
-    aceditor.setTheme("ace/theme/monokai");
-    aceditor.getSession().setMode("ace/mode/ruby");
-    aceditor.setOptions({
-        enableBasicAutocompletion: true,
-        //enableSnippets: true,
-        enableLiveAutocompletion: true
-    });
-    aceditor.setShowInvisibles(true);
-    aceditor.setFontSize(14);
-
-    $( "#aceditorEdge" ).on("onresize", ()=>{
-        aceditor.resize();
-    });
-}
-
-
 function initializeEvents(){
 
     // button
-    // $("#btn_exec").on("click", buttonRun);
-    // $("#btn_exec_build").on("click", buttonBuild);
-    // $("#btn_exec_run").on("click", buttonExecute);
     $("#btn_halt").on("click", buttonHalt);
-    $("#btn_storeTemplate").on("click", storeTemplate);
-    $("#btn_loadTemplate").on("click", loadTemplate);
+    $("#btn_storeTemplate").on("click", buttonStoreTemplate);
+    $("#btn_loadTemplate").on("click", buttonLoadTemplate);
 
-    // another
-    $("#selector_codelang").change((e)=>{
-        let dom = $("#selector_codelang option:selected");
-        let cmd = dom.data("cmd");
-        let edt = dom.data("edt");
-        if (edt != "")
-            changeCodeLang(cmd, edt);
-    });
+    // selector
+    $("#selector_codelang").change(changeCodeLang);
 }
 
 
-function setupBackup(){
-    restoreBackup();
-    $(window).on("unload", ()=>{storeBackup();});
-    setInterval(()=>{storeBackup();},1000*600);
-}
-
-
+// TODO: refactoring
 function updateSelectorCodelang(catalog){
     let dom = $("#selector_codelang");
 
@@ -85,9 +49,9 @@ function updateSelectorCodelang(catalog){
         let c = catalog[i];
         $("<option></option")
             .data("cmd", c.cmd)
-            .data("edt", c.editor)
             .text(c.name)
             .appendTo(dom);
+        Editor.registerLang(c.cmd, c.editor);
     }
 
     if (appVal){
@@ -98,6 +62,7 @@ function updateSelectorCodelang(catalog){
 }
 
 
+// TODO: refactoring
 function updateRecipes(recipes){
     const domr = $("#div_recipes");
     domr.empty();
@@ -116,6 +81,7 @@ function updateRecipes(recipes){
 }
 
 
+// TODO: refactoring
 function updateOptions(options){
     const domr = $("#div_options");
     domr.empty();
@@ -143,257 +109,40 @@ function updateOptions(options){
 }
 
 
-function changeCodeLangEditor(cmd, edt){
-    aceditor.getSession().setMode("ace/mode/"+edt);
-}
-
-
-function changeVisibleRecipes(cmd, edt){
-    $("#div_recipes > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("d-none");
-    $("#div_recipes > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("d-none");
-}
-
-
-function changeVisibleOptions(cmd, edt){
-    $("#div_options > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("d-none");
-    $("#div_options > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("d-none");
-}
-
-
-function changeCodeLang(cmd, edt){
-    changeCodeLangEditor(cmd, edt);
-    changeVisibleRecipes(cmd, edt);
-    changeVisibleOptions(cmd, edt);
-}
-
-
-// _____________________________________________________
-// getter
-
-
-function getChosenLang(){
-    return $("#selector_codelang option:selected").data("cmd");
-}
-
-
-function gatherInfo(){
-    const cmd = getChosenLang();
-    const options = {};
-    $("#div_options > div")
-        .filter((i,e)=>($(e).data("cmd")==cmd))
-        .find("select")
-        .each((i,e)=>{ options[$(e).data("key")] = $(e).val(); });
-
-    return {
-        txt_stdin:   $("#txt_editstdin").val(),
-        txt_code:    aceditor.getValue(),
-        cmd:         cmd,
-        options:	 options
-    };
-    // timelimit:   $("#input_timeout").val()
-    /*
-var flgDisableCleaning = $("#disableCleaning:checked").val();
-var flagWAll = $("#flagWAll:checked").val();
-var macro = $("#input_macro").val();
-var source = $("#selector_sourcechooser").val();
-var sourcepath = $("#input_filepath").val();
-var filestdin = $('#chk_filestdin:checked').val();
-var stdinpath = $('#input_stdinpath').val();
-    */
-}
-
-
-
-// _____________________________________________________
-// util
-
-/**
- * buttondom を event すると class をトグルする
- * @param {string} event 
- * @param {JQuery} buttondom 
- * @param {JQuery} hiddendom 
- */
-function bindToggler(event, buttondom, hiddendom, buttondomClass = "", hiddendomClass = "d-none"){
-    buttondom.on(event, {fr: buttondom, to: hiddendom}, (e)=>{
-        $(e.data.fr).toggleClass(buttondomClass);
-        $(e.data.to).toggleClass(hiddendomClass);
-    });
-}
-
-
-function bindCopyButton(event, buttondom, textdom){
-    buttondom.on(event, {tg:textdom}, (e)=>{
-        copyTextToClipboard($(e.data.tg).text());
-    });
-}
-
-function copyTextToClipboard(text){
-    let tempdom = $("#__clipboard");
-    if (tempdom.length == 0)
-        tempdom = $("<textarea id='__clipboard'></textarea>")
-        .appendTo($("body"));
-    tempdom.val(text)
-        .css("display", "inline");
-    copyDomToClipboard(tempdom);
-    tempdom.val("")
-        .css("display", "none");
-}
-
-function copyDomToClipboard(dom){
-    dom.select();
-    document.execCommand("copy");
-}
-
-
-// _____________________________________________________
-// display
-
-
-function chooseLang(cmd){
-    let dom = $("#selector_codelang option").filter((i,e)=>($(e).data("cmd")==cmd));
-    if (dom.length > 0)
-        dom.prop("selected", true);
-    else
-        $("#selector_codelang").data("apply", cmd);
-
-    $("#selector_codelang").change();
-}
-
-
-function displayStdout(message){
-    $("#txt_stdout").val(message);
-}
-function displayStderr(message){
-    $("#div_stderr").text(message);
-}
-
-
-function clearResultLogs(){
-    $("#div_resultlogs").empty();
-    aceditor.getSession().clearAnnotations();
-}
-
-function appendResultLog(title, message, classtype, isProgressing = false){
-    if ($("#div_resultlogs > div").first().data("isprog")){
-        $("#div_resultlogs > div").first().remove();
-    }
-    const titledom = $("<div></div>").text(title)
-        .addClass("alert-"+classtype+" title")
-    const bodydom = $("<div></div>")
-        .addClass("body")
-        .addClass("d-none");
-
-    if (typeof message === "object"){
-        for (const key in message){
-            const msg = ""+message[key];
-            if (msg.match(/\n/)){
-                const keydom1 = $("<span></span>").text(key);
-                const keydom2 = $("<button></button>").text("[copy]").css("font-size","small").addClass("btn btn-sm btn-primary");
-                const valdom = $("<pre></pre>").addClass("val").text(message[key]).data("key", key);
-                bindToggler("click", keydom1, valdom);
-                bindCopyButton("click", keydom2, valdom);
-                const keydom = $("<div></div>").addClass("key").append(keydom1).append(keydom2);
-                bodydom.append(keydom).append(valdom);
-                bodydom.append(keydom).append(valdom);
-            }
-            else{
-                bodydom.prepend(
-                    $("<div></div>")
-                    .addClass("keypair")
-                    .append($("<div></div>").addClass("key").text(key))
-                    .append($("<div></div>").addClass("val").text(msg).data("key", key))
-                );
-            }
-        }
-    }
-    else{
-        bodydom.append(
-            $("<pre></pre>").text(message)
-        );
-    }
-    bindToggler("click", titledom, bodydom);
-    $("#div_resultlogs").prepend(
-        $("<div></div>")
-        .addClass("resultLog")
-        .data("isprog", isProgressing)
-        .append(titledom).append(bodydom)
-    );
-}
-
-
-function changeStateExecButton(enabled = true){
-    $("#btn_exec").prop("disabled", !enabled);
-    $("#btn_exec_build").prop("disabled", !enabled);
-    $("#btn_exec_run").prop("disabled", !enabled);
-    $("#btn_halt").prop("disabled", !!enabled);
-}
-
-
-// _____________________________________________________
-// backup
-
-
-function restoreBackup(){
-    let stored = localStorage.getItem("backup");
-    if (!stored) return;
-    
-    let json = JSON.parse(stored);
-
-    $("#txt_editstdin").val(json.txt_stdin);
-    aceditor.setValue(json.txt_code, -1);
-
-    chooseLang(json.cmd);
-}
-
-
-function storeBackup(){
-    const json = {
-        txt_stdin:   $("#txt_editstdin").val(),
-        txt_code:    aceditor.getValue(),
-        cmd:         getChosenLang()
-    };
-    localStorage.setItem("backup", JSON.stringify(json));
-}
-
-
-// _____________________________________________________
-// template / snippet
-
-
-function storeTemplate(){
-    let stored = localStorage.getItem("template");
-    let json = !stored ? {} : JSON.parse(stored);
-    json[getChosenLang()] = aceditor.getValue();
-    localStorage.setItem("template", JSON.stringify(json));
-    console.log("complete store");
-}
-
-
-function loadTemplate(){
-    let stored = localStorage.getItem("template");
-    if (!stored) return;
-    let val = JSON.parse(stored)[getChosenLang()];
-    if (!val) return;
-    aceditor.setValue(val, -1);
-    console.log("complete load");
-}
-
-
 // _____________________________________________________
 // events
 
 function buttonHalt(){
-    const info = gatherInfo();
+    const info = Interface.gatherInfo();
     socket.emit("c2s_halt", info);
 }
 
 
 function buttonRecipe(e){
     const recipe = e.data.recipe;
-    const info = gatherInfo();
+    const info = Interface.gatherInfo();
     info.recipe = recipe;
-    clearResultLogs();
+    Interface.clearResultLogs();
     socket.emit("c2s_submit", info);
+}
+
+
+function buttonStoreTemplate(){
+    Storage.storeTemplate(Interface.getChosenLang(), Editor.getValue());
+}
+
+function buttonLoadTemplate(){
+    Editor.setValue(Storage.loadTemplate(Interface.getChosenLang()));
+}
+
+
+function changeCodeLang(){
+    let dom = $("#selector_codelang option:selected");
+    let cmd = dom.data("cmd");
+    if (cmd === "") return;
+
+    Editor.changeCodeLang(cmd);
+    Interface.changeVisibleRecipes(cmd);
 }
 
 // _____________________________________________________
@@ -420,12 +169,12 @@ socket.on("s2c_progress", (json)=>{
     // console.log(json);
 
     if (json.type === "halted"){
-        appendResultLog("halted", "", "info");
+        Interface.appendResultLog("halted", "", "info");
         return;
     }
 
     if (json.type === "success"){
-        displayStdout(
+        Interface.displayStdout(
             $("#div_resultlogs > div").first().find(".val")
             .filter((i,e)=>($(e).data("key")=="stdout"))
             .text()
@@ -438,14 +187,13 @@ socket.on("s2c_progress", (json)=>{
         json.type === "error" ? "danger" : 
         "info";
 
-    appendResultLog(
+    Interface.appendResultLog(
         json.data.taskName ? "[" + json.data.taskName + "]"+json.type : json.type,
         json.data, state, json.type === "progress"
     );
 
     if (json.data.info) {
-        const s = aceditor.getSession();
-        s.setAnnotations(json.data.info);
+        Editor.setAnnotations(json.data.info);
     }
 
 });

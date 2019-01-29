@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha",
     "start": "node main.js",
-    "build": "browserify src/front/app.js > build/bundle.js",
+    "build": "browserify src/front/app.js -t [ babelify --presets [@babel/preset-env] ] > build/bundle.js",
     "go": "npm run build && npm run start",
     "install-service": "winser -i -a",
     "uninstall-service": "winser -r -x"
@@ -19,5 +19,11 @@
     "mktmpdir": "^0.1.1",
     "socket.io": "^2.1.0",
     "winser": "^1.0.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "babelify": "^10.0.0"
   }
 }
