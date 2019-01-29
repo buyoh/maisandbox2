@@ -1,4 +1,5 @@
 
+/* --------- base --------- */
 body{
 	font-family: "メイリオ", Meiryo, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro";
 	/*margin-left:auto;*/
@@ -8,6 +9,8 @@ body{
 	margin: 10px;
 }
 
+
+/* --------- component --------- */
 input,select{
     background-color:#444;
 }
@@ -34,6 +37,8 @@ pre{
 	color: #EEE;
 }
 
+
+/* --------- flex --------- */
 .flexboxRow{
 	display: flex;
 	flex-direction: row;
@@ -47,12 +52,12 @@ pre{
 	flex: 1;
 }
 
-.resizeableflexcontainer_left{
+.resizeableFlexContainer_left{
 	flex: 0 0 auto;
 	resize: both;
 	overflow: hidden;
 }
-.resizeableflexcontainer_right{
+.resizeableFlexContainer_right{
 	flex: 1 1 auto;
 	resize: none;
 	overflow: hidden;
@@ -60,6 +65,7 @@ pre{
 }
 
 
+/* --------- visual --------- */
 .border{
 	margin:2px;
 	border-width: 2px;
@@ -77,6 +83,12 @@ pre{
 	padding:1px;
 }
 
+.hidden{
+	display: none;
+}
+
+
+/* --------- box --------- */
 .resultLog{
 	margin-bottom: 3px;
 }
@@ -114,4 +126,10 @@ pre{
 	display: inline-block;
 	
 	padding: 1px 6px;
+}
+
+
+/* --------- tag --------- */
+.hiddenTemplate{
+	display: none;
 }

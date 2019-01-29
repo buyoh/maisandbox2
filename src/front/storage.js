@@ -1,7 +1,7 @@
 const $ = require('jQuery');
 const Editor = require('./aceditor');
 const Interface = require('./interface');
-
+const Stdios = require('./stdios');
 
 // _____________________________________________________
 // initialize
@@ -22,7 +22,7 @@ export function restoreBackup(){
     
     let json = JSON.parse(stored);
 
-    $("#txt_editstdin").val(json.txt_stdin);
+    Stdios.setStdinLegacy(json.txt_stdin);
     Editor.setValue(json.txt_code);
 
     Interface.chooseLang(json.cmd);
@@ -31,7 +31,7 @@ export function restoreBackup(){
 
 export function storeBackup(){
     const json = {
-        txt_stdin:   $("#txt_editstdin").val(),
+        txt_stdin:   Stdios.getStdinLegacy(),
         txt_code:    Editor.getValue(),
         cmd:         Interface.getChosenLang()
     };

@@ -1,5 +1,13 @@
 const $ = require('jQuery');
 const Editor = require('./aceditor');
+const Stdios = require('./stdios');
+
+// _____________________________________________________
+// initialize
+
+$(()=>{
+
+});
 
 
 // _____________________________________________________
@@ -19,7 +27,7 @@ export function gatherInfo(){
         .each((i,e)=>{ options[$(e).data("key")] = $(e).val(); });
 
     return {
-        txt_stdin:   $("#txt_editstdin").val(),
+        txt_stdin:   Stdios.getStdinLegacy(),
         txt_code:    Editor.getValue(),
         cmd:         cmd,
         options:	 options
@@ -60,15 +68,16 @@ export function changeVisibleRecipes(cmd){
     $("#div_recipes > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("d-none");
     $("#div_options > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("d-none");
     $("#div_options > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("d-none");
+    Editor.changeCodeLang(cmd);
 }
 
 
-export function displayStdout(message){
-    $("#txt_stdout").val(message);
+export function displayStdout(text){
+    Stdios.setStdoutLegacy(text);
 }
-export function displayStderr(message){
-    $("#div_stderr").text(message);
-}
+// export function displayStderr(message){
+//     $("#div_stderr").text(message);
+// }
 
 
 export function clearResultLogs(){

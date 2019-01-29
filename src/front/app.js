@@ -141,7 +141,6 @@ function changeCodeLang(){
     let cmd = dom.data("cmd");
     if (cmd === "") return;
 
-    Editor.changeCodeLang(cmd);
     Interface.changeVisibleRecipes(cmd);
 }
 

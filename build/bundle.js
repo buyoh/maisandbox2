@@ -10576,7 +10576,6 @@ function changeCodeLang() {
   var dom = $("#selector_codelang option:selected");
   var cmd = dom.data("cmd");
   if (cmd === "") return;
-  Editor.changeCodeLang(cmd);
   Interface.changeVisibleRecipes(cmd);
 } // _____________________________________________________
 // socket
@@ -10615,7 +10614,7 @@ socket.on("s2c_progress", function (json) {
   }
 });
 
-},{"./aceditor":2,"./interface":4,"./storage":5,"jQuery":1}],4:[function(require,module,exports){
+},{"./aceditor":2,"./interface":4,"./storage":6,"jQuery":1}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10626,7 +10625,6 @@ exports.gatherInfo = gatherInfo;
 exports.chooseLang = chooseLang;
 exports.changeVisibleRecipes = changeVisibleRecipes;
 exports.displayStdout = displayStdout;
-exports.displayStderr = displayStderr;
 exports.clearResultLogs = clearResultLogs;
 exports.appendResultLog = appendResultLog;
 
@@ -10634,9 +10632,14 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 var $ = require('jQuery');
 
-var Editor = require('./aceditor'); // _____________________________________________________
-// getter
+var Editor = require('./aceditor');
 
+var Stdios = require('./stdios'); // _____________________________________________________
+// initialize
+
+
+$(function () {}); // _____________________________________________________
+// getter
 
 function getChosenLang() {
   return $("#selector_codelang option:selected").data("cmd");
@@ -10651,7 +10654,7 @@ function gatherInfo() {
     options[$(e).data("key")] = $(e).val();
   });
   return {
-    txt_stdin: $("#txt_editstdin").val(),
+    txt_stdin: Stdios.getStdinLegacy(),
     txt_code: Editor.getValue(),
     cmd: cmd,
     options: options
@@ -10696,15 +10699,15 @@ function changeVisibleRecipes(cmd) {
   $("#div_options > div").filter(function (i, e) {
     return $(e).data("cmd") != cmd;
   }).addClass("d-none");
+  Editor.changeCodeLang(cmd);
 }
 
-function displayStdout(message) {
-  $("#txt_stdout").val(message);
-}
+function displayStdout(text) {
+  Stdios.setStdoutLegacy(text);
+} // export function displayStderr(message){
+//     $("#div_stderr").text(message);
+// }
 
-function displayStderr(message) {
-  $("#div_stderr").text(message);
-}
 
 function clearResultLogs() {
   $("#div_resultlogs").empty();
@@ -10788,7 +10791,72 @@ function copyDomToClipboard(dom) {
   document.execCommand("copy");
 }
 
-},{"./aceditor":2,"jQuery":1}],5:[function(require,module,exports){
+},{"./aceditor":2,"./stdios":5,"jQuery":1}],5:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getStdinLegacy = getStdinLegacy;
+exports.setStdinLegacy = setStdinLegacy;
+exports.getStdoutLegacy = getStdoutLegacy;
+exports.setStdoutLegacy = setStdoutLegacy;
+exports.appendField = appendField;
+
+var $ = require('jQuery');
+
+var domStdioTemplate = null; // _____________________________________________________
+// initialize
+
+$(function () {
+  {
+    var d = $("#div_stdios > .hiddenTemplate");
+    d.removeClass("hiddenTemplate");
+    domStdioTemplate = d.clone();
+    d.remove();
+  }
+  appendField();
+}); // _____________________________________________________
+// getter / setter
+
+function getStdinLegacy() {
+  return $("#div_stdios > div").eq(0).data("childlen").textareaStdin.val();
+}
+
+function setStdinLegacy(text) {
+  return $("#div_stdios > div").eq(0).data("childlen").textareaStdin.val(text);
+}
+
+function getStdoutLegacy() {
+  return $("#div_stdios > div").eq(0).data("childlen").textareaStdout.val();
+}
+
+function setStdoutLegacy(text) {
+  return $("#div_stdios > div").eq(0).data("childlen").textareaStdout.val(text);
+} // _____________________________________________________
+// manipulate
+
+
+function appendField() {
+  $("#div_stdios").append(generateDom());
+} // _____________________________________________________
+// (internal)
+
+
+function generateDom() {
+  var dom = domStdioTemplate.clone();
+  dom.data("childlen", {
+    dom: dom,
+    buttonMinify: dom.find("button[title='minify']"),
+    buttonOpen: dom.find("button[title='open']"),
+    buttonClose: dom.find("button[title='close']"),
+    textareaStdin: dom.find("textarea[title='stdin']"),
+    textareaStdout: dom.find("textarea[title='stdout']")
+  });
+  return dom;
+}
+
+},{"jQuery":1}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10803,7 +10871,9 @@ var $ = require('jQuery');
 
 var Editor = require('./aceditor');
 
-var Interface = require('./interface'); // _____________________________________________________
+var Interface = require('./interface');
+
+var Stdios = require('./stdios'); // _____________________________________________________
 // initialize
 
 
@@ -10822,14 +10892,14 @@ function restoreBackup() {
   var stored = localStorage.getItem("backup");
   if (!stored) return;
   var json = JSON.parse(stored);
-  $("#txt_editstdin").val(json.txt_stdin);
+  Stdios.setStdinLegacy(json.txt_stdin);
   Editor.setValue(json.txt_code);
   Interface.chooseLang(json.cmd);
 }
 
 function storeBackup() {
   var json = {
-    txt_stdin: $("#txt_editstdin").val(),
+    txt_stdin: Stdios.getStdinLegacy(),
     txt_code: Editor.getValue(),
     cmd: Interface.getChosenLang()
   };
@@ -10852,4 +10922,4 @@ function loadTemplate(lang) {
   return val ? val : null;
 }
 
-},{"./aceditor":2,"./interface":4,"jQuery":1}]},{},[3]);
+},{"./aceditor":2,"./interface":4,"./stdios":5,"jQuery":1}]},{},[3]);
