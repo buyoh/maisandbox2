@@ -129,6 +129,21 @@ pre{
 }
 
 
+/* --------- components --------- */
+
+.Stdios_Tools{
+	flex: 0 0 30px;
+}
+.Stdios_Tools.minified{
+	flex: 0 0 auto;
+}
+.Stdios_DivStdin.minified{
+	display: none;
+}
+.Stdios_DivStdout.minified{
+	display: none;
+}
+
 /* --------- tag --------- */
 .hiddenTemplate{
 	display: none;

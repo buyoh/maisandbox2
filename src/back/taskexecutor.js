@@ -24,6 +24,7 @@ const langTask = {
     "clay": task_clay
 };
 
+// deprecated
 exports.langList = (()=>{
     const a = [];
     for (let key in langTask){
@@ -32,6 +33,7 @@ exports.langList = (()=>{
     return a;
 })();
 
+// deprecated
 exports.allRecipes = (()=>{
     const recipes = {};
     for(let lang in langTask) {
@@ -41,6 +43,7 @@ exports.allRecipes = (()=>{
     return recipes;
 })();
 
+// deprecated
 exports.allOptions = (()=>{
     const options = {};
     for(let lang in langTask) {
@@ -48,6 +51,20 @@ exports.allOptions = (()=>{
         options[lang] = task.options;
     }
     return options;
+})();
+
+exports.allLangInfo = (()=>{
+    const a = [];
+    for (let cmd in langTask){
+        const j = {cmd: cmd};
+        const task = langTask[cmd];
+        j.name = task.info.name;
+        j.editor = task.info.editor;
+        j.recipes = task.recipes;
+        j.options = task.options;
+        a.push(j);
+    }
+    return a;
 })();
 
 

@@ -1,3 +1,7 @@
+// _____________________________________________________
+// aceditor.js
+// ace部品の操作のwrapper
+
 const $ = require('jQuery');
 
 let aceditor = null;

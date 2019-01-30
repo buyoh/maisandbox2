@@ -58,21 +58,25 @@
 			<!-- <textarea id="editcode" class="flexcontainer" rows=18></textarea> -->
 		</div>
 	</div>
-	<div id="div_stdios">
-		<div class="border flexboxRow hiddenTemplate">
-			<div class="border" style="flex: 0 0 30px">
-				<div><button class="btn btn-sm btn-primary" style="width: 30px;" title="minify">-</button></div>
-				<div><button class="btn btn-sm btn-primary" style="width: 30px;" title="open">+</button></div>
-				<div><button class="btn btn-sm btn-danger" style="width: 30px;" title="close">X</button></div>
+	<div class="border">
+		<div id="div_stdios">
+			<div class="flexboxRow hiddenTemplate">
+				<div class="Stdios_Tools border">
+					<button class="btn btn-sm btn-primary" style="width: 30px;" title="minify">±</button>
+					<button class="btn btn-sm btn-danger" style="width: 30px;" title="close">X</button>
+				</div>
+				<div class="Stdios_DivStdin border resizeableFlexContainer_left flexboxCol">
+					<div>Stdin</div>
+					<textarea class="flexcontainer textarea enabletabs" rows="12" title="stdin"></textarea>
+				</div>
+				<div class="Stdios_DivStdout border resizeableFlexContainer_right flexboxCol">
+					<div>Stdout</div>
+					<textarea class="flexcontainer textarea enabletabs" title="stdout"></textarea>
+				</div>
 			</div>
-			<div class="border resizeableFlexContainer_left flexboxCol minifiable">
-				<div>Stdin</div>
-				<textarea class="flexcontainer textarea enabletabs" rows="12" title="stdin"></textarea>
-			</div>
-			<div class="border resizeableFlexContainer_right flexboxCol minifiable">
-				<div>Stdout</div>
-				<textarea class="flexcontainer textarea enabletabs" title="stdout"></textarea>
-			</div>
+		</div>
+		<div id ="div_stdioctrl" class="border">
+			<button id="btn_appendstdio" class="btn btn-sm btn-primary">append</button>
 		</div>
 	</div>
 	<div class="border">
@@ -102,6 +106,7 @@
 
 </div>
 <p>Rubyで日本語を使う:<code>puts gets.force_encoding("UTF-8")</code></p>
+<p><button id="btn_forcebackup" class="btn btn-sm btn-primary">force backup</button></p>
 
 <div style="margin-top:2000px;"></div>
 

@@ -1,43 +1,19 @@
-const $ = require('jQuery');
-const Editor = require('./aceditor');
-const Interface = require('./interface');
-const Stdios = require('./stdios');
-
 // _____________________________________________________
-// initialize
-
-$(()=>{
-    restoreBackup();
-    $(window).on("unload", ()=>{storeBackup();});
-    setInterval(()=>{storeBackup();},1000*600);
-});
+// storage.js
+// 読み出したり書き出したりする操作のwrapper
 
 
 // _____________________________________________________
 // backup
 
-export function restoreBackup(){
-    let stored = localStorage.getItem("backup");
-    if (!stored) return;
-    
-    let json = JSON.parse(stored);
-
-    Stdios.setStdinLegacy(json.txt_stdin);
-    Editor.setValue(json.txt_code);
-
-    Interface.chooseLang(json.cmd);
+export function restoreBackupJson(){
+    const stored = localStorage.getItem("backup");
+    if (!stored) return null;
+    return JSON.parse(stored);
 }
-
-
-export function storeBackup(){
-    const json = {
-        txt_stdin:   Stdios.getStdinLegacy(),
-        txt_code:    Editor.getValue(),
-        cmd:         Interface.getChosenLang()
-    };
+export function storeBackupJson(json){
     localStorage.setItem("backup", JSON.stringify(json));
 }
-
 
 // _____________________________________________________
 // template / snippet
@@ -53,7 +29,7 @@ export function storeTemplate(lang, text){
 export function loadTemplate(lang){
     let stored = localStorage.getItem("template");
     if (!stored) return null;
-    let val = JSON.parse(stored)[Interface.getChosenLang()];
+    let val = JSON.parse(stored)[lang];
     return val ? val : null;
 }
 

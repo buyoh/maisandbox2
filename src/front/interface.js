@@ -1,12 +1,35 @@
+// _____________________________________________________
+// interface.js
+// UI全体のwrapper，特に複数の部品に影響があるもの
+
 const $ = require('jQuery');
 const Editor = require('./aceditor');
 const Stdios = require('./stdios');
+const Socket = require('./socket');
+
+
+// メモ化
+const _m_memorized = {};
+function m$(html){
+    return _m_memorized[html] ?
+        _m_memorized[html] :
+        (_m_memorized[html] = $(html));
+}
 
 // _____________________________________________________
 // initialize
 
 $(()=>{
-
+    $("textarea.enabletabs").keydown((e)=>{
+        if (e.keyCode === 9) {
+            e.preventDefault(); // デフォルト動作の中止
+            var elem = e.target;
+            var val = elem.value;
+            var pos = elem.selectionStart;
+            elem.value = val.substr(0, pos) + '\t' + val.substr(pos, val.length);
+            elem.setSelectionRange(pos + 1, pos + 1);
+        }
+    });
 });
 
 
@@ -46,7 +69,7 @@ var stdinpath = $('#input_stdinpath').val();
 
 
 // _____________________________________________________
-// display
+// manipulate
 
 /**
  * cmd言語を選んだ状態にする
@@ -57,9 +80,25 @@ export function chooseLang(cmd){
     if (dom.length > 0)
         dom.prop("selected", true);
     else
-        $("#selector_codelang").data("apply", cmd);
+        m$("#selector_codelang").data("LazyChoiceCmd", cmd);
 
-    $("#selector_codelang").change();
+    m$("#selector_codelang").change();
+}
+
+
+/**
+ * addLanguage等によって言語関係を変更したら最後にこれを呼び出す
+ */
+export function rechooseLang(){
+    const dom = m$("#selector_codelang");
+    const appVal = dom.data("LazyChoiceCmd");
+    if (appVal){
+        dom.data("LazyChoiceCmd", null);
+        $("#selector_codelang option")
+            .filter((i,e)=>($(e).data("cmd")==appVal))
+            .prop("selected", true);
+    }
+    dom.change();
 }
 
 
@@ -133,9 +172,69 @@ export function appendResultLog(title, message, classtype, isProgressing = false
 }
 
 
+// _____________________________________________________
+// setup
+
+export function addLanguage(langInfo){
+    // selector
+    $("<option></option>")
+        .data("cmd", langInfo.cmd)
+        .text(langInfo.name)
+        .appendTo(m$("#selector_codelang"));
+    Editor.registerLang(langInfo.cmd, langInfo.editor);
+
+    // recipes
+    {
+        const domc = $("<div></div>").data("cmd", langInfo.cmd);
+        for (let name in langInfo.recipes) {
+            // note: langInfo.recipes[name] の情報を使っていない・保持していない
+            domc.append(
+                $("<button></button>")
+                .addClass("btn btn-sm btn-primary")
+                .text(name)
+                .on("click", {recipe: name}, (e)=>{
+                    // todo: refactoring(eventbinderがやるべき)
+                    const recipe = e.data.recipe;
+                    const info = gatherInfo();
+                    info.recipe = recipe;
+                    clearResultLogs();
+                    Socket.emitSubmit(info);
+                })
+            );
+        }
+        m$("#div_recipes").append(domc);
+    }
+
+    // options
+    {
+        const domc = $("<div></div>").data("cmd", langInfo.cmd);
+        for (let name in langInfo.options) {
+            const dom = $("<select></select>")
+                .data("key", name)
+                .addClass("form-control form-control-sm")
+                .css("width", "inherit");
+            for (let val of langInfo.options[name])
+                dom.append(
+                    $("<option></option>")
+                    .text(val)
+                    .val(val)
+                );
+            domc.append(
+                $("<div></div>").addClass("keypair")
+                .append($("<div></div>").addClass("key").text(name))
+                .append(dom.addClass("val"))
+            );
+        }
+        m$("#div_options").append(domc);
+    }
+
+
+}
+
+
 
 // _____________________________________________________
-// util
+// (internal)
 
 
 /**

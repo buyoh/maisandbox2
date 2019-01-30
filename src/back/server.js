@@ -3,8 +3,8 @@ const socketio = require('socket.io');
 const fs = require('fs');
 const filetype = require('file-type')
 
-const taskexecutor = require('./taskexecutor');
-const validator = require('./validator');
+const TaskExecutor = require('./taskexecutor');
+const Validator = require('./validator');
 
 require('./temperaser');
 
@@ -16,11 +16,13 @@ const settings = {
 for (let i = 2, m = null; i < process.argv.length; ++i){
     const arg = process.argv[i];
     if (arg == "--port") m = 1;
-    else if (m == 1) settings.portno = +arg;
+    else if (m == 1) settings.portno = +arg, m = null;
 }
 
 
 function rewritePath(url){
+    if (request.url.match(/\.\./))
+        return null;
     if (url === "/"){
         return "./src/front/media/sandbox.html";
     }
@@ -47,13 +49,19 @@ let server = http.createServer((request, responce)=> {
     console.error("requested: "+request.url);
 
     // 必要に応じてurlを変換
-    let path = rewritePath(request.url);
+    const path = rewritePath(request.url);
+
+    if (!path){
+        responce.statusCode = 403;
+        responce.end("403");
+        return;
+    }
 
     // 該当するファイルを探す
     try{
-        if (request.url.match(/\.\./)) throw 1;
+        const cnt = fs.readFileSync(path, 'utf-8');
         responce.writeHead(200, filetype(request.url));
-        responce.end(fs.readFileSync(path, 'utf-8'));
+        responce.end(cnt);
         console.error("requested: lookup "+path+" => ok");
     }
     catch(err){
@@ -82,24 +90,25 @@ soio.sockets.on('connection', (socket)=> {
     });
 
     // 言語情報等を取得する
-    socket.on('c2s_getCatalog', (data)=> {
-        socket.emit('s2c_catalog', {
-            taskTypeList: taskexecutor.langList,
-            recipes: taskexecutor.allRecipes,
-            options: taskexecutor.allOptions
-        });
+    socket.on('c2s_getCatalog', (listener)=> {
+        listener(TaskExecutor.allLangInfo);
+        // listener({
+        //     taskTypeList: TaskExecutor.langList,
+        //     recipes: TaskExecutor.allRecipes,
+        //     options: TaskExecutor.allOptions
+        // });
     });
 
     // コード提出
     socket.on('c2s_submit', (data)=> {
         if (killer !== null)
             killer();
-        if (!validator.checkTaskSubmission(data)){
+        if (!Validator.checkTaskSubmission(data)){
             socket.emit('s2c_progress', {type:'error', data:{}});
             return;
         }
         data.socketid = socket.id;
-        killer = taskexecutor.pushTask(data, (type, json)=> {
+        killer = TaskExecutor.pushTask(data, (type, json)=> {
             if (json.killer !== undefined){
                 killer = json.killer;
                 json.killer = undefined;
@@ -109,7 +118,7 @@ soio.sockets.on('connection', (socket)=> {
     });
     
     // 中断
-    socket.on('c2s_halt', (data)=> {
+    socket.on('c2s_halt', ()=> {
         if (killer !== null)
             killer();
         socket.emit('s2c_progress', {type:'halted', msg:'accepted (halt)'});
