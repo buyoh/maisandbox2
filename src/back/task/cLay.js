@@ -32,7 +32,7 @@ exports.recipes = {
 exports.command = {
     /** setup files */
     setupAll: function(task, callback){
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
         common.setupTemp(task.uniqueName, ()=>{
             fs.writeFileSync(cwdir+"/code.clay.cpp", task.json.txt_code);
             fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
@@ -42,7 +42,7 @@ exports.command = {
     },
     
     setupIO: function(task, callback){
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
         common.setupTemp(task.uniqueName, ()=>{
             fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
 
@@ -52,7 +52,7 @@ exports.command = {
 
     /** compile codes */
     convert: function(task, callback){
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -105,7 +105,7 @@ exports.command = {
 
     /** compile codes */
     compile: function(task, callback){
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -162,7 +162,7 @@ exports.command = {
 
     /** run compiled file */
     run: function(task, callback){
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{

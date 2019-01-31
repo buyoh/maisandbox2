@@ -55,28 +55,33 @@ function pickupInformations(msg){
 exports.command = {
     /** setup files */
     setupAll: function(task, callback){
-        
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
         common.setupTemp(task.uniqueName, ()=>{
-            fs.writeFileSync(cwdir+"/code.rs", task.json.txt_code);
-            fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
-
-            callback.call(null, "continue", {});
+            common.writeFiles(cwdir+"/", [
+                {path:"code.rs", data:task.json.txt_code},
+                {path:"stdin.txt", data:task.json.txt_stdin}
+            ], (ok)=>{
+                if (ok == 2) callback.call(null, "continue", {});
+                else callback.call(null, "error", {});
+            });
         });
     },
     
     setupIO: function(task, callback){
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
         common.setupTemp(task.uniqueName, ()=>{
-            fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
-
-            callback.call(null, "continue", {});
+            common.writeFiles(cwdir+"/", [
+                {path:"stdin.txt", data:task.json.txt_stdin}
+            ], (ok)=>{
+                if (ok == 1) callback.call(null, "continue", {});
+                else callback.call(null, "error", {});
+            });
         });
     },
 
     /** compile codes */
     compile: function(task, callback){
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -87,15 +92,17 @@ exports.command = {
                     param,
                     null, cwdir+"/stdout.txt", cwdir+"/stderr.txt",
                     {cwd: cwdir},
-                    function(code, json){ resolve([code, json]); });
-
+                    (code, json)=>{
+                        common.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
+                            resolve([code, json, out]);
+                        })
+                    });
                 callback.call(null, "progress", {killer: killer});
             });
-
-        }).then(([code, json])=>{
+        }).then(([code, json, out])=>{
             return new Promise((resolve, reject)=>{
-                let stdout = fs.readFileSync(cwdir+"/stdout.txt", 'UTF-8');
-                let stderr = fs.readFileSync(cwdir+"/stderr.txt", 'UTF-8');
+                const stdout = out.find((v)=>(v.path == "stdout.txt")).data;
+                const stderr = out.find((v)=>(v.path == "stderr.txt")).data;
                 const info = pickupInformations(stderr);
                 if (code != 0){
                     callback.call(null, "failed", {
@@ -133,22 +140,26 @@ exports.command = {
 
     /** run compiled file */
     run: function(task, callback){
-        const cwdir = common.tempDir(task.uniqueName);
+        const cwdir = common.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
                 let killer = myexec.spawn_fileio(
                     "./code.exe",
                     [], cwdir+"/stdin.txt", cwdir+"/stdout.txt", cwdir+"/stderr.txt",
-                    {cwd: cwdir}, function(code, json){ resolve([code, json]); }
-                );
+                    {cwd: cwdir}, (code, json)=>{
+                        common.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
+                            resolve([code, json, out]);
+                        })
+                    });
+
                 callback.call(null, "progress", {killer: killer});
             });
-        }).then(([code, json])=>{
+
+        }).then(([code, json, out])=>{
             return new Promise((resolve, reject)=>{
-                
-                let stdout = fs.readFileSync(cwdir+"/stdout.txt", 'UTF-8');
-                let stderr = fs.readFileSync(cwdir+"/stderr.txt", 'UTF-8');
+                const stdout = out.find((v)=>(v.path == "stdout.txt")).data;
+                const stderr = out.find((v)=>(v.path == "stderr.txt")).data;
                 
                 callback.call(null, code != 0 ? "failed" : "continue", {
                     code: code, signal: json.signal,

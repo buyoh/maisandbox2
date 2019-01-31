@@ -10960,6 +10960,7 @@ $(function () {
   {
     var d = $("#div_stdios > .hiddenTemplate");
     d.removeClass("hiddenTemplate");
+    d.find("textarea").val("");
     domStdioTemplate = d.detach();
   }
   appendField();

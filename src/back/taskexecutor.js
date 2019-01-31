@@ -12,7 +12,7 @@ const task_nodejs = require('./task/nodejs');
 const task_sh = require('./task/shWsl');
 const task_clay = require('./task/clay');
 
-const langTask = {
+const langTasks = {
     "Ruby": task_ruby,
     "C++" : task_cpp,
     "C++Bash" : task_cppbash,
@@ -27,8 +27,8 @@ const langTask = {
 // deprecated
 exports.langList = (()=>{
     const a = [];
-    for (let key in langTask){
-        a.push(Object.assign(langTask[key].info, {cmd: key}));
+    for (let key in langTasks){
+        a.push(Object.assign(langTasks[key].info, {cmd: key}));
     }
     return a;
 })();
@@ -36,8 +36,8 @@ exports.langList = (()=>{
 // deprecated
 exports.allRecipes = (()=>{
     const recipes = {};
-    for(let lang in langTask) {
-        const task = langTask[lang];
+    for(let lang in langTasks) {
+        const task = langTasks[lang];
         recipes[lang] = task.recipes;
     }
     return recipes;
@@ -46,8 +46,8 @@ exports.allRecipes = (()=>{
 // deprecated
 exports.allOptions = (()=>{
     const options = {};
-    for(let lang in langTask) {
-        const task = langTask[lang];
+    for(let lang in langTasks) {
+        const task = langTasks[lang];
         options[lang] = task.options;
     }
     return options;
@@ -55,9 +55,9 @@ exports.allOptions = (()=>{
 
 exports.allLangInfo = (()=>{
     const a = [];
-    for (let cmd in langTask){
+    for (let cmd in langTasks){
         const j = {cmd: cmd};
-        const task = langTask[cmd];
+        const task = langTasks[cmd];
         j.name = task.info.name;
         j.editor = task.info.editor;
         j.recipes = task.recipes;
@@ -73,26 +73,27 @@ exports.allLangInfo = (()=>{
  * @param {JSON} json 
  * @param {(type:String, json:JSON) => boolean} callback 何か成功する度に呼び出す
  */
-exports.pushTask = function(json, callback){
+exports.pushTask = function (json, callback){
     const task = {
         json:json,
         callback:callback
     };
-    if (json.recipe !== undefined)
-        setTimeout((t)=>{runTaskRecipe(t);}, 0, task);
-    else
-        setTimeout((t)=>{runTaskLegacy(t);}, 0, task);
+    if (json.recipe === undefined){
+        task.callback.call(null, 'error', {reason: 'unknown recipe'});
+        return;
+    }
+    setTimeout((t)=>{runTaskRecipe(t);}, 0, task);
 }
 
 
 function runTaskRecipe(task){
-    const lt = langTask[task.json.cmd];
-    if (lt === undefined){
-        task.callback.call(null, 'error', 'unknown cmd'); return;
+    const langTask = langTasks[task.json.cmd];
+    if (langTask === undefined){
+        task.callback.call(null, 'error', {reason: 'unknown cmd'}); return;
     }
-    const recipe = lt.recipes[task.json.recipe];
+    const recipe = langTask.recipes[task.json.recipe];
     if (recipe === undefined){
-        task.callback.call(null, 'error', 'unknown recipe'); return;
+        task.callback.call(null, 'error', {reason: 'unknown recipe'}); return;
     }
 
     task.uniqueName = task.json.socketid + "/" + task.json.cmd;
@@ -104,11 +105,11 @@ function runTaskRecipe(task){
             task.callback.call(null, 'success', {});
             return;
         }
-        if (!lt.command[recipe.tasks[taskIndex]]){
+        if (!langTask.command[recipe.tasks[taskIndex]]){
             task.callback.call(null, 'error', {reason: 'not found the task['+recipe.tasks[taskIndex]+']'});
             return;
         }
-        lt.command[recipe.tasks[taskIndex]](task, (msg, json)=>{
+        langTask.command[recipe.tasks[taskIndex]](task, (msg, json)=>{
             json.taskName = recipe.tasks[taskIndex];
             task.callback.call(null, msg, json);
             if (msg == 'continue' && !accepted[taskIndex]){
@@ -120,31 +121,4 @@ function runTaskRecipe(task){
     process(0);
 }
 
-
-
-function runTaskLegacy(task){
-
-    // 
-    if (langTask[task.json.cmd] === undefined){
-        task.callback('error', 'unknown cmd');
-        return;
-    }
-    
-    if (task.json.query === 'run'){
-        
-        langTask[task.json.cmd].run(task);
-    }
-    else if (task.json.query === 'build'){
-
-        langTask[task.json.cmd].build(task);
-    }
-    else if (task.json.query === 'execute'){
-        
-        langTask[task.json.cmd].execute(task);
-    }
-    else{
-        task.callback('error', 'unknown query');
-
-    }
-}
 

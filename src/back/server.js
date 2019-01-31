@@ -21,7 +21,7 @@ for (let i = 2, m = null; i < process.argv.length; ++i){
 
 
 function rewritePath(url){
-    if (request.url.match(/\.\./))
+    if (url.match(/\.\./))
         return null;
     if (url === "/"){
         return "./src/front/media/sandbox.html";
