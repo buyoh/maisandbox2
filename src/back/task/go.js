@@ -1,6 +1,7 @@
 const fs = require('fs');
 const myexec = require('../exec');
-const common = require('./common');
+const FileWrapper = require('./filewrapper');
+const DefaultTask = require('./default').generateDefaultTasks('go');
 
 // -------------------------------------
 
@@ -52,34 +53,12 @@ function pickupInformations(msg){
 
 exports.command = {
     /** setup files */
-    setupAll: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
-        common.setupTemp(task.uniqueName, ()=>{
-            common.writeFiles(cwdir+"/", [
-                {path:"code.go", data:task.json.txt_code},
-                {path:"stdin.txt", data:task.json.txt_stdin}
-            ], (ok)=>{
-                if (ok == 2) callback.call(null, "continue", {});
-                else callback.call(null, "error", {});
-            });
-        });
-    },
-    
-    setupIO: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
-        common.setupTemp(task.uniqueName, ()=>{
-            common.writeFiles(cwdir+"/", [
-                {path:"stdin.txt", data:task.json.txt_stdin}
-            ], (ok)=>{
-                if (ok == 1) callback.call(null, "continue", {});
-                else callback.call(null, "error", {});
-            });
-        });
-    },
+    setupAll: DefaultTask.command.setupAll,
+    setupIO: DefaultTask.command.setupIO,
 
     /** compile codes */
     compile: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
+        const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -91,56 +70,25 @@ exports.command = {
                     null, cwdir+"/stdout.txt", cwdir+"/stderr.txt",
                     {cwd: cwdir},
                     (code, json)=>{
-                        common.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
+                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
                             resolve([code, json, out]);
                         })
-                    });
+                    }
+                );
 
                 callback.call(null, "progress", {killer: killer});
             });
 
         }).then(([code, json, out])=>{
-            return new Promise((resolve, reject)=>{
-                const stdout = out.find((v)=>(v.path == "stdout.txt")).data;
-                const stderr = out.find((v)=>(v.path == "stderr.txt")).data;
-                const info = pickupInformations(stderr);
-                if (code != 0){
-                    callback.call(null, "failed", {
-                        code:   code,
-                        signal: json.signal,
-                        stdout: stdout,
-                        stderr: stderr,
-                        time:   json.time,
-                        info:   info,
-                        killer: null
-                    });
-                    reject();
-                }
-                else{
-                    callback.call(null, "continue", {
-                        code:   code,
-                        signal: json.signal,
-                        stdout: stdout,
-                        stderr: stderr,
-                        time:   json.time,
-                        info:   info,
-                        killer: null
-                    });
-                    resolve();
-                }
-            });
+            return DefaultTask.util.promiseResultResponser(code, json, out, callback, pickupInformations);
         }).catch((e)=>{
-            if (e){
-                console.error(e);
-                callback.call(null, "error", {err:e, killer: null});
-            }
-            
+            DefaultTask.util.errorHandler(e, callback);
         });
     },
 
     /** run compiled file */
     run: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
+        const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -149,30 +97,18 @@ exports.command = {
                     [], cwdir+"/stdin.txt", cwdir+"/stdout.txt", cwdir+"/stderr.txt",
                     {cwd: cwdir},
                     (code, json)=>{
-                        common.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
+                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
                             resolve([code, json, out]);
                         })
-                    });
+                    }
+                );
+
                 callback.call(null, "progress", {killer: killer});
             });
         }).then(([code, json, out])=>{
-            return new Promise((resolve, reject)=>{
-                const stdout = out.find((v)=>(v.path == "stdout.txt")).data;
-                const stderr = out.find((v)=>(v.path == "stderr.txt")).data;
-                
-                callback.call(null, code != 0 ? "failed" : "continue", {
-                    code: code, signal: json.signal,
-                    stdout: stdout, stderr: stderr,
-                    time: json.time, killer: null
-                });
-    
-                if (code != 0) reject(); else resolve();
-            });
+            return DefaultTask.util.promiseResultResponser(code, json, out, callback, pickupInformations);
         }).catch((e)=>{
-            if (e){
-                console.error(e);
-                callback.call(null, "error", {err:e, killer: null});
-            }
+            DefaultTask.util.errorHandler(e, callback);
         });
     }
 };

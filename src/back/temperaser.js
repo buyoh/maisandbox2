@@ -17,28 +17,28 @@ function removeRecursive(path, callback) {
         if (err){ callback(err); return; }
         if (!stat.isDirectory()){
             fs.unlink(path, callback);
+            return;
         }
-        else{
-            fs.readdir(path, (err, files)=>{
-                if (err){ callback(err); return; }
-                let count = files.length;
-                for (let file of files){
-                    removeRecursive(path+"/"+file, (err)=>{
-                        if (err){
-                            if (count >= 0)
-                                callback(err), // 2つ以上のエラーを送信しない
-                                count = -1;
-                            return;
-                        }
-                        if (--count == 0)
-                            fs.rmdir(path, callback);
-                    });
-                }
-                if (files.length == 0){
-                    fs.rmdir(path, callback);
-                }
-            });
-        }
+        fs.readdir(path, (err, files)=>{
+            if (err){ callback(err); return; }
+            let remain = files.length;
+            if (remain == 0){
+                fs.rmdir(path, callback);
+                return;
+            }
+            for (let file of files){
+                removeRecursive(path+"/"+file, (err)=>{
+                    if (err){
+                        if (remain >= 0)
+                            callback(err), // 2つ以上のエラーを送信しない
+                            remain = -1;
+                        return;
+                    }
+                    if (--remain == 0)
+                        fs.rmdir(path, callback);
+                });
+            }
+        });
     });
 }
 

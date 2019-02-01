@@ -1,6 +1,7 @@
 const fs = require('fs');
 const myexec = require('../exec');
-const common = require('./common');
+const FileWrapper = require('./filewrapper');
+const DefaultTask = require('./default').generateDefaultTasks('cpp');
 const cpp = require('./cpp');
 
 // -------------------------------------
@@ -38,7 +39,7 @@ exports.command = {
 
     /** compile codes */
     compile: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
+        const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -54,53 +55,25 @@ exports.command = {
                     null, null, null,
                     {cwd: cwdir},
                     (code, json)=>{
-                        common.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
+                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
                             resolve([code, json, out]);
                         })
-                    });
+                    }
+                );
 
                 callback.call(null, "progress", {killer: killer});
             });
 
         }).then(([code, json, out])=>{
-            return new Promise((resolve, reject)=>{
-                const stdout = out.find((v)=>(v.path == "stdout.txt")).data;
-                const stderr = out.find((v)=>(v.path == "stderr.txt")).data;
-                if (code != 0){
-                    callback.call(null, "failed", {
-                        code:   code,
-                        signal: json.signal,
-                        stdout: stdout,
-                        stderr: stderr,
-                        time:   json.time,
-                        killer: null
-                    });
-                    reject();
-                }
-                else{
-                    callback.call(null, "continue", {
-                        code:   code,
-                        signal: json.signal,
-                        stdout: stdout,
-                        stderr: stderr,
-                        time:   json.time,
-                        killer: null
-                    });
-                    resolve();
-                }
-            });
+            return DefaultTask.util.promiseResultResponser(code, json, out, callback, cpp.pickupInformations);
         }).catch((e)=>{
-            if (e){
-                console.error(e);
-                callback.call(null, "error", {err:e, killer: null});
-            }
-            
+            DefaultTask.util.errorHandler(e, callback);
         });
     },
 
     /** run compiled file */
     run: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
+        const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -109,32 +82,18 @@ exports.command = {
                     ["-c", "./code.out < ./stdin.txt 1> ./stdout.txt 2> ./stderr.txt"], null, null, null, 
                     {cwd: cwdir},
                     (code, json)=>{
-                        common.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
+                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
                             resolve([code, json, out]);
                         });
                     }
                 );
+
                 callback.call(null, "progress", {killer: killer});
             });
         }).then(([code, json, out])=>{
-            return new Promise((resolve, reject)=>{
-
-                const stdout = out.find((v)=>(v.path == "stdout.txt")).data;
-                const stderr = out.find((v)=>(v.path == "stderr.txt")).data;
-                
-                callback.call(null, code != 0 ? "failed" : "continue", {
-                    code: code, signal: json.signal,
-                    stdout: stdout, stderr: stderr,
-                    time: json.time, killer: null
-                });
-    
-                if (code != 0) reject(); else resolve();
-            });
+            return DefaultTask.util.promiseResultResponser(code, json, out, callback);
         }).catch((e)=>{
-            if (e){
-                console.error(e);
-                callback.call(null, "error", {err:e, killer: null});
-            }
+            DefaultTask.util.errorHandler(e, callback);
         });
     }
 };

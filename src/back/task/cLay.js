@@ -1,6 +1,7 @@
 const fs = require('fs');
 const myexec = require('../exec');
-const common = require('./common');
+const FileWrapper = require('./filewrapper');
+const DefaultTask = require('./default').generateDefaultTasks('cpp');
 
 // -------------------------------------
 
@@ -31,28 +32,12 @@ exports.recipes = {
 
 exports.command = {
     /** setup files */
-    setupAll: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
-        common.setupTemp(task.uniqueName, ()=>{
-            fs.writeFileSync(cwdir+"/code.clay.cpp", task.json.txt_code);
-            fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
-
-            callback.call(null, "continue", {});
-        });
-    },
+    setupAll: DefaultTask.command.setupAll,
+    setupIO: DefaultTask.command.setupIO,
     
-    setupIO: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
-        common.setupTemp(task.uniqueName, ()=>{
-            fs.writeFileSync(cwdir+"/stdin.txt", task.json.txt_stdin);
-
-            callback.call(null, "continue", {});
-        });
-    },
-
     /** compile codes */
     convert: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
+        const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
@@ -60,56 +45,32 @@ exports.command = {
                 let killer = myexec.spawn_fileio(
                     "./tool/clay.exe",
                     [],
-                    cwdir+"/code.clay.cpp", cwdir+"/code.cpp", cwdir+"/stderr.txt",
+                    cwdir+"/code.cpp", cwdir+"/code_gen.cpp", cwdir+"/stderr.txt",
                     {},
-                    function(code, json){ resolve([code, json]); });
+                    (code, json)=>{
+                        FileWrapper.readFiles(cwdir+"/", [{path:"code_gen.cpp"},{path:"stderr.txt"}], (out)=>{
+                            resolve([code, json, out]);
+                        });
+                    }
+                );
 
                 callback.call(null, "progress", {killer: killer});
             });
 
-        }).then(([code, json])=>{
-            return new Promise((resolve, reject)=>{
-                let stdout = fs.readFileSync(cwdir+"/code.cpp", 'UTF-8');
-                let stderr = fs.readFileSync(cwdir+"/stderr.txt", 'UTF-8');
-                if (code != 0){
-                    callback.call(null, "failed", {
-                        code:   code,
-                        signal: json.signal,
-                        stdout: stdout,
-                        stderr: stderr,
-                        time:   json.time,
-                        killer: null
-                    });
-                    reject();
-                }
-                else{
-                    callback.call(null, "continue", {
-                        code:   code,
-                        signal: json.signal,
-                        stdout: stdout,
-                        stderr: stderr,
-                        time:   json.time,
-                        killer: null
-                    });
-                    resolve();
-                }
-            });
+        }).then(([code, json, out])=>{
+            return DefaultTask.util.promiseResultResponser(code, json, out, callback, null, "code_gen.cpp", "stderr.txt");
         }).catch((e)=>{
-            if (e){
-                console.error(e);
-                callback.call(null, "error", {err:e, killer: null});
-            }
-            
+            DefaultTask.util.errorHandler(e, callback);
         });
     },
 
     /** compile codes */
     compile: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
+        const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
-                let param = ["./code.cpp", "-o", "./code.out"];
+                let param = ["./code_gen.cpp", "-o", "./code.out"];
 
                 if (task.json.options.optimization === "-O3") param.push("-O3");
                 if (options.std.includes(task.json.options.std)) param.push(task.json.options.std); else param.push("-std=gnu++14");
@@ -118,80 +79,48 @@ exports.command = {
                     "g++",
                     param,
                     null, cwdir+"/stdout.txt", cwdir+"/stderr.txt",
-                    {env:{PATH:common.cygwinEnvPath}, cwd: cwdir},
-                    function(code, json){ resolve([code, json]); });
+                    {env:{PATH:FileWrapper.cygwinEnvPath}, cwd: cwdir},
+                    (code, json)=>{
+                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
+                            resolve([code, json, out]);
+                        });
+                    }
+                );
 
                 callback.call(null, "progress", {killer: killer});
             });
 
-        }).then(([code, json])=>{
-            return new Promise((resolve, reject)=>{
-                let stdout = fs.readFileSync(cwdir+"/stdout.txt", 'UTF-8');
-                let stderr = fs.readFileSync(cwdir+"/stderr.txt", 'UTF-8');
-                if (code != 0){
-                    callback.call(null, "failed", {
-                        code:   code,
-                        signal: json.signal,
-                        stdout: stdout,
-                        stderr: stderr,
-                        time:   json.time,
-                        killer: null
-                    });
-                    reject();
-                }
-                else{
-                    callback.call(null, "continue", {
-                        code:   code,
-                        signal: json.signal,
-                        stdout: stdout,
-                        stderr: stderr,
-                        time:   json.time,
-                        killer: null
-                    });
-                    resolve();
-                }
-            });
+        }).then(([code, json, out])=>{
+            return DefaultTask.util.promiseResultResponser(code, json, out, callback);
         }).catch((e)=>{
-            if (e){
-                console.error(e);
-                callback.call(null, "error", {err:e, killer: null});
-            }
-            
+            DefaultTask.util.errorHandler(e, callback);
         });
     },
 
     /** run compiled file */
     run: function(task, callback){
-        const cwdir = common.getTempDirName(task.uniqueName);
+        const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
             return new Promise((resolve, reject)=>{
                 let killer = myexec.spawn_fileio(
                     "./code.out",
                     [], cwdir+"/stdin.txt", cwdir+"/stdout.txt", cwdir+"/stderr.txt",
-                    {env:{PATH:common.cygwinEnvPath}, cwd: cwdir}, function(code, json){ resolve([code, json]); }
+                    {env:{PATH:FileWrapper.cygwinEnvPath}, cwd: cwdir},
+                    (code, json)=>{
+                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
+                            resolve([code, json, out]);
+                        });
+                    }
                 );
+
                 callback.call(null, "progress", {killer: killer});
             });
-        }).then(([code, json])=>{
-            return new Promise((resolve, reject)=>{
-                
-                let stdout = fs.readFileSync(cwdir+"/stdout.txt", 'UTF-8');
-                let stderr = fs.readFileSync(cwdir+"/stderr.txt", 'UTF-8');
-                
-                callback.call(null, code != 0 ? "failed" : "continue", {
-                    code: code, signal: json.signal,
-                    stdout: stdout, stderr: stderr,
-                    time: json.time, killer: null
-                });
-    
-                if (code != 0) reject(); else resolve();
-            });
+
+        }).then(([code, json, out])=>{
+            return DefaultTask.util.promiseResultResponser(code, json, out, callback);
         }).catch((e)=>{
-            if (e){
-                console.error(e);
-                callback.call(null, "error", {err:e, killer: null});
-            }
+            DefaultTask.util.errorHandler(e, callback);
         });
     }
 };
