@@ -10590,16 +10590,21 @@ Socket.addProgressListener(function (json) {
   }
 
   if (json.type === "success") {
-    Interface.displayStdout($("#div_resultlogs > div").first().find(".val").filter(function (i, e) {
+    var d = $("#div_resultlogs > div").first().find(".val").filter(function (i, e) {
       return $(e).data("key") == "stdout";
-    }).text());
+    });
+    if (d.length === 1) Interface.displayStdout(d.text());
   }
 
   var state = json.type === "continue" || json.type === "success" ? "success" : json.type === "failed" ? "warning" : json.type === "error" ? "danger" : "info";
   Interface.appendResultLog(json.data.taskName ? "[" + json.data.taskName + "]" + json.type : json.type, json.data, state, json.type === "progress");
 
-  if (json.data.info) {
-    Editor.setAnnotations(json.data.info);
+  if (json.data && json.data.key) {
+    Interface.displayStdout(json.data.stdout, json.data.key);
+  }
+
+  if (json.data.note) {
+    Editor.setAnnotations(json.data.note);
   }
 });
 
@@ -10670,6 +10675,8 @@ function gatherInfo() {
   });
   return {
     txt_stdin: Stdios.getStdinLegacy(),
+    // TODO: remove
+    txt_stdins: Stdios.getStdins(true),
     txt_code: Editor.getValue(),
     cmd: cmd,
     options: options
@@ -10736,7 +10743,13 @@ function changeVisibleRecipes(cmd) {
 }
 
 function displayStdout(text) {
-  Stdios.setStdoutLegacy(text);
+  var id = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+  if (id) {
+    var li = {};
+    li[id] = text;
+    Stdios.setStdouts(li);
+  } else Stdios.setStdoutLegacy(text);
 } // export function displayStderr(message){
 //     $("#div_stderr").text(message);
 // }
@@ -11004,7 +11017,7 @@ function setStdouts(li) {
   $("#div_stdios > div").each(function (i, e) {
     var c = $(e).data("components");
 
-    if (!li[c.internalID]) {
+    if (li[c.internalID]) {
       c.textareaStdout.val(li[c.internalID]);
     }
   });

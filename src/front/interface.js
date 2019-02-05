@@ -50,7 +50,8 @@ export function gatherInfo(){
         .each((i,e)=>{ options[$(e).data("key")] = $(e).val(); });
 
     return {
-        txt_stdin:   Stdios.getStdinLegacy(),
+        txt_stdin:   Stdios.getStdinLegacy(), // TODO: remove
+        txt_stdins:  Stdios.getStdins(true),
         txt_code:    Editor.getValue(),
         cmd:         cmd,
         options:	 options
@@ -111,10 +112,15 @@ export function changeVisibleRecipes(cmd){
 }
 
 
-export function displayStdout(text){
-    Stdios.setStdoutLegacy(text);
-}
-// export function displayStderr(message){
+export function displayStdout(text, id = null){
+    if (id){
+        const li = {};
+        li[id] = text;
+        Stdios.setStdouts(li);
+    }
+    else
+        Stdios.setStdoutLegacy(text);
+}// export function displayStderr(message){
 //     $("#div_stderr").text(message);
 // }
 

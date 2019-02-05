@@ -63,11 +63,11 @@ Socket.addProgressListener((json)=>{
     }
 
     if (json.type === "success"){
-        Interface.displayStdout(
+        const d =
             $("#div_resultlogs > div").first().find(".val")
-            .filter((i,e)=>($(e).data("key")=="stdout"))
-            .text()
-        );
+            .filter((i,e)=>($(e).data("key")=="stdout"));
+        if (d.length === 1)
+            Interface.displayStdout(d.text());
     }
     
     const state = 
@@ -81,8 +81,12 @@ Socket.addProgressListener((json)=>{
         json.data, state, json.type === "progress"
     );
 
-    if (json.data.info) {
-        Editor.setAnnotations(json.data.info);
+    if (json.data && json.data.key) {
+        Interface.displayStdout(json.data.stdout, json.data.key);
+    }
+
+    if (json.data.note) {
+        Editor.setAnnotations(json.data.note);
     }
 
 });

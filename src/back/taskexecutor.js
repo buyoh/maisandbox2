@@ -79,7 +79,7 @@ exports.pushTask = function (json, callback){
         callback:callback
     };
     if (json.recipe === undefined){
-        task.callback.call(null, 'error', {reason: 'unknown recipe'});
+        task.callback.call(null, 'error', {reason: 'unknown recipe'}, true);
         return;
     }
     setTimeout((t)=>{runTaskRecipe(t);}, 0, task);
@@ -89,11 +89,11 @@ exports.pushTask = function (json, callback){
 function runTaskRecipe(task){
     const langTask = langTasks[task.json.cmd];
     if (langTask === undefined){
-        task.callback.call(null, 'error', {reason: 'unknown cmd'}); return;
+        task.callback.call(null, 'error', {reason: 'unknown cmd'}, true); return;
     }
     const recipe = langTask.recipes[task.json.recipe];
     if (recipe === undefined){
-        task.callback.call(null, 'error', {reason: 'unknown recipe'}); return;
+        task.callback.call(null, 'error', {reason: 'unknown recipe'}, true); return;
     }
 
     task.uniqueName = task.json.socketid + "/" + task.json.cmd;
@@ -102,14 +102,14 @@ function runTaskRecipe(task){
     
     const process = function(taskIndex){
         if (taskIndex >= recipe.tasks.length){
-            task.callback.call(null, 'success', {});
+            task.callback.call(null, 'success', {}, true);
             return;
         }
         if (!langTask.command[recipe.tasks[taskIndex]]){
-            task.callback.call(null, 'error', {reason: 'not found the task['+recipe.tasks[taskIndex]+']'});
+            task.callback.call(null, 'error', {reason: 'not found the task['+recipe.tasks[taskIndex]+']'}, true);
             return;
         }
-        langTask.command[recipe.tasks[taskIndex]](task, (msg, json)=>{
+        langTask.command[recipe.tasks[taskIndex]](task, (msg, json = {})=>{
             json.taskName = recipe.tasks[taskIndex];
             task.callback.call(null, msg, json);
             if (msg == 'continue' && !accepted[taskIndex]){

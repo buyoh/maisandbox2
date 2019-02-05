@@ -25,24 +25,38 @@ exports.generateDefaultTasks = function(codeExtension){
         },
         command:{
             setupAll: function(task, callback){
+                const files = [
+                    {path:"code."+codeExtension, data:task.json.txt_code},
+                    {path:"stdin.txt", data:task.json.txt_stdin}
+                ];
+                for (let key in task.json.txt_stdins){
+                    files.push(
+                        {path: "stdin"+(key)+".txt", data:task.json.txt_stdins[key]}
+                    );
+                }
+
                 const cwdir = FileWrapper.getTempDirName(task.uniqueName);
                 FileWrapper.setupTemp(task.uniqueName, ()=>{
-                    FileWrapper.writeFiles(cwdir+"/", [
-                        {path:"code."+codeExtension, data:task.json.txt_code},
-                        {path:"stdin.txt", data:task.json.txt_stdin}
-                    ], (ok)=>{
-                        if (ok == 2) callback.call(null, "continue", {});
+                    FileWrapper.writeFiles(cwdir+"/", files, (ok)=>{
+                        if (ok == files.length) callback.call(null, "continue", {});
                         else callback.call(null, "error", {});
                     });
                 });
             },
             setupIO: function(task, callback){
+                const files = [
+                    {path:"stdin.txt", data:task.json.txt_stdin}
+                ];
+                for (let key in task.json.txt_stdins){
+                    files.push(
+                        {path: "stdin"+(key)+".txt", data:task.json.txt_stdins[key]}
+                    );
+                }
+
                 const cwdir = FileWrapper.getTempDirName(task.uniqueName);
                 FileWrapper.setupTemp(task.uniqueName, ()=>{
-                    FileWrapper.writeFiles(cwdir+"/", [
-                        {path:"stdin.txt", data:task.json.txt_stdin}
-                    ], (ok)=>{
-                        if (ok == 1) callback.call(null, "continue", {});
+                    FileWrapper.writeFiles(cwdir+"/", files, (ok)=>{
+                        if (ok == files.length) callback.call(null, "continue", {});
                         else callback.call(null, "error", {});
                     });
                 });
@@ -50,6 +64,7 @@ exports.generateDefaultTasks = function(codeExtension){
         },
         util:{
             promiseResultResponser: promiseResultResponser,
+            promiseMultiExecutor: promiseMultiExecutor,
             errorHandler: errorHandler
         }
     };
@@ -63,25 +78,51 @@ exports.generateDefaultTasks = function(codeExtension){
  * @param {*} callback 
  * @param {*} pickupInformations 
  */
-function promiseResultResponser(code, json, out, callback, pickupInformations = null, stdoutFilename = "stdout.txt", stderrFilename = "stderr.txt"){
+function promiseResultResponser(code, json, out, callbackTask, pickupInformations = null, stdoutFilename = "stdout.txt", stderrFilename = "stderr.txt"){
     return new Promise((resolve, reject)=>{
         const stdout = out.find((v)=>(v.path == stdoutFilename)).data;
         const stderr = out.find((v)=>(v.path == stderrFilename)).data;
-        const info = pickupInformations ? pickupInformations(stderr) : [];
+        const note = pickupInformations ? pickupInformations(stderr) : [];
         
-        callback.call(null, code != 0 ? "failed" : "continue", {
+        callbackTask.call(null, code != 0 ? "failed" : "continue", {
             code: code, signal: json.signal,
             stdout: stdout, stderr: stderr,
-            time: json.time, info: info, killer: null
+            time: json.time, note: note, killer: null
         });
         if (code != 0) reject(); else resolve();
     });
 }
 
 
-function errorHandler(err, callback){
+function errorHandler(err, callbackTask){
     if (err){
         console.error(err);
-        callback.call(null, "error", {err:"internal error", killer: null});
+        callbackTask.call(null, "error", {err:"internal error", killer: null});
     }
+}
+
+
+/**
+ * @param {[any[],...]} iterationArgs
+ * @param {(args?)=>Promise<any>} promiseSingleExecution 
+ */
+function promiseMultiExecutor(iterationArgs, promiseSingleExecution){
+    return new Promise((resolve, reject)=>{
+        let promise = Promise.resolve();
+        const results = [];
+        for (let args of iterationArgs){
+            promise = promise.then(()=>{
+                return promiseSingleExecution(...args);
+            });
+            promise.then((result)=>{
+                results.push(result);
+            });
+        }
+        promise.then(()=>{
+            resolve(results);
+        }).catch((...reason)=>{
+            console.log("reject:", reason);
+            reject(...reason);
+        });
+    });
 }

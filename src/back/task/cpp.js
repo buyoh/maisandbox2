@@ -93,24 +93,51 @@ exports.command = {
 
     /** run compiled file */
     run: function(task, callback){
+        const suffixs = [""];
+        for (let key in task.json.txt_stdins){
+            suffixs.push(key);
+        }
+
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
-            return new Promise((resolve, reject)=>{
-                let killer = myexec.spawn_fileio(
-                    "./code.out",
-                    [], cwdir+"/stdin.txt", cwdir+"/stdout.txt", cwdir+"/stderr.txt",
-                    {env:{PATH:FileWrapper.cygwinEnvPath}, cwd: cwdir},
-                    (code, json)=>{
-                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
-                            resolve([code, json, out]);
-                        });
-                    }
-                );
-                callback.call(null, "progress", {killer: killer});
+            return DefaultTask.util.promiseMultiExecutor(suffixs.map((e)=>[e]), (suffix)=>{
+                return new Promise((resolve, reject)=>{
+                    const nameStdin = "stdin"+suffix+".txt";
+                    const nameStdout = "stdout"+suffix+".txt";
+                    const nameStderr = "stderr"+suffix+".txt";
+                    let killer = myexec.spawn_fileio(
+                        "./code.out",
+                        [], cwdir+"/"+nameStdin, cwdir+"/"+nameStdout, cwdir+"/"+nameStderr,
+                        {env:{PATH:FileWrapper.cygwinEnvPath}, cwd: cwdir},
+                        (code, json)=>{
+                            FileWrapper.readFiles(cwdir+"/", [{path:nameStdout},{path:nameStderr}], (out)=>{
+                                resolve([code, json, out, suffix]);
+                            });
+                        }
+                    );
+                    callback.call(null, "progress", {killer: killer});
+                });
             });
-        }).then(([code, json, out])=>{
-            return DefaultTask.util.promiseResultResponser(code, json, out, callback);
+            
+        }).then((args)=>{
+            return new Promise((resolve, reject)=>{
+                for (let arg of args){
+                    let [code, json, out, suffix] = arg;
+                    const stdout = out.find((v)=>(v.path == "stdout"+suffix+".txt")).data;
+                    const stderr = out.find((v)=>(v.path == "stderr"+suffix+".txt")).data;
+                    const note = pickupInformations ? pickupInformations(stderr) : [];
+                    
+                    callback.call(null, code != 0 ? "wa" : "ac", {
+                        key: suffix,
+                        code: code, signal: json.signal,
+                        stdout: stdout, stderr: stderr,
+                        time: json.time, note: note, killer: null
+                    });
+                }
+                callback.call(null, "continue");
+                resolve();
+            });
         }).catch((e)=>{
             DefaultTask.util.errorHandler(e, callback);
         });
