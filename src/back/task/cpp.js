@@ -112,7 +112,18 @@ exports.command = {
                         {env:{PATH:FileWrapper.cygwinEnvPath}, cwd: cwdir},
                         (code, json)=>{
                             FileWrapper.readFiles(cwdir+"/", [{path:nameStdout},{path:nameStderr}], (out)=>{
-                                resolve([code, json, out, suffix]);
+                                
+                                const stdout = out.find((v)=>(v.path == "stdout"+suffix+".txt")).data;
+                                const stderr = out.find((v)=>(v.path == "stderr"+suffix+".txt")).data;
+                                const note = pickupInformations ? pickupInformations(stderr) : [];
+                                
+                                callback.call(null, code != 0 ? "wa" : "ac", {
+                                    key: suffix,
+                                    code: code, signal: json.signal,
+                                    stdout: stdout, stderr: stderr,
+                                    time: json.time, note: note, killer: null
+                                });
+                                resolve([code]);
                             });
                         }
                     );
@@ -123,17 +134,7 @@ exports.command = {
         }).then((args)=>{
             return new Promise((resolve, reject)=>{
                 for (let arg of args){
-                    let [code, json, out, suffix] = arg;
-                    const stdout = out.find((v)=>(v.path == "stdout"+suffix+".txt")).data;
-                    const stderr = out.find((v)=>(v.path == "stderr"+suffix+".txt")).data;
-                    const note = pickupInformations ? pickupInformations(stderr) : [];
-                    
-                    callback.call(null, code != 0 ? "wa" : "ac", {
-                        key: suffix,
-                        code: code, signal: json.signal,
-                        stdout: stdout, stderr: stderr,
-                        time: json.time, note: note, killer: null
-                    });
+                    // nop
                 }
                 callback.call(null, "continue");
                 resolve();
