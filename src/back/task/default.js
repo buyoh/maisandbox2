@@ -64,7 +64,7 @@ exports.generateDefaultTasks = function(codeExtension){
         },
         util:{
             promiseResultResponser: promiseResultResponser,
-            promiseMultiExecutor: promiseMultiExecutor,
+            promiseMultiSeries: promiseMultiSeries,
             errorHandler: errorHandler
         }
     };
@@ -72,24 +72,26 @@ exports.generateDefaultTasks = function(codeExtension){
 
 /**
  * 
- * @param {*} code 
  * @param {*} json 
- * @param {*} out 
  * @param {*} callback 
  * @param {*} pickupInformations 
  */
-function promiseResultResponser(code, json, out, callbackTask, pickupInformations = null, stdoutFilename = "stdout.txt", stderrFilename = "stderr.txt"){
+function promiseResultResponser(json, cwdir, callbackTask, pickupInformations = null,
+    stdoutFilename = "stdout.txt", stderrFilename = "stderr.txt", commandAccept = "continue", commandAbort = "failed"){
     return new Promise((resolve, reject)=>{
+        FileWrapper.readFiles(cwdir+"/", [{path:stdoutFilename},{path:stderrFilename}], (out)=>{
+            resolve(out);
+        });
+    }).then((out)=>{
         const stdout = out.find((v)=>(v.path == stdoutFilename)).data;
         const stderr = out.find((v)=>(v.path == stderrFilename)).data;
         const note = pickupInformations ? pickupInformations(stderr) : [];
         
-        callbackTask.call(null, code != 0 ? "failed" : "continue", {
-            code: code, signal: json.signal,
-            stdout: stdout, stderr: stderr,
-            time: json.time, note: note, killer: null
-        });
-        if (code != 0) reject(); else resolve();
+        callbackTask.call(null, json.code != 0 ? commandAbort : commandAccept, Object.assign({
+            stdout: stdout, stderr: stderr, note: note,
+            killer: null
+        }, json));
+        return Promise.resolve();
     });
 }
 
@@ -106,7 +108,7 @@ function errorHandler(err, callbackTask){
  * @param {[any[],...]} iterationArgs
  * @param {(args?)=>Promise<any>} promiseSingleExecution 
  */
-function promiseMultiExecutor(iterationArgs, promiseSingleExecution){
+function promiseMultiSeries(iterationArgs, promiseSingleExecution){
     return new Promise((resolve, reject)=>{
         let promise = Promise.resolve();
         const results = [];

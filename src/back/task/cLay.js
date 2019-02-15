@@ -1,4 +1,3 @@
-const fs = require('fs');
 const myexec = require('../exec');
 const FileWrapper = require('./filewrapper');
 const DefaultTask = require('./default').generateDefaultTasks('cpp');
@@ -43,13 +42,14 @@ exports.command = {
             return new Promise((resolve, reject)=>{
 
                 let killer = myexec.spawn_fileio(
-                    "./tool/clay.exe",
-                    [],
+                    "./tool/clay.exe", [],
                     cwdir+"/code.cpp", cwdir+"/code_gen.cpp", cwdir+"/stderr.txt",
                     {},
                     (code, json)=>{
-                        FileWrapper.readFiles(cwdir+"/", [{path:"code_gen.cpp"},{path:"stderr.txt"}], (out)=>{
-                            resolve([code, json, out]);
+                        DefaultTask.util.promiseResultResponser(json, cwdir, callback, null, "code_gen.cpp")
+                        .then(()=>{
+                            if (code === 0) resolve();
+                            reject();
                         });
                     }
                 );
@@ -57,8 +57,6 @@ exports.command = {
                 callback.call(null, "progress", {killer: killer});
             });
 
-        }).then(([code, json, out])=>{
-            return DefaultTask.util.promiseResultResponser(code, json, out, callback, null, "code_gen.cpp", "stderr.txt");
         }).catch((e)=>{
             DefaultTask.util.errorHandler(e, callback);
         });
@@ -76,13 +74,14 @@ exports.command = {
                 if (options.std.includes(task.json.options.std)) param.push(task.json.options.std); else param.push("-std=gnu++14");
 
                 let killer = myexec.spawn_fileio(
-                    "g++",
-                    param,
+                    "g++", param,
                     null, cwdir+"/stdout.txt", cwdir+"/stderr.txt",
                     {env:{PATH:FileWrapper.cygwinEnvPath}, cwd: cwdir},
                     (code, json)=>{
-                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
-                            resolve([code, json, out]);
+                        DefaultTask.util.promiseResultResponser(json, cwdir, callback)
+                        .then(()=>{
+                            if (code === 0) resolve();
+                            reject();
                         });
                     }
                 );
@@ -90,8 +89,6 @@ exports.command = {
                 callback.call(null, "progress", {killer: killer});
             });
 
-        }).then(([code, json, out])=>{
-            return DefaultTask.util.promiseResultResponser(code, json, out, callback);
         }).catch((e)=>{
             DefaultTask.util.errorHandler(e, callback);
         });
@@ -99,26 +96,36 @@ exports.command = {
 
     /** run compiled file */
     run: function(task, callback){
+        const suffixs = Object.keys(task.json.txt_stdins);
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(()=>{
-            return new Promise((resolve, reject)=>{
-                let killer = myexec.spawn_fileio(
-                    "./code.out",
-                    [], cwdir+"/stdin.txt", cwdir+"/stdout.txt", cwdir+"/stderr.txt",
-                    {env:{PATH:FileWrapper.cygwinEnvPath}, cwd: cwdir},
-                    (code, json)=>{
-                        FileWrapper.readFiles(cwdir+"/", [{path:"stdout.txt"},{path:"stderr.txt"}], (out)=>{
-                            resolve([code, json, out]);
-                        });
-                    }
-                );
-
-                callback.call(null, "progress", {killer: killer});
+            return DefaultTask.util.promiseMultiSeries(suffixs.map((e)=>[e]), (suffix)=>{
+                const nameStdin = "stdin"+suffix+".txt";
+                const nameStdout = "stdout"+suffix+".txt";
+                const nameStderr = "stderr"+suffix+".txt";
+                return new Promise((resolve, reject)=>{
+                    let killer = myexec.spawn_fileio(
+                        "./code.out", [],
+                        cwdir+"/"+nameStdin, cwdir+"/"+nameStdout, cwdir+"/"+nameStderr,
+                        {env:{PATH:FileWrapper.cygwinEnvPath}, cwd: cwdir},
+                        (code, json)=>{ resolve(json); }
+                    );
+                    callback.call(null, "progress", {killer: killer});
+                }).then((json)=>{
+                    json.key = suffix;
+                    return DefaultTask.util.promiseResultResponser(
+                        json, cwdir, callback, null,
+                        nameStdout, nameStderr, "ac", "wa"
+                    ).then(()=>Promise.resolve(json.code));
+                });
             });
-
-        }).then(([code, json, out])=>{
-            return DefaultTask.util.promiseResultResponser(code, json, out, callback);
+        }).then((args)=>{
+            if (args.filter((e)=>(e != 0)).length === 0)
+                callback.call(null, "continue");
+            else
+                callback.call(null, "failed");
+            return Promise.resolve();
         }).catch((e)=>{
             DefaultTask.util.errorHandler(e, callback);
         });

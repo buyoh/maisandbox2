@@ -1,4 +1,3 @@
-
 const fs = require('fs');
 const child_process = require('child_process');
 
@@ -29,7 +28,7 @@ exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath
     }, options));
 
     ps.on("close", (code, signal)=>{
-        callback(code, {signal: signal, time: Date.now()-time});
+        callback(code, {code: code, signal: signal, time: Date.now()-time});
     });
 
     return ()=>{
