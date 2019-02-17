@@ -1,5 +1,5 @@
 const fs = require('fs');
-const myexec = require('../exec');
+const myexec = require('./exec');
 const FileWrapper = require('./filewrapper');
 
 /**

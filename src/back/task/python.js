@@ -1,6 +1,6 @@
-const myexec = require('../exec');
-const FileWrapper = require('./filewrapper');
-const DefaultTask = require('./default').generateDefaultTasks('py');
+const myexec = require('./util/exec');
+const FileWrapper = require('./util/filewrapper');
+const DefaultTask = require('./util/default').generateDefaultTasks('py');
 
 // -------------------------------------
 

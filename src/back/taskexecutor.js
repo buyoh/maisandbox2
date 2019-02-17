@@ -24,35 +24,6 @@ const langTasks = {
     "clay": task_clay
 };
 
-// deprecated
-exports.langList = (()=>{
-    const a = [];
-    for (let key in langTasks){
-        a.push(Object.assign(langTasks[key].info, {cmd: key}));
-    }
-    return a;
-})();
-
-// deprecated
-exports.allRecipes = (()=>{
-    const recipes = {};
-    for(let lang in langTasks) {
-        const task = langTasks[lang];
-        recipes[lang] = task.recipes;
-    }
-    return recipes;
-})();
-
-// deprecated
-exports.allOptions = (()=>{
-    const options = {};
-    for(let lang in langTasks) {
-        const task = langTasks[lang];
-        options[lang] = task.options;
-    }
-    return options;
-})();
-
 exports.allLangInfo = (()=>{
     const a = [];
     for (let cmd in langTasks){
