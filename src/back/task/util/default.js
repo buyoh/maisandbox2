@@ -5,7 +5,7 @@ const FileWrapper = require('./filewrapper');
 /**
  * export default したい
  */
-exports.generateDefaultTasks = function(codeExtension){
+exports.generateDefaultTasks = function(codeExtension) {
     return {
         /** */
         info: {
@@ -16,53 +16,61 @@ exports.generateDefaultTasks = function(codeExtension){
         },
         options: {},
         recipes: {
-            "compile > run":{
+            "compile > run": {
                 tasks: ["setupAll", "compile", "run"]
             },
-            "run(no update)":{
+            "run(no update)": {
                 tasks: ["setupIO", "run"]
             }
         },
-        command:{
-            setupAll: function(task, callback){
-                const files = [
-                    {path:"code."+codeExtension, data:task.json.txt_code},
-                    {path:"stdin.txt", data:task.json.txt_stdin}
+        command: {
+            setupAll: function(task, callback) {
+                const files = [{
+                        path: "code." + codeExtension,
+                        data: task.json.txt_code
+                    },
+                    {
+                        path: "stdin.txt",
+                        data: task.json.txt_stdin
+                    }
                 ];
-                for (let key in task.json.txt_stdins){
-                    files.push(
-                        {path: "stdin"+(key)+".txt", data:task.json.txt_stdins[key]}
-                    );
+                for (let key in task.json.txt_stdins) {
+                    files.push({
+                        path: "stdin" + (key) + ".txt",
+                        data: task.json.txt_stdins[key]
+                    });
                 }
 
                 const cwdir = FileWrapper.getTempDirName(task.uniqueName);
-                FileWrapper.setupTemp(task.uniqueName, ()=>{
-                    FileWrapper.writeFiles(cwdir+"/", files, (ok)=>{
+                FileWrapper.setupTemp(task.uniqueName, () => {
+                    FileWrapper.writeFiles(cwdir + "/", files, (ok) => {
                         if (ok == files.length) callback.call(null, "continue", {});
                         else callback.call(null, "error", {});
                     });
                 });
             },
-            setupIO: function(task, callback){
-                const files = [
-                    {path:"stdin.txt", data:task.json.txt_stdin}
-                ];
-                for (let key in task.json.txt_stdins){
-                    files.push(
-                        {path: "stdin"+(key)+".txt", data:task.json.txt_stdins[key]}
-                    );
+            setupIO: function(task, callback) {
+                const files = [{
+                    path: "stdin.txt",
+                    data: task.json.txt_stdin
+                }];
+                for (let key in task.json.txt_stdins) {
+                    files.push({
+                        path: "stdin" + (key) + ".txt",
+                        data: task.json.txt_stdins[key]
+                    });
                 }
 
                 const cwdir = FileWrapper.getTempDirName(task.uniqueName);
-                FileWrapper.setupTemp(task.uniqueName, ()=>{
-                    FileWrapper.writeFiles(cwdir+"/", files, (ok)=>{
+                FileWrapper.setupTemp(task.uniqueName, () => {
+                    FileWrapper.writeFiles(cwdir + "/", files, (ok) => {
                         if (ok == files.length) callback.call(null, "continue", {});
                         else callback.call(null, "error", {});
                     });
                 });
             }
         },
-        util:{
+        util: {
             promiseResultResponser: promiseResultResponser,
             promiseMultiSeries: promiseMultiSeries,
             errorHandler: errorHandler
@@ -77,18 +85,24 @@ exports.generateDefaultTasks = function(codeExtension){
  * @param {*} pickupInformations 
  */
 function promiseResultResponser(json, cwdir, callbackTask, pickupInformations = null,
-    stdoutFilename = "stdout.txt", stderrFilename = "stderr.txt", commandAccept = "continue", commandAbort = "failed"){
-    return new Promise((resolve, reject)=>{
-        FileWrapper.readFiles(cwdir+"/", [{path:stdoutFilename},{path:stderrFilename}], (out)=>{
+    stdoutFilename = "stdout.txt", stderrFilename = "stderr.txt", commandAccept = "continue", commandAbort = "failed") {
+    return new Promise((resolve, reject) => {
+        FileWrapper.readFiles(cwdir + "/", [{
+            path: stdoutFilename
+        }, {
+            path: stderrFilename
+        }], (out) => {
             resolve(out);
         });
-    }).then((out)=>{
-        const stdout = out.find((v)=>(v.path == stdoutFilename)).data;
-        const stderr = out.find((v)=>(v.path == stderrFilename)).data;
+    }).then((out) => {
+        const stdout = out.find((v) => (v.path == stdoutFilename)).data;
+        const stderr = out.find((v) => (v.path == stderrFilename)).data;
         const note = pickupInformations ? pickupInformations(stderr) : [];
-        
+
         callbackTask.call(null, json.code != 0 ? commandAbort : commandAccept, Object.assign({
-            stdout: stdout, stderr: stderr, note: note,
+            stdout: stdout,
+            stderr: stderr,
+            note: note,
             killer: null
         }, json));
         return Promise.resolve();
@@ -96,10 +110,13 @@ function promiseResultResponser(json, cwdir, callbackTask, pickupInformations = 
 }
 
 
-function errorHandler(err, callbackTask){
-    if (err){
+function errorHandler(err, callbackTask) {
+    if (err) {
         console.error(err);
-        callbackTask.call(null, "error", {err:"internal error", killer: null});
+        callbackTask.call(null, "error", {
+            err: "internal error",
+            killer: null
+        });
     }
 }
 
@@ -108,21 +125,21 @@ function errorHandler(err, callbackTask){
  * @param {[any[],...]} iterationArgs
  * @param {(args?)=>Promise<any>} promiseSingleExecution 
  */
-function promiseMultiSeries(iterationArgs, promiseSingleExecution){
-    return new Promise((resolve, reject)=>{
+function promiseMultiSeries(iterationArgs, promiseSingleExecution) {
+    return new Promise((resolve, reject) => {
         let promise = Promise.resolve();
         const results = [];
-        for (let args of iterationArgs){
-            promise = promise.then(()=>{
+        for (let args of iterationArgs) {
+            promise = promise.then(() => {
                 return promiseSingleExecution(...args);
             });
-            promise.then((result)=>{
+            promise.then((result) => {
                 results.push(result);
             });
         }
-        promise.then(()=>{
+        promise.then(() => {
             resolve(results);
-        }).catch((...reason)=>{
+        }).catch((...reason) => {
             console.log("reject:", reason);
             reject(...reason);
         });

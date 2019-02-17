@@ -1,9 +1,8 @@
-
 /**
  * 
  * @param {JSON} json 
  */
-exports.checkTaskSubmission = function(json){
+exports.checkTaskSubmission = function(json) {
     // TODO:
     // TODO: (stdins)等に不正なファイル名送信があった場合にその項目を消す．
     return true;
@@ -13,7 +12,7 @@ exports.checkTaskSubmission = function(json){
  * 
  * @param {JSON} json 
  */
-exports.checkTaskExecution = function(json){
+exports.checkTaskExecution = function(json) {
     // TODO:
     return true;
 }
@@ -23,7 +22,7 @@ exports.checkTaskExecution = function(json){
  * 
  * @param {string} raw 
  */
-function toSafeFilename(raw){
+function toSafeFilename(raw) {
     if (raw.match(/^[0-9A-Za-z]+$/)) return raw;
     let s = "";
     for (let i = 0; i < raw.length; ++i)

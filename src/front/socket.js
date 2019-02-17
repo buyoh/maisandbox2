@@ -5,7 +5,7 @@
 const socket = io.connect();
 const progressListener = [];
 
-socket.on("s2c_progress", (json)=>{
+socket.on("s2c_progress", (json) => {
     for (let f of progressListener)
         f(json);
 });
@@ -14,7 +14,7 @@ socket.on("s2c_progress", (json)=>{
 // _____________________________________________________
 // getter
 
-export function getCatalog(callback){
+export function getCatalog(callback) {
     socket.emit("c2s_getCatalog", callback);
 }
 
@@ -22,11 +22,11 @@ export function getCatalog(callback){
 // _____________________________________________________
 // emitter
 
-export function emitHalt(){
+export function emitHalt() {
     socket.emit("c2s_halt");
 }
 
-export function emitSubmit(info){
+export function emitSubmit(info) {
     socket.emit("c2s_submit", info);
 }
 
@@ -34,6 +34,6 @@ export function emitSubmit(info){
 // _____________________________________________________
 // listener
 
-export function addProgressListener(listener){
+export function addProgressListener(listener) {
     progressListener.push(listener);
 }

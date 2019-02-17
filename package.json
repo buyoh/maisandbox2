@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "test": "mocha",
+    "beautify": "ruby ./tools/beautify.rb",
     "start": "node main.js",
     "build": "browserify src/front/app.js -t [ babelify --presets [@babel/preset-env] ] > build/bundle.js",
     "go": "npm run build && npm run start",

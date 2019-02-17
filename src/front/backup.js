@@ -13,19 +13,25 @@ const Storage = require('./storage');
 // _____________________________________________________
 // initialize
 
-$(()=>{
+$(() => {
     restoreBackup();
-    $(window).on("unload", ()=>{storeBackup();});
-    setInterval(()=>{storeBackup();},1000*600);
+    $(window).on("unload", () => {
+        storeBackup();
+    });
+    setInterval(() => {
+        storeBackup();
+    }, 1000 * 600);
 
-    $("#btn_forcebackup").on("click", ()=>{storeBackup();});
+    $("#btn_forcebackup").on("click", () => {
+        storeBackup();
+    });
 });
 
 
 // _____________________________________________________
 // backup
 
-export function restoreBackup(){
+export function restoreBackup() {
     const json = Storage.restoreBackupJson();
     if (!json) return;
 
@@ -39,11 +45,10 @@ export function restoreBackup(){
 }
 
 
-export function storeBackup(){
+export function storeBackup() {
     Storage.storeBackupJson({
-        txt_stdins:  Stdios.dumpStdin(),
-        txt_code:    Editor.getValue(),
-        cmd:         Interface.getChosenLang()
+        txt_stdins: Stdios.dumpStdin(),
+        txt_code: Editor.getValue(),
+        cmd: Interface.getChosenLang()
     });
 }
-

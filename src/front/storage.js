@@ -6,19 +6,19 @@
 // _____________________________________________________
 // backup
 
-export function restoreBackupJson(){
+export function restoreBackupJson() {
     const stored = localStorage.getItem("backup");
     if (!stored) return null;
     return JSON.parse(stored);
 }
-export function storeBackupJson(json){
+export function storeBackupJson(json) {
     localStorage.setItem("backup", JSON.stringify(json));
 }
 
 // _____________________________________________________
 // template / snippet
 
-export function storeTemplate(lang, text){
+export function storeTemplate(lang, text) {
     let stored = localStorage.getItem("template");
     let json = !stored ? {} : JSON.parse(stored);
     json[lang] = text;
@@ -26,10 +26,9 @@ export function storeTemplate(lang, text){
 }
 
 
-export function loadTemplate(lang){
+export function loadTemplate(lang) {
     let stored = localStorage.getItem("template");
     if (!stored) return null;
     let val = JSON.parse(stored)[lang];
     return val ? val : null;
 }
-

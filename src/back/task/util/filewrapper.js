@@ -1,4 +1,3 @@
-
 const fs = require('fs');
 
 
@@ -19,14 +18,14 @@ exports.cygwinEnvPath = cygwinEnvPath;
  * @param {String} directoryName 
  * @param {()=>void} callback 
  */
-exports.setupTemp = function(directoryName, callback){
+exports.setupTemp = function(directoryName, callback) {
     let dirs = directoryName.split("/");
     let dir = defaultTempDir;
+
     function rec(err) {
         if (dirs.length == 0) {
             callback();
-        }
-        else{
+        } else {
             dir += "/" + dirs.shift();
             fs.mkdir(dir, rec);
         }
@@ -41,10 +40,11 @@ exports.setupTemp = function(directoryName, callback){
  * @param {Array<{path, data}>} files 
  * @param {(ok:Number)=>{}} callback ok:成功した個数
  */
-exports.writeFiles = function(prefixPath, files, callback){
-    let ok = 0, rem = files.length;
-    for (let file of files){
-        fs.writeFile(prefixPath + file.path, file.data, (err)=>{
+exports.writeFiles = function(prefixPath, files, callback) {
+    let ok = 0,
+        rem = files.length;
+    for (let file of files) {
+        fs.writeFile(prefixPath + file.path, file.data, (err) => {
             --rem;
             if (!err) ++ok;
             if (rem == 0) callback(ok);
@@ -59,12 +59,16 @@ exports.writeFiles = function(prefixPath, files, callback){
  * @param {Array<{path}>} files 
  * @param {(out:Array<{path, data}>)=>void} callback
  */
-exports.readFiles = function(prefixPath, files, callback){
-    let ok = [], rem = files.length;
-    for (let file of files){
-        fs.readFile(prefixPath + file.path, "UTF-8", (err, buff)=>{
+exports.readFiles = function(prefixPath, files, callback) {
+    let ok = [],
+        rem = files.length;
+    for (let file of files) {
+        fs.readFile(prefixPath + file.path, "UTF-8", (err, buff) => {
             --rem;
-            if (!err) ok.push({path: file.path, data: buff});
+            if (!err) ok.push({
+                path: file.path,
+                data: buff
+            });
             if (rem == 0) callback(ok);
         });
     }
@@ -75,12 +79,12 @@ exports.readFiles = function(prefixPath, files, callback){
  * 一時ファイル用のディレクトリを返す
  * @param {String} name 
  */
-exports.getTempDirName = function(name){
-    return defaultTempDir+"/"+name;
+exports.getTempDirName = function(name) {
+    return defaultTempDir + "/" + name;
 }
 
 
-exports.cleanTemp = function(name){
+exports.cleanTemp = function(name) {
     // nop
 }
 
@@ -91,24 +95,24 @@ exports.cleanTemp = function(name){
  * ファイルが存在するかどうか調べる(Sync)()
  * @param {string} filename 
  */
-exports.isExistFile = function(filename){
+exports.isExistFile = function(filename) {
     try {
         fs.statSync(filename);
-    } catch(err) {
+    } catch (err) {
         if (err.code === 'ENOENT') return false;
     }
     return true;
 }
 
 
-exports.chdir = function(directory, proc){
+exports.chdir = function(directory, proc) {
     const lastCwd = process.cwd();
     process.chdir(directory);
-    try{
+    try {
         proc();
-    }catch (e){
+    } catch (e) {
         throw e;
-    }finally{
+    } finally {
         process.chdir(lastCwd);
     }
 }

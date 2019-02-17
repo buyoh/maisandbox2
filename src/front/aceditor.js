@@ -11,7 +11,7 @@ const convertCmd2Edt = {};
 // initialize
 
 
-$(()=>{
+$(() => {
     aceditor = ace.edit("aceditor");
     aceditor.setTheme("ace/theme/monokai");
     aceditor.getSession().setMode("ace/mode/ruby");
@@ -23,7 +23,7 @@ $(()=>{
     aceditor.setShowInvisibles(true);
     aceditor.setFontSize(14);
 
-    $( "#aceditorEdge" ).on("onresize", ()=>{
+    $("#aceditorEdge").on("onresize", () => {
         aceditor.resize();
     });
 });
@@ -32,15 +32,15 @@ $(()=>{
 // _____________________________________________________
 // getter / setter
 
-export function getValue(){
+export function getValue() {
     return aceditor.getValue();
 }
 
-export function setValue(text){
+export function setValue(text) {
     aceditor.setValue(text, -1);
 }
 
-export function registerLang(cmd, edt){
+export function registerLang(cmd, edt) {
     convertCmd2Edt[cmd] = edt;
 }
 
@@ -48,20 +48,20 @@ export function registerLang(cmd, edt){
 // _____________________________________________________
 // interface
 
-export function changeCodeLang(cmd){
+export function changeCodeLang(cmd) {
     const edt = convertCmd2Edt[cmd];
     if (!edt) return;
-    aceditor.getSession().setMode("ace/mode/"+convertCmd2Edt[cmd]);
+    aceditor.getSession().setMode("ace/mode/" + convertCmd2Edt[cmd]);
 }
 
 /**
  * 
  * @param {{text:String, row:Number, column:Number, type: "error" | "warning" | "information"}} json 
  */
-export function setAnnotations(json){
+export function setAnnotations(json) {
     aceditor.getSession().setAnnotations(json);
 }
 
-export function clearAnnotations(){
+export function clearAnnotations() {
     aceditor.getSession().clearAnnotations();
 }

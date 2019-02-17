@@ -10,7 +10,8 @@ const Socket = require('./socket');
 
 // メモ化
 const _m_memorized = {};
-function m$(html){
+
+function m$(html) {
     return _m_memorized[html] ?
         _m_memorized[html] :
         (_m_memorized[html] = $(html));
@@ -19,8 +20,8 @@ function m$(html){
 // _____________________________________________________
 // initialize
 
-$(()=>{
-    $("textarea.enabletabs").keydown((e)=>{
+$(() => {
+    $("textarea.enabletabs").keydown((e) => {
         if (e.keyCode === 9) {
             e.preventDefault(); // デフォルト動作の中止
             var elem = e.target;
@@ -36,25 +37,27 @@ $(()=>{
 // _____________________________________________________
 // getter
 
-export function getChosenLang(){
+export function getChosenLang() {
     return $("#selector_codelang option:selected").data("cmd");
 }
 
 
-export function gatherInfo(){
+export function gatherInfo() {
     const cmd = getChosenLang();
     const options = {};
     $("#div_options > div")
-        .filter((i,e)=>($(e).data("cmd")==cmd))
+        .filter((i, e) => ($(e).data("cmd") == cmd))
         .find("select")
-        .each((i,e)=>{ options[$(e).data("key")] = $(e).val(); });
+        .each((i, e) => {
+            options[$(e).data("key")] = $(e).val();
+        });
 
     return {
-        txt_stdin:   Stdios.getStdinLegacy(), // TODO: remove
-        txt_stdins:  Stdios.getStdins(true),
-        txt_code:    Editor.getValue(),
-        cmd:         cmd,
-        options:	 options
+        txt_stdin: Stdios.getStdinLegacy(), // TODO: remove
+        txt_stdins: Stdios.getStdins(true),
+        txt_code: Editor.getValue(),
+        cmd: cmd,
+        options: options
     };
     // timelimit:   $("#input_timeout").val()
     /*
@@ -76,8 +79,8 @@ var stdinpath = $('#input_stdinpath').val();
  * cmd言語を選んだ状態にする
  * @param {*} cmd 
  */
-export function chooseLang(cmd){
-    let dom = $("#selector_codelang option").filter((i,e)=>($(e).data("cmd")==cmd));
+export function chooseLang(cmd) {
+    let dom = $("#selector_codelang option").filter((i, e) => ($(e).data("cmd") == cmd));
     if (dom.length > 0)
         dom.prop("selected", true);
     else
@@ -90,70 +93,68 @@ export function chooseLang(cmd){
 /**
  * addLanguage等によって言語関係を変更したら最後にこれを呼び出す
  */
-export function rechooseLang(){
+export function rechooseLang() {
     const dom = m$("#selector_codelang");
     const appVal = dom.data("LazyChoiceCmd");
-    if (appVal){
+    if (appVal) {
         dom.data("LazyChoiceCmd", null);
         $("#selector_codelang option")
-            .filter((i,e)=>($(e).data("cmd")==appVal))
+            .filter((i, e) => ($(e).data("cmd") == appVal))
             .prop("selected", true);
     }
     dom.change();
 }
 
 
-export function changeVisibleRecipes(cmd){
-    $("#div_recipes > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("d-none");
-    $("#div_recipes > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("d-none");
-    $("#div_options > div").filter((i,e)=>($(e).data("cmd")==cmd)).removeClass("d-none");
-    $("#div_options > div").filter((i,e)=>($(e).data("cmd")!=cmd)).addClass("d-none");
+export function changeVisibleRecipes(cmd) {
+    $("#div_recipes > div").filter((i, e) => ($(e).data("cmd") == cmd)).removeClass("d-none");
+    $("#div_recipes > div").filter((i, e) => ($(e).data("cmd") != cmd)).addClass("d-none");
+    $("#div_options > div").filter((i, e) => ($(e).data("cmd") == cmd)).removeClass("d-none");
+    $("#div_options > div").filter((i, e) => ($(e).data("cmd") != cmd)).addClass("d-none");
     Editor.changeCodeLang(cmd);
 }
 
 
-export function displayStdout(text, id = null){
-    if (id){
+export function displayStdout(text, id = null) {
+    if (id) {
         const li = {};
         li[id] = text;
         Stdios.setStdouts(li);
-    }
-    else
+    } else
         Stdios.setStdoutLegacy(text);
-}// export function displayStderr(message){
+} // export function displayStderr(message){
 //     $("#div_stderr").text(message);
 // }
 
 
-export function clearResultLogs(){
+export function clearResultLogs() {
     $("#div_resultlogs").empty();
     Editor.clearAnnotations();
 }
 
-export function appendResultLog(title, message, classtype, isProgressing = false){
-    if ($("#div_resultlogs > div").first().data("isprog")){
+export function appendResultLog(title, message, classtype, isProgressing = false) {
+    if ($("#div_resultlogs > div").first().data("isprog")) {
         $("#div_resultlogs > div").first().remove();
     }
     const titledom = $("<div></div>").text(title)
-        .addClass("alert-"+classtype+" title")
+        .addClass("alert-" + classtype + " title")
     const bodydom = $("<div></div>")
         .addClass("body")
         .addClass("d-none");
 
-    if (typeof message === "object"){
-        for (const key in message){
-            const msg = ""+message[key];
-            if (msg.match(/\n/)){
+    if (typeof message === "object") {
+        for (const key in message) {
+            const msg = "" + message[key];
+            if (msg.match(/\n/)) {
                 const keydom1 = $("<span></span>").text(key);
-                const keydom2 = $("<button></button>").text("[copy]").css("font-size","small").addClass("btn btn-sm btn-primary");
+                const keydom2 = $("<button></button>").text("[copy]").css("font-size", "small").addClass("btn btn-sm btn-primary");
                 const valdom = $("<pre></pre>").addClass("val").text(message[key]).data("key", key);
                 bindToggler("click", keydom1, valdom);
                 bindCopyButton("click", keydom2, valdom);
                 const keydom = $("<div></div>").addClass("key").append(keydom1).append(keydom2);
                 bodydom.append(keydom).append(valdom);
                 bodydom.append(keydom).append(valdom);
-            }
-            else{
+            } else {
                 bodydom.prepend(
                     $("<div></div>")
                     .addClass("keypair")
@@ -162,8 +163,7 @@ export function appendResultLog(title, message, classtype, isProgressing = false
                 );
             }
         }
-    }
-    else{
+    } else {
         bodydom.append(
             $("<pre></pre>").text(message)
         );
@@ -181,7 +181,7 @@ export function appendResultLog(title, message, classtype, isProgressing = false
 // _____________________________________________________
 // setup
 
-export function addLanguage(langInfo){
+export function addLanguage(langInfo) {
     // selector
     $("<option></option>")
         .data("cmd", langInfo.cmd)
@@ -198,7 +198,9 @@ export function addLanguage(langInfo){
                 $("<button></button>")
                 .addClass("btn btn-sm btn-primary")
                 .text(name)
-                .on("click", {recipe: name}, (e)=>{
+                .on("click", {
+                    recipe: name
+                }, (e) => {
                     // todo: refactoring(eventbinderがやるべき)
                     const recipe = e.data.recipe;
                     const info = gatherInfo();
@@ -249,21 +251,26 @@ export function addLanguage(langInfo){
  * @param {JQuery} buttondom 
  * @param {JQuery} hiddendom 
  */
-function bindToggler(event, buttondom, hiddendom, buttondomClass = "", hiddendomClass = "d-none"){
-    buttondom.on(event, {fr: buttondom, to: hiddendom}, (e)=>{
+function bindToggler(event, buttondom, hiddendom, buttondomClass = "", hiddendomClass = "d-none") {
+    buttondom.on(event, {
+        fr: buttondom,
+        to: hiddendom
+    }, (e) => {
         $(e.data.fr).toggleClass(buttondomClass);
         $(e.data.to).toggleClass(hiddendomClass);
     });
 }
 
 
-function bindCopyButton(event, buttondom, textdom){
-    buttondom.on(event, {tg:textdom}, (e)=>{
+function bindCopyButton(event, buttondom, textdom) {
+    buttondom.on(event, {
+        tg: textdom
+    }, (e) => {
         copyTextToClipboard($(e.data.tg).text());
     });
 }
 
-function copyTextToClipboard(text){
+function copyTextToClipboard(text) {
     let tempdom = $("#__clipboard");
     if (tempdom.length == 0)
         tempdom = $("<textarea id='__clipboard'></textarea>")
@@ -275,7 +282,7 @@ function copyTextToClipboard(text){
         .css("display", "none");
 }
 
-function copyDomToClipboard(dom){
+function copyDomToClipboard(dom) {
     dom.select();
     document.execCommand("copy");
 }
