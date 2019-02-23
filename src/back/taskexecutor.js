@@ -1,5 +1,3 @@
-const fs = require('fs');
-const myexec = require('./exec');
 
 const task_ruby = require('./task/ruby');
 const task_cpp = require('./task/cpp');

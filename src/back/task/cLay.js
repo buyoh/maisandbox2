@@ -1,5 +1,5 @@
 const myexec = require('./util/exec');
-const FileWrapper = require('./filewrapper');
+const FileWrapper = require('./util/filewrapper');
 const DefaultTask = require('./util/default').generateDefaultTasks('cpp');
 
 // -------------------------------------
