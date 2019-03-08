@@ -24,12 +24,10 @@ const langTasks = {
 exports.allLangInfo = (() => {
     const a = [];
     for (let cmd in langTasks) {
-        const j = {
-            cmd: cmd
-        };
         const task = langTasks[cmd];
-        j.name = task.info.name;
-        j.editor = task.info.editor;
+        const j = Object.assign({
+            cmd: cmd
+        }, task.info);
         j.recipes = task.recipes;
         j.options = task.options;
         a.push(j);

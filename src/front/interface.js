@@ -187,7 +187,9 @@ export function addLanguage(langInfo) {
         .data("cmd", langInfo.cmd)
         .text(langInfo.name)
         .appendTo(m$("#selector_codelang"));
-    Editor.registerLang(langInfo.cmd, langInfo.editor);
+
+    // editor
+    Editor.registerLang(langInfo.cmd, langInfo);
 
     // recipes
     {

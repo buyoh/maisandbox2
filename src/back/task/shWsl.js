@@ -7,6 +7,7 @@ const DefaultTask = require('./util/default').generateDefaultTasks('sh');
 exports.info = {
     name: "sh WSL",
     editor: "sh",
+    tabwidth: 4
 };
 
 exports.options = {}

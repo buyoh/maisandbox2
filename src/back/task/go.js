@@ -7,6 +7,7 @@ const DefaultTask = require('./util/default').generateDefaultTasks('go');
 exports.info = {
     name: "Go Win",
     editor: "golang",
+    tabwidth: 4
 };
 
 const options = {};

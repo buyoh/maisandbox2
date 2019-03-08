@@ -10383,7 +10383,7 @@ exports.clearAnnotations = clearAnnotations;
 var $ = require('jQuery');
 
 var aceditor = null;
-var convertCmd2Edt = {}; // _____________________________________________________
+var langInfo = {}; // _____________________________________________________
 // initialize
 
 $(function () {
@@ -10412,15 +10412,20 @@ function setValue(text) {
 }
 
 function registerLang(cmd, edt) {
-  convertCmd2Edt[cmd] = edt;
+  langInfo[cmd] = {
+    editor: edt.editor,
+    tabwidth: edt.tabwidth
+  };
 } // _____________________________________________________
 // interface
 
 
 function changeCodeLang(cmd) {
-  var edt = convertCmd2Edt[cmd];
-  if (!edt) return;
-  aceditor.getSession().setMode("ace/mode/" + convertCmd2Edt[cmd]);
+  var info = langInfo[cmd];
+  if (!info) return;
+  var s = aceditor.getSession();
+  s.setMode("ace/mode/" + info.editor);
+  s.setTabSize(info.tabwidth);
 }
 /**
  * 
@@ -10799,8 +10804,9 @@ function appendResultLog(title, message, classtype) {
 
 function addLanguage(langInfo) {
   // selector
-  $("<option></option>").data("cmd", langInfo.cmd).text(langInfo.name).appendTo(m$("#selector_codelang"));
-  Editor.registerLang(langInfo.cmd, langInfo.editor); // recipes
+  $("<option></option>").data("cmd", langInfo.cmd).text(langInfo.name).appendTo(m$("#selector_codelang")); // editor
+
+  Editor.registerLang(langInfo.cmd, langInfo); // recipes
 
   {
     var domc = $("<div></div>").data("cmd", langInfo.cmd);

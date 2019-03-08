@@ -5,7 +5,7 @@
 const $ = require('jQuery');
 
 let aceditor = null;
-const convertCmd2Edt = {};
+const langInfo = {};
 
 // _____________________________________________________
 // initialize
@@ -41,7 +41,10 @@ export function setValue(text) {
 }
 
 export function registerLang(cmd, edt) {
-    convertCmd2Edt[cmd] = edt;
+    langInfo[cmd] = {
+        editor: edt.editor,
+        tabwidth: edt.tabwidth
+    };
 }
 
 
@@ -49,9 +52,11 @@ export function registerLang(cmd, edt) {
 // interface
 
 export function changeCodeLang(cmd) {
-    const edt = convertCmd2Edt[cmd];
-    if (!edt) return;
-    aceditor.getSession().setMode("ace/mode/" + convertCmd2Edt[cmd]);
+    const info = langInfo[cmd];
+    if (!info) return;
+    const s = aceditor.getSession();
+    s.setMode("ace/mode/" + info.editor);
+    s.setTabSize(info.tabwidth);
 }
 
 /**

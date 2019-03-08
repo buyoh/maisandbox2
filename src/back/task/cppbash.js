@@ -10,6 +10,7 @@ const cpp = require('./cpp');
 exports.info = {
     name: "C++ Bash",
     editor: "c_cpp",
+    tabwidth: 4
 };
 
 const options = {
