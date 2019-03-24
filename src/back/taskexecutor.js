@@ -7,7 +7,7 @@ const task_go = require('./task/go');
 const task_rust = require('./task/rust');
 const task_nodejs = require('./task/nodejs');
 const task_sh = require('./task/shWsl');
-const task_clay = require('./task/clay');
+const task_clay = require('./task/cLay');
 
 const langTasks = {
     "Ruby": task_ruby,
