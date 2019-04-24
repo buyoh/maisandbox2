@@ -16,7 +16,7 @@
   "license": "Unlicense",
   "dependencies": {
     "file-type": "^7.7.1",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.0",
     "mktmpdir": "^0.1.1",
     "socket.io": "^2.1.0",
     "winser": "^1.0.3"

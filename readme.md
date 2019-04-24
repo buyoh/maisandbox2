@@ -28,6 +28,11 @@ wandbox,ideoneのような即席のコーディング環境をローカルに構
 - launch cmd (administrator)
 - `npm run uninstall-service`
 
+## 開発ツールのインストール
+
+```
+npm i -g babelify browserify
+```
 
 ## winserすごいよね
 
