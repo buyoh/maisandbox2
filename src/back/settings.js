@@ -1,6 +1,7 @@
 
 const defaultSettings = {
-    portno: 11450
+    portno: 11450,
+    hostname: "localhost"
 };
 
 exports.settings = (()=>{

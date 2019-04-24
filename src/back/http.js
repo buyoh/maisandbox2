@@ -52,4 +52,4 @@ exports.server = http.createServer((request, responce) => {
         console.error("requested: lookup " + path + " => ng");
     }
 
-}).listen(settings.portno);
+}).listen(settings.portno, settings.hostname);
