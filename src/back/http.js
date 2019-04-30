@@ -19,13 +19,13 @@ function rewritePath(url) {
 }
 
 
-exports.server = http.createServer((request, responce) => {
+exports.server = http.createServer((request, response) => {
     request.on('error', (e) => {
         console.error(e);
-        responce.statusCode = 400;
-        responce.end("400");
+        response.statusCode = 400;
+        response.end("400");
     });
-    responce.on('error', (e) => {
+    response.on('error', (e) => {
         console.error(e);
     });
 
@@ -35,20 +35,20 @@ exports.server = http.createServer((request, responce) => {
     const path = rewritePath(request.url);
 
     if (!path) {
-        responce.statusCode = 403;
-        responce.end("403");
+        response.statusCode = 403;
+        response.end("403");
         return;
     }
 
     // 該当するファイルを探す
     try {
         const cnt = fs.readFileSync(path, 'utf-8');
-        responce.writeHead(200, filetype(request.url));
-        responce.end(cnt);
+        response.writeHead(200, filetype(request.url));
+        response.end(cnt);
         console.error("requested: lookup " + path + " => ok");
     } catch (err) {
-        responce.statusCode = 404;
-        responce.end("404");
+        response.statusCode = 404;
+        response.end("404");
         console.error("requested: lookup " + path + " => ng");
     }
 
