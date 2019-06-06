@@ -48,7 +48,7 @@ exports.command = {
 
         Promise.resolve().then(() => {
             return new Promise((resolve, reject) => {
-                let param = ["code.kt"];
+                let param = ["code.kt", "-include-runtime", "-d"];
 
                 let killer = myexec.spawn_fileio(
                     "kotlinc.bat", param, // windowsならkotlinc.bat
