@@ -3,6 +3,7 @@
 // ace部品の操作のwrapper
 
 const $ = require('jQuery');
+let ace = require('ace-builds/src-min/ace');
 
 let aceditor = null;
 const langInfo = {};
@@ -12,9 +13,10 @@ const langInfo = {};
 
 
 $(() => {
-    aceditor = ace.edit("aceditor");
-    aceditor.setTheme("ace/theme/monokai");
-    aceditor.getSession().setMode("ace/mode/ruby");
+    ace.config.set('basePath', '/ext');
+    aceditor = ace.edit('aceditor');
+    aceditor.setTheme('ace/theme/monokai');
+    aceditor.getSession().setMode('ace/mode/ruby');
     aceditor.setOptions({
         enableBasicAutocompletion: true,
         //enableSnippets: true,
@@ -23,7 +25,7 @@ $(() => {
     aceditor.setShowInvisibles(true);
     aceditor.setFontSize(14);
 
-    $("#aceditorEdge").on("onresize", () => {
+    $('#aceditorEdge').on('onresize', () => {
         aceditor.resize();
     });
 });
@@ -55,7 +57,7 @@ export function changeCodeLang(cmd) {
     const info = langInfo[cmd];
     if (!info) return;
     const s = aceditor.getSession();
-    s.setMode("ace/mode/" + info.editor);
+    s.setMode('ace/mode/' + info.editor);
     s.setTabSize(info.tabwidth);
 }
 

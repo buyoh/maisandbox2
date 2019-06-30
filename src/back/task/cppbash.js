@@ -8,25 +8,25 @@ const cpp = require('./cpp');
 // -------------------------------------
 
 exports.info = {
-    name: "C++ Bash",
-    editor: "c_cpp",
+    name: 'C++ Bash',
+    editor: 'c_cpp',
     tabwidth: 4
 };
 
 const options = {
-    optimization: ["default", "-O3"],
-    std: ["-std=gnu++14", "-std=gnu++17", "-std=c++14", "-std=c++17"]
+    optimization: ['default', '-O3'],
+    std: ['-std=gnu++14', '-std=gnu++17', '-std=c++14', '-std=c++17']
 };
 exports.options = options;
 
 // -------------------------------------
 
 exports.recipes = {
-    "compile > run": {
-        tasks: ["setupAll", "compile", "run"]
+    'compile > run': {
+        tasks: ['setupAll', 'compile', 'run']
     },
-    "run(no update)": {
-        tasks: ["setupIO", "run"]
+    'run(no update)': {
+        tasks: ['setupIO', 'run']
     }
 };
 
@@ -38,8 +38,8 @@ exports.recipes = {
 function pickupInformations(msg) {
     if (!msg) return [];
     const infos = [];
-    for (let line of msg.split("\n")) {
-        const m = line.match(/^\.\/code\.cpp\:(\d+)\:(\d+)\: (\w+)\:/);
+    for (let line of msg.split('\n')) {
+        const m = line.match(/^\.\/code\.cpp:(\d+):(\d+): (\w+):/);
         if (m) {
             infos.push({
                 text: line,
@@ -66,16 +66,16 @@ exports.command = {
 
         Promise.resolve().then(() => {
             return new Promise((resolve, reject) => {
-                let param = "g++ ./code.cpp";
+                let param = 'g++ ./code.cpp';
 
-                if (task.json.options.optimization === "-O3") param += " -O3";
-                if (options.std.includes(task.json.options.std)) param += " " + task.json.options.std;
-                else param += " -std=gnu++14";
+                if (task.json.options.optimization === '-O3') param += ' -O3';
+                if (options.std.includes(task.json.options.std)) param += ' ' + task.json.options.std;
+                else param += ' -std=gnu++14';
 
-                param += " -o ./code.out 1> ./stdout.txt 2> ./stderr.txt";
+                param += ' -o ./code.out 1> ./stdout.txt 2> ./stderr.txt';
 
                 let killer = myexec.spawn_fileio(
-                    "bash", ["-c", param],
+                    'bash', ['-c', param],
                     null, null, null, {
                         cwd: cwdir
                     },
@@ -88,7 +88,7 @@ exports.command = {
                     }
                 );
 
-                callback.call(null, "progress", {
+                callback.call(null, 'progress', {
                     killer: killer
                 });
             });
@@ -105,12 +105,12 @@ exports.command = {
 
         Promise.resolve().then(() => {
             return DefaultTask.util.promiseMultiSeries(suffixs.map((e) => [e]), (suffix) => {
-                const nameStdin = "stdin" + suffix + ".txt";
-                const nameStdout = "stdout" + suffix + ".txt";
-                const nameStderr = "stderr" + suffix + ".txt";
-                return new Promise((resolve, reject) => {
+                const nameStdin = 'stdin' + suffix + '.txt';
+                const nameStdout = 'stdout' + suffix + '.txt';
+                const nameStderr = 'stderr' + suffix + '.txt';
+                return new Promise((resolve) => {
                     let killer = myexec.spawn_fileio(
-                        "bash", ["-c", "./code.out < ./" + nameStdin + " 1> ./" + nameStdout + " 2> ./" + nameStderr],
+                        'bash', ['-c', './code.out < ./' + nameStdin + ' 1> ./' + nameStdout + ' 2> ./' + nameStderr],
                         null, null, null, {
                             cwd: cwdir
                         },
@@ -118,22 +118,22 @@ exports.command = {
                             resolve(json);
                         }
                     );
-                    callback.call(null, "progress", {
+                    callback.call(null, 'progress', {
                         killer: killer
                     });
                 }).then((json) => {
                     json.key = suffix;
                     return DefaultTask.util.promiseResultResponser(
                         json, cwdir, callback, null,
-                        nameStdout, nameStderr, "ac", "wa"
+                        nameStdout, nameStderr, 'ac', 'wa'
                     ).then(() => Promise.resolve(json.code));
                 });
             });
         }).then((args) => {
             if (args.filter((e) => (e != 0)).length === 0)
-                callback.call(null, "continue");
+                callback.call(null, 'continue');
             else
-                callback.call(null, "failed");
+                callback.call(null, 'failed');
             return Promise.resolve();
         }).catch((e) => {
             DefaultTask.util.errorHandler(e, callback);

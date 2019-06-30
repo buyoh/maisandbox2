@@ -1,6 +1,7 @@
 
 const task_ruby = require('./task/ruby');
 const task_cpp = require('./task/cpp');
+const task_cppraw = require('./task/cpp_raw');
 const task_cppbash = require('./task/cppbash');
 const task_py = require('./task/python');
 const task_go = require('./task/go');
@@ -11,16 +12,17 @@ const task_clay = require('./task/cLay');
 const task_kotlin = require('./task/kotlin');
 
 const langTasks = {
-    "Ruby": task_ruby,
-    "C++": task_cpp,
-    "C++Bash": task_cppbash,
-    "Python": task_py,
-    "Go": task_go,
-    "Rust": task_rust,
-    "javascript(node)": task_nodejs,
-    "sh": task_sh,
-    "clay": task_clay,
-    "kotlin": task_kotlin
+    'Ruby': task_ruby,
+    'C++Cyg': task_cpp,
+    'C++': task_cppraw,
+    'C++Bash': task_cppbash,
+    'Python': task_py,
+    'Go': task_go,
+    'Rust': task_rust,
+    'javascript(node)': task_nodejs,
+    'sh': task_sh,
+    'clay': task_clay,
+    'kotlin': task_kotlin
 };
 
 exports.allLangInfo = (() => {
@@ -57,7 +59,7 @@ exports.pushTask = function(json, callback) {
     setTimeout((t) => {
         runTaskRecipe(t);
     }, 0, task);
-}
+};
 
 
 function runTaskRecipe(task) {
@@ -76,7 +78,7 @@ function runTaskRecipe(task) {
         return;
     }
 
-    task.uniqueName = task.json.socketid + "/" + task.json.cmd;
+    task.uniqueName = task.json.socketid + '/' + task.json.cmd;
 
     const accepted = [];
 
@@ -98,7 +100,7 @@ function runTaskRecipe(task) {
                 accepted[taskIndex] = true;
                 process(taskIndex + 1);
             }
-        })
+        });
     };
     process(0);
 }

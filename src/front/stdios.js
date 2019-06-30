@@ -13,15 +13,15 @@ let nextInternalID = 0;
 
 $(() => {
     {
-        const d = $("#div_stdios > .hiddenTemplate");
-        d.removeClass("hiddenTemplate");
-        d.find("textarea").val("");
+        const d = $('#div_stdios > .hiddenTemplate');
+        d.removeClass('hiddenTemplate');
+        d.find('textarea').val('');
         domStdioTemplate = d.detach();
     }
     appendField();
 
-    $("#btn_appendstdio").on("click", () => {
-        appendField()
+    $('#btn_appendstdio').on('click', () => {
+        appendField();
     });
 });
 
@@ -30,24 +30,24 @@ $(() => {
 // getter / setter
 
 export function getStdinLegacy() {
-    return $("#div_stdios > div").eq(0).data("components").textareaStdin.val();
+    return $('#div_stdios > div').eq(0).data('components').textareaStdin.val();
 }
 export function setStdinLegacy(text) {
-    return $("#div_stdios > div").eq(0).data("components").textareaStdin.val(text);
+    return $('#div_stdios > div').eq(0).data('components').textareaStdin.val(text);
 }
 export function getStdoutLegacy() {
-    return $("#div_stdios > div").eq(0).data("components").textareaStdout.val();
+    return $('#div_stdios > div').eq(0).data('components').textareaStdout.val();
 }
 export function setStdoutLegacy(text) {
-    return $("#div_stdios > div").eq(0).data("components").textareaStdout.val(text);
+    return $('#div_stdios > div').eq(0).data('components').textareaStdout.val(text);
 }
 
 export function getStdins(visibleonly = true) {
     const li = {};
-    $("#div_stdios > div").each((i, e) => {
+    $('#div_stdios > div').each((i, e) => {
         const d = $(e);
-        if (!visibleonly || !d.hasClass("minified")) {
-            const c = d.data("components");
+        if (!visibleonly || !d.hasClass('minified')) {
+            const c = d.data('components');
             li[c.internalID] = c.textareaStdin.val();
         }
     });
@@ -55,8 +55,8 @@ export function getStdins(visibleonly = true) {
 }
 
 export function setStdouts(li) {
-    $("#div_stdios > div").each((i, e) => {
-        const c = $(e).data("components");
+    $('#div_stdios > div').each((i, e) => {
+        const c = $(e).data('components');
         if (li[c.internalID]) {
             c.textareaStdout.val(li[c.internalID]);
         }
@@ -68,11 +68,11 @@ export function setStdouts(li) {
 // manipulate
 
 export function appendField() {
-    $("#div_stdios").append(generateDom());
+    $('#div_stdios').append(generateDom());
 }
 
 export function clearField() {
-    $("#div_stdios").empty();
+    $('#div_stdios').empty();
 }
 
 
@@ -81,8 +81,8 @@ export function clearField() {
 
 export function dumpStdin() {
     const li = [];
-    $("#div_stdios > div").each((i, e) => {
-        li.push($(e).data("components").textareaStdin.val());
+    $('#div_stdios > div').each((i, e) => {
+        li.push($(e).data('components').textareaStdin.val());
     });
     return li;
 }
@@ -91,8 +91,8 @@ export function restoreStdin(li) {
     clearField();
     for (let txt of li) {
         const d = generateDom();
-        d.data("components").textareaStdin.val(txt);
-        $("#div_stdios").append(d);
+        d.data('components').textareaStdin.val(txt);
+        $('#div_stdios').append(d);
     }
 }
 
@@ -104,17 +104,17 @@ function generateDom() {
     const dom = domStdioTemplate.clone();
     const components = {
         dom: dom,
-        buttonMinify: dom.find("button[title='minify']"),
-        buttonClose: dom.find("button[title='close']"),
-        textareaStdin: dom.find("textarea[title='stdin']"),
-        textareaStdout: dom.find("textarea[title='stdout']"),
+        buttonMinify: dom.find('button[title=\'minify\']'),
+        buttonClose: dom.find('button[title=\'close\']'),
+        textareaStdin: dom.find('textarea[title=\'stdin\']'),
+        textareaStdout: dom.find('textarea[title=\'stdout\']'),
         internalID: nextInternalID++
     };
-    dom.data("components", components);
-    components.buttonMinify.on("click", () => {
+    dom.data('components', components);
+    components.buttonMinify.on('click', () => {
         toggleMinifyField(components);
     });
-    components.buttonClose.on("click", () => {
+    components.buttonClose.on('click', () => {
         closeField(components);
     });
     return dom;
@@ -122,12 +122,12 @@ function generateDom() {
 
 
 function toggleMinifyField(components) {
-    if (components.dom.hasClass("minified")) {
-        components.dom.removeClass("minified");
-        components.dom.children().removeClass("minified");
+    if (components.dom.hasClass('minified')) {
+        components.dom.removeClass('minified');
+        components.dom.children().removeClass('minified');
     } else {
-        components.dom.addClass("minified");
-        components.dom.children().addClass("minified");
+        components.dom.addClass('minified');
+        components.dom.children().addClass('minified');
     }
 }
 

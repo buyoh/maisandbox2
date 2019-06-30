@@ -17,22 +17,22 @@ $(() => {
 
 function bundEvents() {
 
-    $("#btn_halt").on("click", () => {
+    $('#btn_halt').on('click', () => {
         Socket.emitHalt();
     });
 
-    $("#btn_storeTemplate").on("click", () => {
+    $('#btn_storeTemplate').on('click', () => {
         Storage.storeTemplate(Interface.getChosenLang(), Editor.getValue());
     });
 
-    $("#btn_loadTemplate").on("click", () => {
+    $('#btn_loadTemplate').on('click', () => {
         Editor.setValue(Storage.loadTemplate(Interface.getChosenLang()));
     });
 
-    $("#selector_codelang").change(() => {
-        let dom = $("#selector_codelang option:selected");
-        let cmd = dom.data("cmd");
-        if (cmd === "") return;
+    $('#selector_codelang').change(() => {
+        let dom = $('#selector_codelang option:selected');
+        let cmd = dom.data('cmd');
+        if (cmd === '') return;
 
         Interface.changeVisibleRecipes(cmd);
     });
@@ -57,28 +57,28 @@ function initialize() {
 Socket.addProgressListener((json) => {
     // console.log(json);
 
-    if (json.type === "halted") {
-        Interface.appendResultLog("halted", "", "info");
+    if (json.type === 'halted') {
+        Interface.appendResultLog('halted', '', 'info');
         return;
     }
 
-    if (json.type === "success") {
+    if (json.type === 'success') {
         const d =
-            $("#div_resultlogs > div").first().find(".val")
-            .filter((i, e) => ($(e).data("key") == "stdout"));
+            $('#div_resultlogs > div').first().find('.val')
+                .filter((i, e) => ($(e).data('key') == 'stdout'));
         if (d.length === 1)
             Interface.displayStdout(d.text());
     }
 
     const state =
-        json.type === "continue" || json.type === "success" ? "success" :
-        json.type === "failed" ? "warning" :
-        json.type === "error" ? "danger" :
-        "info";
+        json.type === 'continue' || json.type === 'success' ? 'success' :
+            json.type === 'failed' ? 'warning' :
+                json.type === 'error' ? 'danger' :
+                    'info';
 
     Interface.appendResultLog(
-        json.data.taskName ? "[" + json.data.taskName + "]" + json.type : json.type,
-        json.data, state, json.type === "progress"
+        json.data.taskName ? '[' + json.data.taskName + ']' + json.type : json.type,
+        json.data, state, json.type === 'progress'
     );
 
     if (json.data && json.data.key) {

@@ -2,10 +2,11 @@
 // socket.js
 // サーバ通信操作のwrapper
 
+const io = require('socket.io-client');
 const socket = io.connect();
 const progressListener = [];
 
-socket.on("s2c_progress", (json) => {
+socket.on('s2c_progress', (json) => {
     for (let f of progressListener)
         f(json);
 });
@@ -15,7 +16,7 @@ socket.on("s2c_progress", (json) => {
 // getter
 
 export function getCatalog(callback) {
-    socket.emit("c2s_getCatalog", callback);
+    socket.emit('c2s_getCatalog', callback);
 }
 
 
@@ -23,11 +24,11 @@ export function getCatalog(callback) {
 // emitter
 
 export function emitHalt() {
-    socket.emit("c2s_halt");
+    socket.emit('c2s_halt');
 }
 
 export function emitSubmit(info) {
-    socket.emit("c2s_submit", info);
+    socket.emit('c2s_submit', info);
 }
 
 

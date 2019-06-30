@@ -10,7 +10,7 @@ require('./temperaser');
 //
 
 const settings = require('./settings').settings;
-console.log("port: " + settings.portno);
+console.log('port: ' + settings.portno);
 
 //
 
@@ -21,15 +21,15 @@ const server = require('./http').server;
 let soio = socketio.listen(server);
 
 soio.sockets.on('connection', (socket) => {
-    console.log("join " + socket.id);
+    console.log('join ' + socket.id);
     let killer = null;
     let auth = true; // impl
 
     // テスト用
     socket.on('c2s_echo', (data) => {
-        console.log("echo :" + data.msg);
+        console.log('echo :' + data.msg);
         socket.emit('s2c_echo', {
-            msg: !data.msg ? "Hello!" : data.msg.toUpperCase()
+            msg: !data.msg ? 'Hello!' : data.msg.toUpperCase()
         });
     });
 

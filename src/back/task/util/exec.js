@@ -27,7 +27,7 @@ exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath
         stdio: [stdin, stdout, stderr]
     }, options));
 
-    ps.on("close", (code, signal) => {
+    ps.on('close', (code, signal) => {
         callback(code, {
             code: code,
             signal: signal,
@@ -37,8 +37,8 @@ exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath
 
     return () => {
         if (!ps.killed) ps.kill();
-    }
-}
+    };
+};
 /**
  * ファイルを介さずに実行
  * @param {string} command 
@@ -49,32 +49,32 @@ exports.spawn_fileio = function(command, args, stdinpath, stdoutpath, stderrpath
 exports.spawn_buff = function(command, args, stdin, options, callback) {
 
     const ps = child_process.spawn(command, args, options);
-    if (stdin !== null && stdin != "")
+    if (stdin !== null && stdin != '')
         ps.stdin.write(stdin);
     ps.stdin.end();
 
-    let buffstdout = new Buffer("");
-    let buffstderr = new Buffer("");
+    let buffstdout = new Buffer('');
+    let buffstderr = new Buffer('');
 
     let endflg = 0;
     let endcode = -1;
-    let endsignal = "";
+    let endsignal = '';
 
-    ps.stdout.on("data", (data) => {
+    ps.stdout.on('data', (data) => {
         buffstdout.write(data.toString());
     });
-    ps.stderr.on("data", (data) => {
+    ps.stderr.on('data', (data) => {
         buffstderr.write(data.toString());
     });
-    ps.stdout.on("end", () => {
+    ps.stdout.on('end', () => {
         endflg |= 1;
         checkTermination();
     });
-    ps.stderr.on("end", () => {
+    ps.stderr.on('end', () => {
         endflg |= 2;
         checkTermination();
     });
-    ps.on("close", (code, signal) => {
+    ps.on('close', (code, signal) => {
         endcode = code;
         endsignal = signal;
         endflg |= 4;
@@ -86,7 +86,7 @@ exports.spawn_buff = function(command, args, stdin, options, callback) {
             callback(null, endcode, endsignal, buffstdout, buffstderr);
     }
 
-    ps.on("err", (err) => {
+    ps.on('err', (err) => {
         callback(err, endcode, endsignal, buffstdout, buffstderr);
     });
-}
+};

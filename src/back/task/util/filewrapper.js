@@ -3,10 +3,10 @@ const fs = require('fs');
 
 // --------------------------------
 
-const defaultTempDir = "./temp";
+const defaultTempDir = './temp';
 
 
-const cygwinEnvPath = "C:/cygwin64/bin;C:/cygwin64/usr/local/bin;";
+const cygwinEnvPath = 'C:/cygwin64/bin;C:/cygwin64/usr/local/bin;';
 exports.cygwinEnvPath = cygwinEnvPath;
 
 
@@ -19,19 +19,19 @@ exports.cygwinEnvPath = cygwinEnvPath;
  * @param {()=>void} callback 
  */
 exports.setupTemp = function(directoryName, callback) {
-    let dirs = directoryName.split("/");
+    let dirs = directoryName.split('/');
     let dir = defaultTempDir;
 
-    function rec(err) {
+    function rec() {
         if (dirs.length == 0) {
             callback();
         } else {
-            dir += "/" + dirs.shift();
+            dir += '/' + dirs.shift();
             fs.mkdir(dir, rec);
         }
     }
     fs.mkdir(dir, rec);
-}
+};
 
 
 /**
@@ -50,7 +50,7 @@ exports.writeFiles = function(prefixPath, files, callback) {
             if (rem == 0) callback(ok);
         });
     }
-}
+};
 
 
 /**
@@ -63,7 +63,7 @@ exports.readFiles = function(prefixPath, files, callback) {
     let ok = [],
         rem = files.length;
     for (let file of files) {
-        fs.readFile(prefixPath + file.path, "UTF-8", (err, buff) => {
+        fs.readFile(prefixPath + file.path, 'UTF-8', (err, buff) => {
             --rem;
             if (!err) ok.push({
                 path: file.path,
@@ -72,7 +72,7 @@ exports.readFiles = function(prefixPath, files, callback) {
             if (rem == 0) callback(ok);
         });
     }
-}
+};
 
 
 /**
@@ -80,13 +80,13 @@ exports.readFiles = function(prefixPath, files, callback) {
  * @param {String} name 
  */
 exports.getTempDirName = function(name) {
-    return defaultTempDir + "/" + name;
-}
+    return defaultTempDir + '/' + name;
+};
 
 
-exports.cleanTemp = function(name) {
+exports.cleanTemp = function() {
     // nop
-}
+};
 
 
 // --------------------------------
@@ -102,7 +102,7 @@ exports.isExistFile = function(filename) {
         if (err.code === 'ENOENT') return false;
     }
     return true;
-}
+};
 
 
 exports.chdir = function(directory, proc) {
@@ -110,9 +110,9 @@ exports.chdir = function(directory, proc) {
     process.chdir(directory);
     try {
         proc();
-    } catch (e) {
-        throw e;
-    } finally {
         process.chdir(lastCwd);
+    } catch (e) {
+        process.chdir(lastCwd);
+        throw e;
     }
-}
+};

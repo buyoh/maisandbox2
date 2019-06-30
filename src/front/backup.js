@@ -15,14 +15,14 @@ const Storage = require('./storage');
 
 $(() => {
     restoreBackup();
-    $(window).on("unload", () => {
+    $(window).on('unload', () => {
         storeBackup();
     });
     setInterval(() => {
         storeBackup();
     }, 1000 * 600);
 
-    $("#btn_forcebackup").on("click", () => {
+    $('#btn_forcebackup').on('click', () => {
         storeBackup();
     });
 });

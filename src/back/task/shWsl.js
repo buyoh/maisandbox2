@@ -5,21 +5,21 @@ const DefaultTask = require('./util/default').generateDefaultTasks('sh');
 // -------------------------------------
 
 exports.info = {
-    name: "sh WSL",
-    editor: "sh",
+    name: 'sh WSL',
+    editor: 'sh',
     tabwidth: 4
 };
 
-exports.options = {}
+exports.options = {};
 
 // -------------------------------------
 
 exports.recipes = {
-    "run": {
-        tasks: ["setupAll", "run"]
+    'run': {
+        tasks: ['setupAll', 'run']
     },
-    "run(no update)": {
-        tasks: ["setupIO", "run"]
+    'run(no update)': {
+        tasks: ['setupIO', 'run']
     }
 };
 
@@ -37,12 +37,12 @@ exports.command = {
 
         Promise.resolve().then(() => {
             return DefaultTask.util.promiseMultiSeries(suffixs.map((e) => [e]), (suffix) => {
-                const nameStdin = "stdin" + suffix + ".txt";
-                const nameStdout = "stdout" + suffix + ".txt";
-                const nameStderr = "stderr" + suffix + ".txt";
-                return new Promise((resolve, reject) => {
+                const nameStdin = 'stdin' + suffix + '.txt';
+                const nameStdout = 'stdout' + suffix + '.txt';
+                const nameStderr = 'stderr' + suffix + '.txt';
+                return new Promise((resolve) => {
                     let killer = myexec.spawn_fileio(
-                        "bash", ["-c", "sh ./code.sh < ./" + nameStdin + " 1> ./" + nameStdout + " 2> ./" + nameStderr],
+                        'bash', ['-c', 'sh ./code.sh < ./' + nameStdin + ' 1> ./' + nameStdout + ' 2> ./' + nameStderr],
                         null, null, null, {
                             cwd: cwdir
                         },
@@ -50,22 +50,22 @@ exports.command = {
                             resolve(json);
                         }
                     );
-                    callback.call(null, "progress", {
+                    callback.call(null, 'progress', {
                         killer: killer
                     });
                 }).then((json) => {
                     json.key = suffix;
                     return DefaultTask.util.promiseResultResponser(
                         json, cwdir, callback, null,
-                        nameStdout, nameStderr, "ac", "wa"
+                        nameStdout, nameStderr, 'ac', 'wa'
                     ).then(() => Promise.resolve(json.code));
                 });
             });
         }).then((args) => {
             if (args.filter((e) => (e != 0)).length === 0)
-                callback.call(null, "continue");
+                callback.call(null, 'continue');
             else
-                callback.call(null, "failed");
+                callback.call(null, 'failed');
             return Promise.resolve();
         }).catch((e) => {
             DefaultTask.util.errorHandler(e, callback);

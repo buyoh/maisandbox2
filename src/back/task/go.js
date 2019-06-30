@@ -5,8 +5,8 @@ const DefaultTask = require('./util/default').generateDefaultTasks('go');
 // -------------------------------------
 
 exports.info = {
-    name: "Go Win",
-    editor: "golang",
+    name: 'Go Win',
+    editor: 'golang',
     tabwidth: 4
 };
 
@@ -16,11 +16,11 @@ exports.options = options;
 // -------------------------------------
 
 exports.recipes = {
-    "compile > run": {
-        tasks: ["setupAll", "compile", "run"]
+    'compile > run': {
+        tasks: ['setupAll', 'compile', 'run']
     },
-    "run(no update)": {
-        tasks: ["setupIO", "run"]
+    'run(no update)': {
+        tasks: ['setupIO', 'run']
     }
 };
 
@@ -32,14 +32,14 @@ exports.recipes = {
 function pickupInformations(msg) {
     if (!msg) return [];
     const infos = [];
-    for (let line of msg.split("\n")) {
-        const m = line.match(/^\.\\code\.go\:(\d+)\:(\d+)\:/);
+    for (let line of msg.split('\n')) {
+        const m = line.match(/^\.\\code\.go:(\d+):(\d+):/);
         if (m) {
             infos.push({
                 text: line,
                 row: +m[1] - 1,
                 column: +m[2] - 1,
-                type: "error"
+                type: 'error'
             });
         }
     }
@@ -61,11 +61,11 @@ exports.command = {
 
         Promise.resolve().then(() => {
             return new Promise((resolve, reject) => {
-                let param = ["build", "./code.go"];
+                let param = ['build', './code.go'];
 
                 let killer = myexec.spawn_fileio(
-                    "go", param,
-                    null, cwdir + "/stdout.txt", cwdir + "/stderr.txt", {
+                    'go', param,
+                    null, cwdir + '/stdout.txt', cwdir + '/stderr.txt', {
                         cwd: cwdir
                     },
                     (code, json) => {
@@ -77,7 +77,7 @@ exports.command = {
                     }
                 );
 
-                callback.call(null, "progress", {
+                callback.call(null, 'progress', {
                     killer: killer
                 });
             });
@@ -94,35 +94,35 @@ exports.command = {
 
         Promise.resolve().then(() => {
             return DefaultTask.util.promiseMultiSeries(suffixs.map((e) => [e]), (suffix) => {
-                const nameStdin = "stdin" + suffix + ".txt";
-                const nameStdout = "stdout" + suffix + ".txt";
-                const nameStderr = "stderr" + suffix + ".txt";
-                return new Promise((resolve, reject) => {
+                const nameStdin = 'stdin' + suffix + '.txt';
+                const nameStdout = 'stdout' + suffix + '.txt';
+                const nameStderr = 'stderr' + suffix + '.txt';
+                return new Promise((resolve) => {
                     let killer = myexec.spawn_fileio(
-                        "./code.exe", [],
-                        cwdir + "/" + nameStdin, cwdir + "/" + nameStdout, cwdir + "/" + nameStderr, {
+                        './code.exe', [],
+                        cwdir + '/' + nameStdin, cwdir + '/' + nameStdout, cwdir + '/' + nameStderr, {
                             cwd: cwdir
                         },
                         (code, json) => {
                             resolve(json);
                         }
                     );
-                    callback.call(null, "progress", {
+                    callback.call(null, 'progress', {
                         killer: killer
                     });
                 }).then((json) => {
                     json.key = suffix;
                     return DefaultTask.util.promiseResultResponser(
                         json, cwdir, callback, pickupInformations,
-                        nameStdout, nameStderr, "ac", "wa"
+                        nameStdout, nameStderr, 'ac', 'wa'
                     ).then(() => Promise.resolve(json.code));
                 });
             });
         }).then((args) => {
             if (args.filter((e) => (e != 0)).length === 0)
-                callback.call(null, "continue");
+                callback.call(null, 'continue');
             else
-                callback.call(null, "failed");
+                callback.call(null, 'failed');
             return Promise.resolve();
         }).catch((e) => {
             DefaultTask.util.errorHandler(e, callback);

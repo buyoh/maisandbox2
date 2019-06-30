@@ -33,7 +33,7 @@ function removeRecursive(path, callback) {
                 return;
             }
             for (let file of files) {
-                removeRecursive(path + "/" + file, (err) => {
+                removeRecursive(path + '/' + file, (err) => {
                     if (err) {
                         if (remain >= 0)
                             callback(err), // 2つ以上のエラーを送信しない
@@ -52,14 +52,14 @@ function removeRecursive(path, callback) {
 function loop() {
     const time = (new Date).getTime();
 
-    fs.readdir("./temp", (err, files) => {
+    fs.readdir('./temp', (err, files) => {
         if (err) return;
         for (let file of files) {
-            fs.stat("./temp/" + file, (err, stat) => {
+            fs.stat('./temp/' + file, (err, stat) => {
                 if (err) return;
                 if (stat.atimeMs + lifeTime < time) {
-                    removeRecursive("./temp/" + file, (err) => {
-                        if (err) console.error("removeRecursive: " + err);
+                    removeRecursive('./temp/' + file, (err) => {
+                        if (err) console.error('removeRecursive: ' + err);
                     });
                 }
             });
