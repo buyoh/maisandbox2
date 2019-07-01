@@ -28,6 +28,11 @@ wandbox,ideoneのような即席のコーディング環境をローカルに構
 - launch cmd (administrator)
 - `npm run uninstall-service`
 
+## systemd 
+
+- `npm run build`
+- `sudo sh ./install.sh`
+
 ## 開発ツールのインストール
 
 ```
