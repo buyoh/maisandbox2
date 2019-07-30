@@ -2,6 +2,7 @@ const socketio = require('socket.io');
 
 const TaskExecutor = require('./taskexecutor');
 const Validator = require('./validator');
+const Logger = require('./logger');
 
 //
 
@@ -10,7 +11,7 @@ require('./temperaser');
 //
 
 const settings = require('./settings').settings;
-console.log('port: ' + settings.portno);
+Logger.info('port: ' + settings.portno);
 
 //
 
@@ -21,13 +22,13 @@ const server = require('./http').server;
 let soio = socketio.listen(server);
 
 soio.sockets.on('connection', (socket) => {
-    console.log('join ' + socket.id);
+    Logger.log('join ' + socket.id);
     let killer = null;
     let auth = true; // impl
 
     // テスト用
     socket.on('c2s_echo', (data) => {
-        console.log('echo :' + data.msg);
+        Logger.log('echo :' + data.msg);
         socket.emit('s2c_echo', {
             msg: !data.msg ? 'Hello!' : data.msg.toUpperCase()
         });
