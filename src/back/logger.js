@@ -1,7 +1,7 @@
 
 const argv = require('./argv');
 
-const enableLog = (()=>(!!argv['--log']));
+const enableLog = !!argv['--log'];
 
 exports.log = function(...args) {
     if (enableLog) console.log(...args);
