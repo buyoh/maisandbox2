@@ -1,4 +1,5 @@
 const FileWrapper = require('./filewrapper');
+const Logger = require('./../../logger');
 
 /**
  * export default したい
@@ -138,7 +139,7 @@ function promiseMultiSeries(iterationArgs, promiseSingleExecution) {
         promise.then(() => {
             resolve(results);
         }).catch((...reason) => {
-            console.log('reject:', reason);
+            Logger.log('reject:', reason);
             reject(...reason);
         });
     });
