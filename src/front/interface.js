@@ -2,7 +2,7 @@
 // interface.js
 // UI全体のwrapper，特に複数の部品に影響があるもの
 
-const $ = require('jQuery');
+const $ = require('jquery');
 const Editor = require('./aceditor');
 const Stdios = require('./stdios');
 const Socket = require('./socket');

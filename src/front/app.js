@@ -1,4 +1,4 @@
-require('jQuery');
+require('jquery');
 require('./eventbinder');
 require('./interface');
 require('./aceditor');

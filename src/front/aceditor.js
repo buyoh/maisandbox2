@@ -2,7 +2,7 @@
 // aceditor.js
 // ace部品の操作のwrapper
 
-const $ = require('jQuery');
+const $ = require('jquery');
 let ace = require('ace-builds/src-min/ace');
 
 let aceditor = null;

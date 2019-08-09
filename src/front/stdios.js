@@ -2,7 +2,7 @@
 // stdio.js
 // stdio部品の操作のwrapper
 
-const $ = require('jQuery');
+const $ = require('jquery');
 
 let domStdioTemplate = null;
 let nextInternalID = 0;

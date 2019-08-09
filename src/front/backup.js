@@ -2,7 +2,7 @@
 // backup.js
 // バックアップ機能
 
-const $ = require('jQuery');
+const $ = require('jquery');
 const Editor = require('./aceditor');
 const Interface = require('./interface');
 const Stdios = require('./stdios');

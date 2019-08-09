@@ -2,7 +2,7 @@
 // socket.js
 // ボタン押下時の操作等のeventと初期化を記述する
 
-const $ = require('jQuery');
+const $ = require('jquery');
 const Interface = require('./interface');
 const Editor = require('./aceditor');
 const Storage = require('./storage');
