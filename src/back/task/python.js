@@ -5,8 +5,9 @@ const DefaultTask = require('./util/default').generateDefaultTasks('py');
 // -------------------------------------
 
 exports.info = {
-    name: 'Python Win',
+    name: 'Python',
     editor: 'python',
+    category: 'default',
     tabwidth: 4
 };
 

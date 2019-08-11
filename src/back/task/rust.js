@@ -5,8 +5,9 @@ const DefaultTask = require('./util/default').generateDefaultTasks('rs');
 // -------------------------------------
 
 exports.info = {
-    name: 'Rust Win',
+    name: 'Rust',
     editor: 'rust',
+    category: 'default',
     tabwidth: 2
 };
 

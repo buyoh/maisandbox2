@@ -8,8 +8,9 @@ const cpp = require('./cpp');
 // -------------------------------------
 
 exports.info = {
-    name: 'C++ Bash',
+    name: 'C++',
     editor: 'c_cpp',
+    category: 'wsl',
     tabwidth: 4
 };
 

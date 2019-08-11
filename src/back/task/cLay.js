@@ -7,6 +7,7 @@ const DefaultTask = require('./util/default').generateDefaultTasks('cpp');
 exports.info = {
     name: 'cLay',
     editor: 'c_cpp',
+    category: 'default',
     tabwidth: 4
 };
 

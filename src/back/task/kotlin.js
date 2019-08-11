@@ -7,6 +7,7 @@ const DefaultTask = require('./util/default').generateDefaultTasks('kt');
 exports.info = {
     name: 'kotlin',
     editor: 'kotlin',
+    category: 'windows',
     tabwidth: 4
 };
 

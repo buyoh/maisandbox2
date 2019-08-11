@@ -10,6 +10,7 @@ const cpp = require('./cpp');
 exports.info = {
     name: 'C++',
     editor: 'c_cpp',
+    category: 'default',
     tabwidth: 4
 };
 

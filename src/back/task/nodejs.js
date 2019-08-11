@@ -5,8 +5,9 @@ const DefaultTask = require('./util/default').generateDefaultTasks('js');
 // -------------------------------------
 
 exports.info = {
-    name: 'nodejs Win',
+    name: 'nodejs',
     editor: 'javascript',
+    category: 'default',
     tabwidth: 4
 };
 
