@@ -182,11 +182,21 @@ export function appendResultLog(title, message, classtype, isProgressing = false
 // setup
 
 export function addLanguage(langInfo) {
+
+    const category = langInfo.category || 'default';
+
+    let optg = $('#selector_codelang optgroup[label="'+category+'"]');
+
+    if (optg.length === 0)
+        optg = $('<optgroup></optgroup>')
+            .attr('label', category)
+            .appendTo(m$('#selector_codelang'));
+
     // selector
     $('<option></option>')
         .data('cmd', langInfo.cmd)
         .text(langInfo.name)
-        .appendTo(m$('#selector_codelang'));
+        .appendTo(optg);
 
     // editor
     Editor.registerLang(langInfo.cmd, langInfo);

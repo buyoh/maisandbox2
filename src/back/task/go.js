@@ -5,8 +5,9 @@ const DefaultTask = require('./util/default').generateDefaultTasks('go');
 // -------------------------------------
 
 exports.info = {
-    name: 'Go Win',
+    name: 'Go',
     editor: 'golang',
+    category: 'default',
     tabwidth: 4
 };
 

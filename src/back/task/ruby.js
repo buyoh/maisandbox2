@@ -5,8 +5,9 @@ const DefaultTask = require('./util/default').generateDefaultTasks('rb');
 // -------------------------------------
 
 exports.info = {
-    name: 'Ruby Win',
+    name: 'Ruby',
     editor: 'ruby',
+    category: 'default',
     tabwidth: 2
 };
 

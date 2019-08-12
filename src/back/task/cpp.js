@@ -5,8 +5,9 @@ const DefaultTask = require('./util/default').generateDefaultTasks('cpp');
 // -------------------------------------
 
 exports.info = {
-    name: 'C++ Cyg',
+    name: 'C++',
     editor: 'c_cpp',
+    category: 'cygwin',
     tabwidth: 4
 };
 
