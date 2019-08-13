@@ -1,0 +1,4 @@
+build/**/*
+src/front/media/ext/**/*
+node_modules/**/*
+temp/**/*
