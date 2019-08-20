@@ -1,5 +1,7 @@
 const socketio = require('socket.io');
 
+const TaskImporter = require('./taskimporter');
+
 const TaskExecutor = require('./taskexecutor');
 const Validator = require('./validator');
 const Logger = require('./logger');
@@ -38,7 +40,7 @@ soio.sockets.on('connection', (socket) => {
 
     // 言語情報等を取得する
     socket.on('c2s_getCatalog', (listener) => {
-        listener(TaskExecutor.allLangInfo);
+        listener(TaskImporter.allLangInfo);
     });
 
     // コード提出
