@@ -178,6 +178,36 @@ export function appendResultLog(title, message, classtype, isProgressing = false
 }
 
 
+const editorConfigSelector = {};
+
+export function appendEditorConfig(key, title, options, changeHandler) {
+    const sel = $('<select></select>')
+        .addClass('form-control form-control-sm')
+        .on('change', changeHandler);
+    for (let option of options) {
+        $('<option></option>')
+            .text(option)
+            .val(option)
+            .appendTo(sel);
+    }
+    $('#div_config_space').append(
+        $('<div></div>')
+            .css('display', 'inline-block')
+            .append(title)
+            .append(sel)
+    );
+    editorConfigSelector[key] = sel;
+}
+
+
+
+export function changeEditorConfig(key, option) {
+    const dom = editorConfigSelector[key];
+    if (!dom) return;
+    dom.val(option);
+}
+
+
 // _____________________________________________________
 // setup
 
