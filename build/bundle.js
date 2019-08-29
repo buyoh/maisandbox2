@@ -16878,17 +16878,42 @@ var langInfo = {}; // _____________________________________________________
 // initialize
 
 $(function () {
-  ace.config.set('basePath', '/ext');
+  ace.config.set('basePath', 'ext');
   aceditor = ace.edit('aceditor');
-  aceditor.setTheme('ace/theme/monokai');
-  aceditor.getSession().setMode('ace/mode/ruby');
-  aceditor.setOptions({
-    enableBasicAutocompletion: true,
-    //enableSnippets: true,
-    enableLiveAutocompletion: true
+  ace.config.loadModule('ext/language_tools', function () {
+    aceditor.setTheme('ace/theme/monokai');
+    aceditor.getSession().setMode('ace/mode/ruby');
+    aceditor.setOptions({
+      enableBasicAutocompletion: true,
+      enableSnippets: true,
+      enableLiveAutocompletion: true
+    });
+    aceditor.setShowInvisibles(true);
+    aceditor.setFontSize(14);
+
+    var snippetManager = ace.require("ace/snippets").snippetManager;
+
+    ace.config.loadModule('ace/snippets/javascript', function (mod) {
+      snippetManager.files.javascript = mod;
+      mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
+      mod.snippets.push({
+        "content": "const ${1:variable} = new Animation.base(x, y, z);",
+        "name": "Animation",
+        "tabTrigger": "Animation"
+      });
+      snippetManager.register(mod.snippets, mod.scope);
+    });
+    ace.config.loadModule('ace/snippets/c_cpp', function (mod) {
+      snippetManager.files.c_cpp = mod;
+      mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
+      mod.snippets.push({
+        "content": "repeat(${1:i}, ${2:N}) {\n\t$3\n}",
+        "name": "repeat",
+        "tabTrigger": "repeat"
+      });
+      snippetManager.register(mod.snippets, mod.scope);
+    });
   });
-  aceditor.setShowInvisibles(true);
-  aceditor.setFontSize(14);
   $('#aceditorEdge').on('onresize', function () {
     aceditor.resize();
   });
