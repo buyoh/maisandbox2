@@ -1,5 +1,5 @@
 const fs = require('fs');
-const filetype = require('file-type');
+const mimeTypes = require('mime-types');
 const http = require('http');
 
 const settings = require('./settings').settings;
@@ -43,7 +43,7 @@ exports.server = http.createServer((request, response) => {
     // 該当するファイルを探す
     try {
         const cnt = fs.readFileSync(path, 'utf-8');
-        response.writeHead(200, filetype(request.url));
+        response.writeHead(200, {'Content-Type': mimeTypes.lookup(request.url)});
         response.end(cnt);
         console.error('requested: lookup ' + path + ' => ok');
     } catch (err) {
