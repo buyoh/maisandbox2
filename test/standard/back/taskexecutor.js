@@ -4,7 +4,7 @@ const assert = require('assert');
 /* eslint-env mocha */
 
 
-const testjs = require('../../src/back/taskexecutor.js');
+const testjs = require('../../../src/back/taskexecutor.js');
 
 describe('test of taskexecutor.js', function(){
     
