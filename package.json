@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "test": "mocha",
-    "lint": "eslint ./src/**/*js --fix",
+    "lint": "eslint ./src/back/**/*js ./src/front/*js ./test/**/*js --fix",
     "beautify": "ruby ./tools/beautify.rb",
     "start": "node main.js",
     "build": "browserify src/front/app.js -t [ babelify --presets [@babel/preset-env] ] > build/bundle.js",
