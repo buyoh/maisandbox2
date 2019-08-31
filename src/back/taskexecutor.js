@@ -7,7 +7,7 @@ const Importer = require('./taskimporter');
  * @param {JSON} json 
  * @param {(type:String, json:JSON) => boolean} callback 何か成功する度に呼び出す
  */
-exports.pushTask = function(json, callback) {
+exports.pushTask = function (json, callback) {
     const task = {
         json: json,
         callback: callback
@@ -44,7 +44,7 @@ function runTaskRecipe(task) {
 
     const accepted = [];
 
-    const process = function(taskIndex) {
+    const process = function (taskIndex) {
         if (taskIndex >= recipe.tasks.length) {
             task.callback.call(null, 'success', {}, true);
             return;
