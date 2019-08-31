@@ -15,23 +15,23 @@ const mktmpdir = require('mktmpdir');
 
 const testjs = require('../../../src/back/task/util/exec.js');
 
-describe('test of exec.js', () => {
+describe('[unit test] exec.js', () => {
 
     before((done) => {
-        Promise.resolve().then(()=>new Promise((resolve, reject)=>{
+        Promise.resolve().then(() => new Promise((resolve, reject) => {
             fs.access('temp', fs.constants.F_OK | fs.constants.R_OK | fs.constants.W_OK, (err) => {
                 if (err) {
-                    fs.mkdir('temp', (err)=>{
+                    fs.mkdir('temp', (err) => {
                         err ? reject(err) : resolve();
                     });
                 }
                 else
                     resolve();
             });
-        })).then(()=>new Promise((resolve, reject)=>{
+        })).then(() => new Promise((resolve, reject) => {
             fs.access('temp/test', fs.constants.F_OK | fs.constants.R_OK | fs.constants.W_OK, (err) => {
                 if (err) {
-                    fs.rmdir('temp/test', ()=>{
+                    fs.rmdir('temp/test', () => {
                         fs.mkdir('temp/test', (err) => {
                             err ? reject(err) : resolve();
                         });
@@ -40,9 +40,9 @@ describe('test of exec.js', () => {
                 else
                     resolve();
             });
-        })).then(()=>done()).catch((err)=>done(err));
+        })).then(() => done()).catch((err) => done(err));
     });
-    
+
     it('rubyの実行結果が取得出来る(exec)', (done) => {
         testjs.exec('ruby -e \'p 1+8\'', (err, stdout, stderr) => {
             assert.equal(!!err, false);
@@ -60,27 +60,27 @@ describe('test of exec.js', () => {
     });
 
     it('ファイル操作が出来る(exec)', (done) => {
-        Promise.resolve().then(()=>new Promise((resolve)=>{
+        Promise.resolve().then(() => new Promise((resolve) => {
             testjs.exec('echo foobar > temp/test/fstest.txt', (err) => {
                 assert.equal(!!err, false, 'write file');
                 resolve();
             });
-        })).then(()=>new Promise((resolve)=>{
+        })).then(() => new Promise((resolve) => {
             fs.access('temp/test/fstest.txt', fs.constants.F_OK, (err) => {
                 assert.equal(!!err, false, 'file exists');
                 resolve();
             });
-        })).then(()=>new Promise((resolve)=>{
+        })).then(() => new Promise((resolve) => {
             testjs.exec('rm temp/test/fstest.txt', (err) => {
                 assert.equal(!!err, false, 'remove file');
                 resolve();
             });
-        })).then(()=>new Promise((resolve)=>{
+        })).then(() => new Promise((resolve) => {
             fs.access('temp/test/fstest.txt', fs.constants.F_OK, (err) => {
                 assert.equal(!!err, true, 'file does not exist');
                 resolve();
             });
-        })).then(()=>done()).catch((err)=>done(err));
+        })).then(() => done()).catch((err) => done(err));
     });
 
     it('標準入出力を伴う実行が出来る(spawn_fileio)', (done) => {
@@ -88,9 +88,9 @@ describe('test of exec.js', () => {
         mktmpdir((err, tempdir) => {
             if (err) { done(err); return; }
             process.chdir(tempdir);
-            
-            fs.writeFileSync('./test.rb','s=gets.chomp;puts s+\'#out\';STDERR.puts s+\'#err\'');
-            fs.writeFileSync('./in.txt','hello');
+
+            fs.writeFileSync('./test.rb', 's=gets.chomp;puts s+\'#out\';STDERR.puts s+\'#err\'');
+            fs.writeFileSync('./in.txt', 'hello');
             testjs.spawn_fileio('ruby', ['./test.rb'], './in.txt', './out.txt', './err.txt', {}, (code) => {
                 assert.equal(code, 0, 'exitcode == 0');
                 let stdout = fs.readFileSync('./out.txt', 'UTF-8');
@@ -109,12 +109,12 @@ describe('test of exec.js', () => {
     });
 
     it('rubyの実行結果が取得出来る(spawn_buff)', (done) => {
-        testjs.spawn_buff('ruby', ['-e','p 8+1'], '', {}, (err, code, signal, stdout) => {
+        testjs.spawn_buff('ruby', ['-e', 'p 8+1'], '', {}, (err, code, signal, stdout) => {
             assert.equal(err, null, 'success');
             assert.equal(code, 0, 'exitcode == 0');
             assert.ok(stdout.toString().startsWith('9\n'), 'check stdout');
             done();
         });
     });
-    
+
 });
