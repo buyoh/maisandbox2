@@ -1,16 +1,8 @@
 const assert = require('assert');
 const fs = require('fs');
-// const child_process = require('child_process');
 const mktmpdir = require('mktmpdir');
-// var async = require('async');
 
 /* eslint-env mocha */
-
-/* ------------------------- */
-
-//const cygwin_env_path = ';C:/cygwin64/bin;C:/cygwin64/usr/local/bin;';
-
-/* ------------------------- */
 
 
 const testjs = require('../../../src/back/task/util/exec.js');
