@@ -57,8 +57,9 @@ export function getStdins(visibleonly = true) {
 export function setStdouts(li) {
     $('#div_stdios > div').each((i, e) => {
         const c = $(e).data('components');
-        if (li[c.internalID]) {
-            c.textareaStdout.val(li[c.internalID]);
+        const txt = li[c.internalID];
+        if (txt || txt === '') {
+            c.textareaStdout.val(txt);
         }
     });
 }
