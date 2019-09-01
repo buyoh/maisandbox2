@@ -7,10 +7,11 @@ wandbox,ideoneのような即席のコーディング環境をローカルに構
 
 ## development environment
 
-- windows 10
+- windows 10 / Ubuntu 18.04
 - nodejs
 
-`src/back/task` の中身をすべて書き換えれば `ubuntu` でも動くかもしれません．
+Windows 10 の場合、WSLとcygwinがあると嬉しい  
+これ以外の環境でも動くかもしれません．
 
 ## usage
 
@@ -28,20 +29,20 @@ wandbox,ideoneのような即席のコーディング環境をローカルに構
 - launch cmd (administrator)
 - `npm run uninstall-service`
 
-## systemd 
+## systemd として install
 
 - `npm run build`
 - `sudo sh ./install.sh`
+
+## systemd として uninstall
+
+- TODO:
 
 ## 開発ツールのインストール
 
 ```
 npm i -g babelify browserify
 ```
-
-## winserすごいよね
-
-- https://qiita.com/Kazunori-Kimura/items/c40ce82e7c044869fd27
 
 ## トラブルシューティング
 
