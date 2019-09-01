@@ -64,8 +64,14 @@ describe('[unit test] exec.js', () => {
             });
         })).then(() => new Promise((resolve) => {
             testjs.exec('rm temp/test/fstest.txt', (err) => {
-                assert.equal(!!err, false, 'remove file');
-                resolve();
+                if (err)
+                    testjs.exec('del temp\\test\\fstest.txt', (err) => {
+                        // windows command
+                        assert.equal(!!err, false, 'remove file');
+                        resolve();
+                    });
+                else 
+                    resolve();
             });
         })).then(() => new Promise((resolve) => {
             fs.access('temp/test/fstest.txt', fs.constants.F_OK, (err) => {
@@ -104,7 +110,7 @@ describe('[unit test] exec.js', () => {
         testjs.spawn_buff('ruby', ['-e', 'p 8+1'], '', {}, (err, code, signal, stdout) => {
             assert.equal(err, null, 'success');
             assert.equal(code, 0, 'exitcode == 0');
-            assert.ok(stdout.toString().startsWith('9\n'), 'check stdout');
+            assert.ok(stdout.toString().startsWith('9'), 'check stdout');
             done();
         });
     });
