@@ -4,7 +4,7 @@
   "description": "maisan",
   "main": "main.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha ./test/standard/**/*js",
     "lint": "eslint ./src/back/**/*js ./src/front/*js ./test/**/*js --fix",
     "beautify": "ruby ./tools/beautify.rb",
     "start": "node main.js",

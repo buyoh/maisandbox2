@@ -53,8 +53,8 @@ exports.spawn_buff = function(command, args, stdin, options, callback) {
         ps.stdin.write(stdin);
     ps.stdin.end();
 
-    let buffstdout = new Buffer('');
-    let buffstderr = new Buffer('');
+    let buffstdout = Buffer.alloc(1024);
+    let buffstderr = Buffer.alloc(1024);
 
     let endflg = 0;
     let endcode = -1;
