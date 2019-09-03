@@ -7,6 +7,8 @@ const Editor = require('./aceditor');
 const Stdios = require('./stdios');
 const Socket = require('./socket');
 
+const Languages = require('./languages');
+
 
 // メモ化
 const _m_memorized = {};
@@ -106,12 +108,12 @@ export function rechooseLang() {
 }
 
 
-export function changeVisibleRecipes(cmd) {
+export function changeVisibleRecipes(cmd, lang) {
     $('#div_recipes > div').filter((i, e) => ($(e).data('cmd') == cmd)).removeClass('d-none');
     $('#div_recipes > div').filter((i, e) => ($(e).data('cmd') != cmd)).addClass('d-none');
     $('#div_options > div').filter((i, e) => ($(e).data('cmd') == cmd)).removeClass('d-none');
     $('#div_options > div').filter((i, e) => ($(e).data('cmd') != cmd)).addClass('d-none');
-    Editor.changeCodeLang(cmd);
+    Editor.changeCodeLang(lang);
 }
 
 
@@ -181,9 +183,13 @@ export function appendResultLog(title, message, classtype, isProgressing = false
 // _____________________________________________________
 // setup
 
-export function addLanguage(langInfo) {
+export function addLanguage(taskInfo) {
+    // TODO: Languageではなく、Task
+    // TODO: 少し長いので分割する
 
-    const category = langInfo.category || 'default';
+    // const langInfo = Languages.languages[taskInfo.language];
+
+    const category = taskInfo.category || 'default';
 
     let optg = $('#selector_codelang optgroup[label="' + category + '"]');
 
@@ -194,17 +200,16 @@ export function addLanguage(langInfo) {
 
     // selector
     $('<option></option>')
-        .data('cmd', langInfo.cmd)
-        .text(langInfo.language)
+        .data('cmd', taskInfo.cmd)
+        .data('lang', taskInfo.language)
+        .text(taskInfo.language)
         .appendTo(optg);
-
-    // editor
-    Editor.registerLang(langInfo.cmd, langInfo);
 
     // recipes
     {
-        const domc = $('<div></div>').data('cmd', langInfo.cmd);
-        for (let name in langInfo.recipes) {
+        const domc = $('<div></div>')
+            .data('cmd', taskInfo.cmd);
+        for (let name in taskInfo.recipes) {
             // note: langInfo.recipes[name] の情報を使っていない・保持していない
             domc.append(
                 $('<button></button>')
@@ -227,13 +232,13 @@ export function addLanguage(langInfo) {
 
     // options
     {
-        const domc = $('<div></div>').data('cmd', langInfo.cmd);
-        for (let name in langInfo.options) {
+        const domc = $('<div></div>').data('cmd', taskInfo.cmd);
+        for (let name in taskInfo.options) {
             const dom = $('<select></select>')
                 .data('key', name)
                 .addClass('form-control form-control-sm')
                 .css('width', 'inherit');
-            for (let val of langInfo.options[name])
+            for (let val of taskInfo.options[name])
                 dom.append(
                     $('<option></option>')
                         .text(val)

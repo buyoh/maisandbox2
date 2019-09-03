@@ -1,5 +1,3 @@
-const languages = require('./languages');
-
 const task_ruby = require('./task/ruby');
 const task_cpp = require('./task/cpp');
 const task_cppraw = require('./task/cpp_raw');
@@ -32,11 +30,7 @@ exports.allLangInfo = (() => {
     const a = [];
     for (let cmd in langTasks) {
         const task = langTasks[cmd];
-        let info = Object.create(task.info);
-        info = Object.assign(info, languages.languages[info.language]);
-        const j = Object.assign({
-            cmd: cmd
-        }, info);
+        const j = Object.assign({ cmd: cmd }, task.info);
         j.recipes = task.recipes;
         j.options = task.options;
         a.push(j);
