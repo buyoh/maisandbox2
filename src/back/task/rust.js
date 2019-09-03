@@ -5,10 +5,8 @@ const DefaultTask = require('./util/default').generateDefaultTasks('rs');
 // -------------------------------------
 
 exports.info = {
-    name: 'Rust',
-    editor: 'rust',
+    language: 'Rust',
     category: 'default',
-    tabwidth: 2
 };
 
 const options = {};
@@ -59,7 +57,7 @@ exports.command = {
     setupIO: DefaultTask.command.setupIO,
 
     /** compile codes */
-    compile: function(task, callback) {
+    compile: function (task, callback) {
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(() => {
@@ -90,7 +88,7 @@ exports.command = {
     },
 
     /** run compiled file */
-    run: function(task, callback) {
+    run: function (task, callback) {
         const suffixs = Object.keys(task.json.txt_stdins);
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 

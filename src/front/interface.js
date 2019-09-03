@@ -185,7 +185,7 @@ export function addLanguage(langInfo) {
 
     const category = langInfo.category || 'default';
 
-    let optg = $('#selector_codelang optgroup[label="'+category+'"]');
+    let optg = $('#selector_codelang optgroup[label="' + category + '"]');
 
     if (optg.length === 0)
         optg = $('<optgroup></optgroup>')
@@ -195,7 +195,7 @@ export function addLanguage(langInfo) {
     // selector
     $('<option></option>')
         .data('cmd', langInfo.cmd)
-        .text(langInfo.name)
+        .text(langInfo.language)
         .appendTo(optg);
 
     // editor
@@ -213,7 +213,7 @@ export function addLanguage(langInfo) {
                     .on('click', {
                         recipe: name
                     }, (e) => {
-                    // todo: refactoring(eventbinderがやるべき)
+                        // todo: refactoring(eventbinderがやるべき)
                         const recipe = e.data.recipe;
                         const info = gatherInfo();
                         info.recipe = recipe;
