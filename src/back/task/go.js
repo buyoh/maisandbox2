@@ -5,10 +5,8 @@ const DefaultTask = require('./util/default').generateDefaultTasks('go');
 // -------------------------------------
 
 exports.info = {
-    name: 'Go',
-    editor: 'golang',
+    language: 'Go',
     category: 'default',
-    tabwidth: 4
 };
 
 const options = {};
@@ -57,7 +55,7 @@ exports.command = {
     setupIO: DefaultTask.command.setupIO,
 
     /** compile codes */
-    compile: function(task, callback) {
+    compile: function (task, callback) {
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(() => {
@@ -89,7 +87,7 @@ exports.command = {
     },
 
     /** run compiled file */
-    run: function(task, callback) {
+    run: function (task, callback) {
         const suffixs = Object.keys(task.json.txt_stdins);
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 

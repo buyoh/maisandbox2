@@ -5,10 +5,8 @@ const DefaultTask = require('./util/default').generateDefaultTasks('rb');
 // -------------------------------------
 
 exports.info = {
-    name: 'Ruby',
-    editor: 'ruby',
+    language: 'Ruby',
     category: 'default',
-    tabwidth: 2
 };
 
 exports.options = {};
@@ -55,7 +53,7 @@ exports.command = {
     setupIO: DefaultTask.command.setupIO,
 
     /** check syntax */
-    check: function(task, callback) {
+    check: function (task, callback) {
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(() => {
@@ -85,7 +83,7 @@ exports.command = {
     },
 
     /** run compiled file */
-    run: function(task, callback) {
+    run: function (task, callback) {
         const suffixs = Object.keys(task.json.txt_stdins);
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 

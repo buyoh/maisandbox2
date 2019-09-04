@@ -32,9 +32,10 @@ function bundEvents() {
     $('#selector_codelang').change(() => {
         let dom = $('#selector_codelang option:selected');
         let cmd = dom.data('cmd');
+        let lang = dom.data('lang');
         if (cmd === '') return;
 
-        Interface.changeVisibleRecipes(cmd);
+        Interface.changeVisibleRecipes(cmd, lang);
     });
 
 }
