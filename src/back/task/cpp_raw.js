@@ -8,10 +8,8 @@ const cpp = require('./cpp');
 // -------------------------------------
 
 exports.info = {
-    name: 'C++',
-    editor: 'c_cpp',
+    language: 'C++',
     category: 'default',
-    tabwidth: 4
 };
 
 const options = {
@@ -62,7 +60,7 @@ exports.command = {
     setupIO: cpp.command.setupIO,
 
     /** compile codes */
-    compile: function(task, callback) {
+    compile: function (task, callback) {
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
         Promise.resolve().then(() => {
@@ -98,7 +96,7 @@ exports.command = {
     },
 
     /** run compiled file */
-    run: function(task, callback) {
+    run: function (task, callback) {
         const suffixs = Object.keys(task.json.txt_stdins);
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 

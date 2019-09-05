@@ -4,6 +4,7 @@
 
 const $ = require('jquery');
 let ace = require('ace-builds/src-min/ace');
+const Languages = require('./languages');
 
 let aceditor = null;
 const langInfo = {};
@@ -65,20 +66,14 @@ export function setValue(text) {
     aceditor.setValue(text, -1);
 }
 
-export function registerLang(cmd, edt) {
-    langInfo[cmd] = {
-        editor: edt.editor,
-        tabwidth: edt.tabwidth
-    };
-}
-
 
 // _____________________________________________________
 // interface
 
-export function changeCodeLang(cmd) {
-    const info = langInfo[cmd];
-    if (!info) return;
+export function changeCodeLang(lang) {
+    let info = Languages.languages[lang];
+    if (!info)
+        info = Languages.languages['default'];
     const s = aceditor.getSession();
     s.setMode('ace/mode/' + info.editor);
     s.setTabSize(info.tabwidth);

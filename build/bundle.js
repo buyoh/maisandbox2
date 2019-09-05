@@ -2714,7 +2714,7 @@ WS.prototype.check = function () {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../transport":12,"buffer":58,"component-inherit":9,"debug":19,"engine.io-parser":22,"parseqs":30,"ws":57,"yeast":47}],18:[function(require,module,exports){
+},{"../transport":12,"buffer":59,"component-inherit":9,"debug":19,"engine.io-parser":22,"parseqs":30,"ws":58,"yeast":47}],18:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 
 var hasCORS = require('has-cors');
@@ -2952,7 +2952,7 @@ function localstorage() {
 }
 
 }).call(this,require('_process'))
-},{"./debug":20,"_process":60}],20:[function(require,module,exports){
+},{"./debug":20,"_process":61}],20:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -4241,7 +4241,7 @@ function hasBinary (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":58,"isarray":28}],26:[function(require,module,exports){
+},{"buffer":59,"isarray":28}],26:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -16174,7 +16174,7 @@ function url (uri, loc) {
 
 },{"debug":37,"parseuri":31}],37:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
-},{"./debug":38,"_process":60,"dup":19}],38:[function(require,module,exports){
+},{"./debug":38,"_process":61,"dup":19}],38:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
 },{"dup":20,"ms":39}],39:[function(require,module,exports){
 arguments[4][21][0].apply(exports,arguments)
@@ -16762,9 +16762,9 @@ function isBuf(obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":58}],43:[function(require,module,exports){
+},{"buffer":59}],43:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
-},{"./debug":44,"_process":60,"dup":19}],44:[function(require,module,exports){
+},{"./debug":44,"_process":61,"dup":19}],44:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
 },{"dup":20,"ms":45}],45:[function(require,module,exports){
 arguments[4][21][0].apply(exports,arguments)
@@ -16861,7 +16861,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getValue = getValue;
 exports.setValue = setValue;
-exports.registerLang = registerLang;
 exports.changeCodeLang = changeCodeLang;
 exports.setAnnotations = setAnnotations;
 exports.clearAnnotations = clearAnnotations;
@@ -16872,6 +16871,8 @@ exports.clearAnnotations = clearAnnotations;
 var $ = require('jquery');
 
 var ace = require('ace-builds/src-min/ace');
+
+var Languages = require('./languages');
 
 var aceditor = null;
 var langInfo = {}; // _____________________________________________________
@@ -16891,25 +16892,20 @@ $(function () {
     aceditor.setShowInvisibles(true);
     aceditor.setFontSize(14);
 
-    var snippetManager = ace.require("ace/snippets").snippetManager;
+    var snippetManager = ace.require('ace/snippets').snippetManager;
 
     ace.config.loadModule('ace/snippets/javascript', function (mod) {
       snippetManager.files.javascript = mod;
       mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
-      mod.snippets.push({
-        "content": "const ${1:variable} = new Animation.base(x, y, z);",
-        "name": "Animation",
-        "tabTrigger": "Animation"
-      });
       snippetManager.register(mod.snippets, mod.scope);
     });
     ace.config.loadModule('ace/snippets/c_cpp', function (mod) {
       snippetManager.files.c_cpp = mod;
       mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
       mod.snippets.push({
-        "content": "repeat(${1:i}, ${2:N}) {\n\t$3\n}",
-        "name": "repeat",
-        "tabTrigger": "repeat"
+        'content': 'repeat(${1:i}, ${2:N}) {\n\t$3\n}',
+        'name': 'repeat',
+        'tabTrigger': 'repeat'
       });
       snippetManager.register(mod.snippets, mod.scope);
     });
@@ -16926,20 +16922,13 @@ function getValue() {
 
 function setValue(text) {
   aceditor.setValue(text, -1);
-}
-
-function registerLang(cmd, edt) {
-  langInfo[cmd] = {
-    editor: edt.editor,
-    tabwidth: edt.tabwidth
-  };
 } // _____________________________________________________
 // interface
 
 
-function changeCodeLang(cmd) {
-  var info = langInfo[cmd];
-  if (!info) return;
+function changeCodeLang(lang) {
+  var info = Languages.languages[lang];
+  if (!info) info = Languages.languages['default'];
   var s = aceditor.getSession();
   s.setMode('ace/mode/' + info.editor);
   s.setTabSize(info.tabwidth);
@@ -16958,7 +16947,7 @@ function clearAnnotations() {
   aceditor.getSession().clearAnnotations();
 }
 
-},{"ace-builds/src-min/ace":1,"jquery":29}],49:[function(require,module,exports){
+},{"./languages":53,"ace-builds/src-min/ace":1,"jquery":29}],49:[function(require,module,exports){
 "use strict";
 
 require('jquery');
@@ -16975,7 +16964,7 @@ require('./socket');
 
 require('./backup');
 
-},{"./aceditor":48,"./backup":50,"./eventbinder":51,"./interface":52,"./socket":53,"./storage":55,"jquery":29}],50:[function(require,module,exports){
+},{"./aceditor":48,"./backup":50,"./eventbinder":51,"./interface":52,"./socket":54,"./storage":56,"jquery":29}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17031,7 +17020,7 @@ function storeBackup() {
   });
 }
 
-},{"./aceditor":48,"./interface":52,"./stdios":54,"./storage":55,"jquery":29}],51:[function(require,module,exports){
+},{"./aceditor":48,"./interface":52,"./stdios":55,"./storage":56,"jquery":29}],51:[function(require,module,exports){
 "use strict";
 
 // _____________________________________________________
@@ -17065,8 +17054,9 @@ function bundEvents() {
   $('#selector_codelang').change(function () {
     var dom = $('#selector_codelang option:selected');
     var cmd = dom.data('cmd');
+    var lang = dom.data('lang');
     if (cmd === '') return;
-    Interface.changeVisibleRecipes(cmd);
+    Interface.changeVisibleRecipes(cmd, lang);
   });
 }
 
@@ -17130,7 +17120,7 @@ Socket.addProgressListener(function (json) {
   }
 });
 
-},{"./aceditor":48,"./interface":52,"./socket":53,"./storage":55,"jquery":29}],52:[function(require,module,exports){
+},{"./aceditor":48,"./interface":52,"./socket":54,"./storage":56,"jquery":29}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17157,7 +17147,9 @@ var Editor = require('./aceditor');
 
 var Stdios = require('./stdios');
 
-var Socket = require('./socket'); // メモ化
+var Socket = require('./socket');
+
+var Languages = require('./languages'); // メモ化
 
 
 var _m_memorized = {};
@@ -17248,7 +17240,7 @@ function rechooseLang() {
   dom.change();
 }
 
-function changeVisibleRecipes(cmd) {
+function changeVisibleRecipes(cmd, lang) {
   $('#div_recipes > div').filter(function (i, e) {
     return $(e).data('cmd') == cmd;
   }).removeClass('d-none');
@@ -17261,7 +17253,7 @@ function changeVisibleRecipes(cmd) {
   $('#div_options > div').filter(function (i, e) {
     return $(e).data('cmd') != cmd;
   }).addClass('d-none');
-  Editor.changeCodeLang(cmd);
+  Editor.changeCodeLang(lang);
 }
 
 function displayStdout(text) {
@@ -17319,19 +17311,20 @@ function appendResultLog(title, message, classtype) {
 // setup
 
 
-function addLanguage(langInfo) {
-  var category = langInfo.category || 'default';
+function addLanguage(taskInfo) {
+  // TODO: Languageではなく、Task
+  // TODO: 少し長いので分割する
+  // const langInfo = Languages.languages[taskInfo.language];
+  var category = taskInfo.category || 'default';
   var optg = $('#selector_codelang optgroup[label="' + category + '"]');
   if (optg.length === 0) optg = $('<optgroup></optgroup>').attr('label', category).appendTo(m$('#selector_codelang')); // selector
 
-  $('<option></option>').data('cmd', langInfo.cmd).text(langInfo.name).appendTo(optg); // editor
-
-  Editor.registerLang(langInfo.cmd, langInfo); // recipes
+  $('<option></option>').data('cmd', taskInfo.cmd).data('lang', taskInfo.language).text(taskInfo.language).appendTo(optg); // recipes
 
   {
-    var domc = $('<div></div>').data('cmd', langInfo.cmd);
+    var domc = $('<div></div>').data('cmd', taskInfo.cmd);
 
-    for (var name in langInfo.recipes) {
+    for (var name in taskInfo.recipes) {
       // note: langInfo.recipes[name] の情報を使っていない・保持していない
       domc.append($('<button></button>').addClass('btn btn-sm btn-primary').text(name).on('click', {
         recipe: name
@@ -17349,16 +17342,16 @@ function addLanguage(langInfo) {
   } // options
 
   {
-    var _domc = $('<div></div>').data('cmd', langInfo.cmd);
+    var _domc = $('<div></div>').data('cmd', taskInfo.cmd);
 
-    for (var _name in langInfo.options) {
+    for (var _name in taskInfo.options) {
       var dom = $('<select></select>').data('key', _name).addClass('form-control form-control-sm').css('width', 'inherit');
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
 
       try {
-        for (var _iterator = langInfo.options[_name][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (var _iterator = taskInfo.options[_name][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var val = _step.value;
           dom.append($('<option></option>').text(val).val(val));
         }
@@ -17426,7 +17419,57 @@ function copyDomToClipboard(dom) {
   document.execCommand('copy');
 }
 
-},{"./aceditor":48,"./socket":53,"./stdios":54,"jquery":29}],53:[function(require,module,exports){
+},{"./aceditor":48,"./languages":53,"./socket":54,"./stdios":55,"jquery":29}],53:[function(require,module,exports){
+"use strict";
+
+// _____________________________________________________
+// language.js
+// 言語情報を記載する
+exports.languages = {
+  'C++': {
+    editor: 'c_cpp',
+    tabWidth: 2
+  },
+  'Ruby': {
+    editor: 'ruby',
+    tabWidth: 2
+  },
+  'Python': {
+    editor: 'python',
+    tabWidth: 4
+  },
+  'JavaScript': {
+    editor: 'javascript',
+    tabWidth: 4
+  },
+  'Kotlin': {
+    editor: 'kotlin',
+    tabWidth: 4
+  },
+  'Go': {
+    editor: 'golang',
+    tabWidth: 4
+  },
+  'Rust': {
+    editor: 'rust',
+    tabWidth: 4
+  },
+  'shell': {
+    editor: 'sh',
+    tabWidth: 4
+  },
+  'cLay': {
+    editor: 'c_cpp',
+    tabWidth: 2
+  },
+  // otherwise
+  'default': {
+    editor: 'text',
+    tabWidth: 4
+  }
+};
+
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17472,7 +17515,7 @@ function addProgressListener(listener) {
   progressListener.push(listener);
 }
 
-},{"socket.io-client":32}],54:[function(require,module,exports){
+},{"socket.io-client":32}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17545,9 +17588,10 @@ function getStdins() {
 function setStdouts(li) {
   $('#div_stdios > div').each(function (i, e) {
     var c = $(e).data('components');
+    var txt = li[c.internalID];
 
-    if (li[c.internalID]) {
-      c.textareaStdout.val(li[c.internalID]);
+    if (txt || txt === '') {
+      c.textareaStdout.val(txt);
     }
   });
 } // _____________________________________________________
@@ -17637,7 +17681,7 @@ function closeField(components) {
   components.dom.remove();
 }
 
-},{"jquery":29}],55:[function(require,module,exports){
+},{"jquery":29}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17679,7 +17723,7 @@ function loadTemplate(lang) {
   return val ? val : null;
 }
 
-},{}],56:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -17832,9 +17876,9 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],57:[function(require,module,exports){
-
 },{}],58:[function(require,module,exports){
+
+},{}],59:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -19615,7 +19659,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":56,"buffer":58,"ieee754":59}],59:[function(require,module,exports){
+},{"base64-js":57,"buffer":59,"ieee754":60}],60:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -19701,7 +19745,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

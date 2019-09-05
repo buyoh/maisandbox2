@@ -5,10 +5,8 @@ const DefaultTask = require('./util/default').generateDefaultTasks('sh');
 // -------------------------------------
 
 exports.info = {
-    name: 'sh',
-    editor: 'sh',
+    language: 'sh',
     category: 'wsl',
-    tabwidth: 4
 };
 
 exports.options = {};
@@ -32,7 +30,7 @@ exports.command = {
     setupIO: DefaultTask.command.setupIO,
 
     /** run compiled file */
-    run: function(task, callback) {
+    run: function (task, callback) {
         const suffixs = Object.keys(task.json.txt_stdins);
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
 
