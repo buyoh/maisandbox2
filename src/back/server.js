@@ -2,7 +2,7 @@ const socketio = require('socket.io');
 
 const TaskImporter = require('./taskimporter');
 
-const JobExecutor = require('./taskexecutor'); // TODO: rename jobExecutor
+const JobExecutor = require('./jobexecutor');
 // const Validator = require('./validator');
 const Logger = require('./logger');
 
