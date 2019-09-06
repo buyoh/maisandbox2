@@ -16,27 +16,27 @@ describe('[middle test] taskexecutor.js', () => {
             cmd: 'Ruby'
         };
         let state = 0;
-        testjs.pushTask(info, (type, json) => {
+        testjs.pushJob(info, (type, json) => {
             setTimeout(() => {
                 if (state === 0) {
                     if (type === 'progress') return;
                     assert.equal(type, 'continue', 'continue?');
-                    assert.equal(json.taskName, 'setupAll', 'taskName');
+                    assert.equal(json.commandName, 'setupAll', 'taskName');
                 } else if (state === 1) {
                     if (type === 'progress') return;
                     assert.equal(type, 'continue', 'continue');
-                    assert.equal(json.taskName, 'check', 'taskName');
+                    assert.equal(json.commandName, 'check', 'taskName');
                 } else if (state === 2) {
                     if (type === 'progress') return;
                     assert.equal(type, 'ac', 'accepted');
-                    assert.equal(json.taskName, 'run', 'taskName');
+                    assert.equal(json.commandName, 'run', 'taskName');
                     assert.equal(json.code, 0, 'プロセスは正常終了した');
                     assert.equal(json.stderr.trim(), '', '標準エラー');
                     assert.equal(json.stdout.trim(), 'hello world', '標準出力');
                 } else if (state === 3) {
                     if (type === 'progress') return;
                     assert.equal(type, 'continue', 'continue');
-                    assert.equal(json.taskName, 'run', 'taskName');
+                    assert.equal(json.commandName, 'run', 'taskName');
                 } else if (state === 4) {
                     assert.equal(type, 'success', 'success');
                     done();
@@ -57,29 +57,29 @@ describe('[middle test] taskexecutor.js', () => {
             cmd: 'Ruby'
         };
         let state = 0;
-        testjs.pushTask(info, (type, json) => {
+        testjs.pushJob(info, (type, json) => {
             setTimeout(() => {
                 if (state === 0) {
                     if (type === 'progress') return;
                     assert.equal(type, 'continue', 'continue?');
-                    assert.equal(json.taskName, 'setupAll', 'taskName');
+                    assert.equal(json.commandName, 'setupAll', 'taskName');
                 } else if (state === 1) {
                     if (type === 'progress') return;
                     assert.equal(type, 'continue', 'continue');
-                    assert.equal(json.taskName, 'check', 'taskName');
+                    assert.equal(json.commandName, 'check', 'taskName');
                 } else if (state === 2) {
                     if (type === 'progress') {
                         json.killer(); // KILL
                         return;
                     }
                     assert.equal(type, 'wa', 'failed');
-                    assert.equal(json.taskName, 'run', 'taskName');
+                    assert.equal(json.commandName, 'run', 'taskName');
                     assert.notEqual(json.code, 0, 'プロセスは異常終了した');
                     done();
                 } else if (state === 3) {
                     if (type === 'progress') return;
                     assert.equal(type, 'failed', 'continue');
-                    assert.equal(json.taskName, 'run', 'taskName');
+                    assert.equal(json.commandName, 'run', 'taskName');
                 } else if (state === 4) {
                     assert.equal(type, 'success', 'success');
                     done();

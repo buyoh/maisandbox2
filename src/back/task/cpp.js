@@ -19,10 +19,10 @@ exports.options = options;
 
 exports.recipes = {
     'compile > run': {
-        tasks: ['setupAll', 'compile', 'run']
+        script: ['setupAll', 'compile', 'run']
     },
     'run(no update)': {
-        tasks: ['setupIO', 'run']
+        script: ['setupIO', 'run']
     }
 };
 
@@ -72,11 +72,11 @@ exports.command = {
                 let killer = myexec.spawn_fileio(
                     'g++', param,
                     null, cwdir + '/stdout.txt', cwdir + '/stderr.txt', {
-                        env: {
-                            PATH: FileWrapper.cygwinEnvPath
-                        },
-                        cwd: cwdir
+                    env: {
+                        PATH: FileWrapper.cygwinEnvPath
                     },
+                    cwd: cwdir
+                },
                     (code, json) => {
                         DefaultTask.util.promiseResultResponser(json, cwdir, callback, pickupInformations)
                             .then(() => {
@@ -110,11 +110,11 @@ exports.command = {
                     let killer = myexec.spawn_fileio(
                         './code.out', [],
                         cwdir + '/' + nameStdin, cwdir + '/' + nameStdout, cwdir + '/' + nameStderr, {
-                            env: {
-                                PATH: FileWrapper.cygwinEnvPath
-                            },
-                            cwd: cwdir
+                        env: {
+                            PATH: FileWrapper.cygwinEnvPath
                         },
+                        cwd: cwdir
+                    },
                         (code, json) => {
                             resolve(json);
                         }

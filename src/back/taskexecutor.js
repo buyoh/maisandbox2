@@ -7,60 +7,60 @@ const Importer = require('./taskimporter');
  * @param {JSON} json 
  * @param {(type:String, json:JSON) => boolean} callback 何か成功する度に呼び出す
  */
-exports.pushTask = function (json, callback) {
-    const task = {
+exports.pushJob = function (json, callback) {
+    const job = {
         json: json,
         callback: callback
     };
     if (json.recipe === undefined) {
-        task.callback.call(null, 'error', {
+        job.callback.call(null, 'error', {
             reason: 'unknown recipe'
         }, true);
         return;
     }
     setTimeout((t) => {
-        runTaskRecipe(t);
-    }, 0, task);
+        runJobRecipe(t);
+    }, 0, job);
 };
 
 
-function runTaskRecipe(task) {
-    const langTask = Importer.langTasks[task.json.cmd];
+function runJobRecipe(job) {
+    const langTask = Importer.langTasks[job.json.cmd];
     if (langTask === undefined) {
-        task.callback.call(null, 'error', {
+        job.callback.call(null, 'error', {
             reason: 'unknown cmd'
         }, true);
         return;
     }
-    const recipe = langTask.recipes[task.json.recipe];
+    const recipe = langTask.recipes[job.json.recipe];
     if (recipe === undefined) {
-        task.callback.call(null, 'error', {
+        job.callback.call(null, 'error', {
             reason: 'unknown recipe'
         }, true);
         return;
     }
 
-    task.uniqueName = task.json.socketid + '/' + task.json.cmd;
+    job.uniqueName = job.json.socketid + '/' + job.json.cmd;
 
     const accepted = [];
 
-    const process = function (taskIndex) {
-        if (taskIndex >= recipe.tasks.length) {
-            task.callback.call(null, 'success', {}, true);
+    const process = function (scriptIndex) {
+        if (scriptIndex >= recipe.script.length) {
+            job.callback.call(null, 'success', {}, true);
             return;
         }
-        if (!langTask.command[recipe.tasks[taskIndex]]) {
-            task.callback.call(null, 'error', {
-                reason: 'not found the task[' + recipe.tasks[taskIndex] + ']'
+        if (!langTask.command[recipe.script[scriptIndex]]) {
+            job.callback.call(null, 'error', {
+                reason: 'not found the task[' + recipe.script[scriptIndex] + ']'
             }, true);
             return;
         }
-        langTask.command[recipe.tasks[taskIndex]](task, (msg, json = {}) => {
-            json.taskName = recipe.tasks[taskIndex];
-            task.callback.call(null, msg, json);
-            if (msg == 'continue' && !accepted[taskIndex]) {
-                accepted[taskIndex] = true;
-                process(taskIndex + 1);
+        langTask.command[recipe.script[scriptIndex]](job, (msg, json = {}) => {
+            json.commandName = recipe.script[scriptIndex];
+            job.callback.call(null, msg, json);
+            if (msg == 'continue' && !accepted[scriptIndex]) {
+                accepted[scriptIndex] = true;
+                process(scriptIndex + 1);
             }
         });
     };

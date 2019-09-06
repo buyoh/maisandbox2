@@ -54,7 +54,7 @@ function initialize() {
 // _____________________________________________________
 // socket
 
-// submitしたtaskの状況がサーバから送られてくる
+// submitしたjobの状況がサーバから送られてくる
 Socket.addProgressListener((json) => {
     // console.log(json);
 
@@ -78,7 +78,7 @@ Socket.addProgressListener((json) => {
                     'info';
 
     Interface.appendResultLog(
-        json.data.taskName ? '[' + json.data.taskName + ']' + json.type : json.type,
+        json.data.commandName ? '[' + json.data.commandName + ']' + json.type : json.type,
         json.data, state, json.type === 'progress'
     );
 
