@@ -38,6 +38,13 @@ function bundEvents() {
         Interface.changeVisibleRecipes(cmd, lang);
     });
 
+    Interface.addClickRecipeListener((recipe) => {
+        const info = Interface.gatherInfo();
+        info.recipe = recipe;
+        Interface.clearResultLogs();
+        Socket.emitSubmit(info);
+    });
+
 }
 
 

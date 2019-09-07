@@ -5,9 +5,8 @@
 const $ = require('jquery');
 const Editor = require('./aceditor');
 const Stdios = require('./stdios');
-const Socket = require('./socket');
 
-const Languages = require('./languages');
+// const Languages = require('./languages');
 
 
 // メモ化
@@ -169,6 +168,13 @@ export function appendResultLog(title, message, classtype, isProgressing = false
 // _____________________________________________________
 // setup
 
+
+const clickRecipeHandlers = [];
+export function addClickRecipeListener(handler) {
+    clickRecipeHandlers.push(handler);
+}
+
+
 export function addTask(taskInfo) {
     // TODO: 少し長いので分割する
 
@@ -203,10 +209,8 @@ export function addTask(taskInfo) {
                         recipe: name
                     }, (e) => {
                         const recipe = e.data.recipe;
-                        const info = gatherInfo();
-                        info.recipe = recipe;
-                        clearResultLogs();
-                        Socket.emitSubmit(info);
+                        for (let h of clickRecipeHandlers)
+                            h(recipe);
                     })
             );
         }
