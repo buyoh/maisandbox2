@@ -2,8 +2,8 @@ const socketio = require('socket.io');
 
 const TaskImporter = require('./taskimporter');
 
-const TaskExecutor = require('./taskexecutor');
-const Validator = require('./validator');
+const JobExecutor = require('./jobexecutor');
+// const Validator = require('./validator');
 const Logger = require('./logger');
 
 //
@@ -36,7 +36,7 @@ soio.sockets.on('connection', (socket) => {
         });
     });
 
-    socket.on('disconnect', () => {});
+    socket.on('disconnect', () => { });
 
     // 言語情報等を取得する
     socket.on('c2s_getCatalog', (listener) => {
@@ -48,15 +48,15 @@ soio.sockets.on('connection', (socket) => {
         if (!auth) return;
         if (killer)
             killer();
-        if (!Validator.checkTaskSubmission(data)) {
-            socket.emit('s2c_progress', {
-                type: 'error',
-                data: {}
-            });
-            return;
-        }
+        // if (!Validator.checkTaskSubmission(data)) {
+        //     socket.emit('s2c_progress', {
+        //         type: 'error',
+        //         data: {}
+        //     });
+        //     return;
+        // }
         data.socketid = socket.id;
-        killer = TaskExecutor.pushTask(data, (type, json) => {
+        killer = JobExecutor.pushJob(data, (type, json) => {
             if (json.killer !== undefined) {
                 killer = json.killer;
                 json.killer = undefined;

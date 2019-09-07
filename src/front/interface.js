@@ -55,22 +55,11 @@ export function gatherInfo() {
         });
 
     return {
-        txt_stdin: Stdios.getStdinLegacy(), // TODO: remove
         txt_stdins: Stdios.getStdins(true),
         txt_code: Editor.getValue(),
         cmd: cmd,
         options: options
     };
-    // timelimit:   $("#input_timeout").val()
-    /*
-var flgDisableCleaning = $("#disableCleaning:checked").val();
-var flagWAll = $("#flagWAll:checked").val();
-var macro = $("#input_macro").val();
-var source = $("#selector_sourcechooser").val();
-var sourcepath = $("#input_filepath").val();
-var filestdin = $('#chk_filestdin:checked').val();
-var stdinpath = $('#input_stdinpath').val();
-    */
 }
 
 
@@ -93,7 +82,7 @@ export function chooseLang(cmd) {
 
 
 /**
- * addLanguage等によって言語関係を変更したら最後にこれを呼び出す
+ * addTask等によって言語関係を変更したら最後にこれを呼び出す
  */
 export function rechooseLang() {
     const dom = m$('#selector_codelang');
@@ -117,16 +106,13 @@ export function changeVisibleRecipes(cmd, lang) {
 }
 
 
-export function displayStdout(text, id = null) {
+export function displayStdout(text, id) {
     if (id) {
         const li = {};
         li[id] = text;
         Stdios.setStdouts(li);
-    } else
-        Stdios.setStdoutLegacy(text);
-} // export function displayStderr(message){
-//     $("#div_stderr").text(message);
-// }
+    }
+}
 
 
 export function clearResultLogs() {
@@ -183,8 +169,7 @@ export function appendResultLog(title, message, classtype, isProgressing = false
 // _____________________________________________________
 // setup
 
-export function addLanguage(taskInfo) {
-    // TODO: Languageではなく、Task
+export function addTask(taskInfo) {
     // TODO: 少し長いので分割する
 
     // const langInfo = Languages.languages[taskInfo.language];
@@ -209,8 +194,7 @@ export function addLanguage(taskInfo) {
     {
         const domc = $('<div></div>')
             .data('cmd', taskInfo.cmd);
-        for (let name in taskInfo.recipes) {
-            // note: langInfo.recipes[name] の情報を使っていない・保持していない
+        for (let name of Object.keys(taskInfo.recipes)) {
             domc.append(
                 $('<button></button>')
                     .addClass('btn btn-sm btn-primary')
@@ -218,7 +202,6 @@ export function addLanguage(taskInfo) {
                     .on('click', {
                         recipe: name
                     }, (e) => {
-                        // todo: refactoring(eventbinderがやるべき)
                         const recipe = e.data.recipe;
                         const info = gatherInfo();
                         info.recipe = recipe;

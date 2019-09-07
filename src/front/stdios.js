@@ -29,19 +29,6 @@ $(() => {
 // _____________________________________________________
 // getter / setter
 
-export function getStdinLegacy() {
-    return $('#div_stdios > div').eq(0).data('components').textareaStdin.val();
-}
-export function setStdinLegacy(text) {
-    return $('#div_stdios > div').eq(0).data('components').textareaStdin.val(text);
-}
-export function getStdoutLegacy() {
-    return $('#div_stdios > div').eq(0).data('components').textareaStdout.val();
-}
-export function setStdoutLegacy(text) {
-    return $('#div_stdios > div').eq(0).data('components').textareaStdout.val(text);
-}
-
 export function getStdins(visibleonly = true) {
     const li = {};
     $('#div_stdios > div').each((i, e) => {

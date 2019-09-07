@@ -16,10 +16,10 @@ exports.options = options;
 
 exports.recipes = {
     'compile > run': {
-        tasks: ['setupAll', 'compile', 'run']
+        script: ['setupAll', 'compile', 'run']
     },
     'run(no update)': {
-        tasks: ['setupIO', 'run']
+        script: ['setupIO', 'run']
     }
 };
 
@@ -65,8 +65,8 @@ exports.command = {
                 let killer = myexec.spawn_fileio(
                     'go', param,
                     null, cwdir + '/stdout.txt', cwdir + '/stderr.txt', {
-                        cwd: cwdir
-                    },
+                    cwd: cwdir
+                },
                     (code, json) => {
                         DefaultTask.util.promiseResultResponser(json, cwdir, callback, pickupInformations)
                             .then(() => {
@@ -100,8 +100,8 @@ exports.command = {
                     let killer = myexec.spawn_fileio(
                         './code.exe', [],
                         cwdir + '/' + nameStdin, cwdir + '/' + nameStdout, cwdir + '/' + nameStderr, {
-                            cwd: cwdir
-                        },
+                        cwd: cwdir
+                    },
                         (code, json) => {
                             resolve(json);
                         }

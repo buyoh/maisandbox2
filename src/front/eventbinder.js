@@ -42,11 +42,9 @@ function bundEvents() {
 
 
 function initialize() {
-
     Socket.getCatalog((allLangInfo) => {
-        // TODO: 言語ごとの配列にまとめる
         for (let langInfo of allLangInfo)
-            Interface.addLanguage(langInfo);
+            Interface.addTask(langInfo);
         Interface.rechooseLang();
     });
 }
@@ -54,7 +52,7 @@ function initialize() {
 // _____________________________________________________
 // socket
 
-// submitしたtaskの状況がサーバから送られてくる
+// submitしたjobの状況がサーバから送られてくる
 Socket.addProgressListener((json) => {
     // console.log(json);
 
@@ -78,7 +76,7 @@ Socket.addProgressListener((json) => {
                     'info';
 
     Interface.appendResultLog(
-        json.data.taskName ? '[' + json.data.taskName + ']' + json.type : json.type,
+        json.data.commandName ? '[' + json.data.commandName + ']' + json.type : json.type,
         json.data, state, json.type === 'progress'
     );
 

@@ -15,10 +15,10 @@ exports.options = {};
 
 exports.recipes = {
     'run': {
-        tasks: ['setupAll', 'run']
+        script: ['setupAll', 'run']
     },
     'run(no update)': {
-        tasks: ['setupIO', 'run']
+        script: ['setupIO', 'run']
     }
 };
 
@@ -43,8 +43,8 @@ exports.command = {
                     let killer = myexec.spawn_fileio(
                         'node', ['./code.js'],
                         cwdir + '/' + nameStdin, cwdir + '/' + nameStdout, cwdir + '/' + nameStderr, {
-                            cwd: cwdir
-                        },
+                        cwd: cwdir
+                    },
                         (code, json) => {
                             resolve(json);
                         }
