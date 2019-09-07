@@ -55,7 +55,6 @@ export function gatherInfo() {
         });
 
     return {
-        txt_stdin: Stdios.getStdinLegacy(), // TODO: remove
         txt_stdins: Stdios.getStdins(true),
         txt_code: Editor.getValue(),
         cmd: cmd,
@@ -107,16 +106,13 @@ export function changeVisibleRecipes(cmd, lang) {
 }
 
 
-export function displayStdout(text, id = null) {
+export function displayStdout(text, id) {
     if (id) {
         const li = {};
         li[id] = text;
         Stdios.setStdouts(li);
-    } else
-        Stdios.setStdoutLegacy(text);
-} // export function displayStderr(message){
-//     $("#div_stderr").text(message);
-// }
+    }
+}
 
 
 export function clearResultLogs() {
