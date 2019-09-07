@@ -42,11 +42,9 @@ function bundEvents() {
 
 
 function initialize() {
-
     Socket.getCatalog((allLangInfo) => {
-        // TODO: 言語ごとの配列にまとめる
         for (let langInfo of allLangInfo)
-            Interface.addLanguage(langInfo);
+            Interface.addTask(langInfo);
         Interface.rechooseLang();
     });
 }

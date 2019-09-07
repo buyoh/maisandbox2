@@ -10,7 +10,7 @@ const task_sh = require('./task/shWsl');
 const task_clay = require('./task/cLay');
 const task_kotlin = require('./task/kotlin');
 
-const langTasks = {
+const tasks = {
     'Ruby': task_ruby,
     'C++Cyg': task_cpp,
     'C++': task_cppraw,
@@ -24,12 +24,12 @@ const langTasks = {
     'kotlin': task_kotlin
 };
 
-exports.langTasks = langTasks; // TODO: rename to Task
+exports.tasks = tasks;
 
 exports.allLangInfo = (() => {
     const a = [];
-    for (let cmd in langTasks) {
-        const task = langTasks[cmd];
+    for (let cmd in tasks) {
+        const task = tasks[cmd];
         const j = Object.assign({ cmd: cmd }, task.info);
         j.recipes = task.recipes;
         j.options = task.options;

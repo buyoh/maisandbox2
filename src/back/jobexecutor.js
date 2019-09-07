@@ -25,7 +25,7 @@ exports.pushJob = function (json, callback) {
 
 
 function runJobRecipe(job) {
-    const langTask = Importer.langTasks[job.json.cmd];
+    const langTask = Importer.tasks[job.json.cmd];
     if (langTask === undefined) {
         job.callback.call(null, 'error', {
             reason: 'unknown cmd'
