@@ -3,8 +3,7 @@
 // ボタン押下時の操作等のeventと初期化を記述する
 
 const $ = require('jquery');
-const Interface = require('./interface/panel');
-const Editor = require('./interface/aceditor');
+const Interface = require('./interface');
 const Storage = require('./storage');
 const Socket = require('./socket');
 
@@ -22,11 +21,11 @@ function bundEvents() {
     });
 
     $('#btn_storeTemplate').on('click', () => {
-        Storage.storeTemplate(Interface.getChosenLang(), Editor.getValue());
+        Storage.storeTemplate(Interface.Panel.getChosenLang(), Interface.Editor.getValue());
     });
 
     $('#btn_loadTemplate').on('click', () => {
-        Editor.setValue(Storage.loadTemplate(Interface.getChosenLang()));
+        Interface.Editor.setValue(Storage.loadTemplate(Interface.Panel.getChosenLang()));
     });
 
     $('#selector_codelang').change(() => {
@@ -35,13 +34,13 @@ function bundEvents() {
         let lang = dom.data('lang');
         if (cmd === '') return;
 
-        Interface.changeVisibleRecipes(cmd, lang);
+        Interface.Panel.changeVisibleRecipes(cmd, lang);
     });
 
-    Interface.addClickRecipeListener((recipe) => {
-        const info = Interface.gatherInfo();
+    Interface.Panel.addClickRecipeListener((recipe) => {
+        const info = Interface.Panel.gatherInfo();
         info.recipe = recipe;
-        Interface.clearResultLogs();
+        Interface.Panel.clearResultLogs();
         Socket.emitSubmit(info);
     });
 
@@ -51,8 +50,8 @@ function bundEvents() {
 function initialize() {
     Socket.getCatalog((allLangInfo) => {
         for (let langInfo of allLangInfo)
-            Interface.addTask(langInfo);
-        Interface.rechooseLang();
+            Interface.Panel.addTask(langInfo);
+        Interface.Panel.rechooseLang();
     });
 }
 
@@ -64,7 +63,7 @@ Socket.addProgressListener((json) => {
     // console.log(json);
 
     if (json.type === 'halted') {
-        Interface.appendResultLog('halted', '', 'info');
+        Interface.Panel.appendResultLog('halted', '', 'info');
         return;
     }
 
@@ -73,7 +72,7 @@ Socket.addProgressListener((json) => {
             $('#div_resultlogs > div').first().find('.val')
                 .filter((i, e) => ($(e).data('key') == 'stdout'));
         if (d.length === 1)
-            Interface.displayStdout(d.text());
+            Interface.Panel.displayStdout(d.text());
     }
 
     const state =
@@ -82,17 +81,17 @@ Socket.addProgressListener((json) => {
                 json.type === 'error' ? 'danger' :
                     'info';
 
-    Interface.appendResultLog(
+    Interface.Panel.appendResultLog(
         json.data.commandName ? '[' + json.data.commandName + ']' + json.type : json.type,
         json.data, state, json.type === 'progress'
     );
 
     if (json.data && json.data.key) {
-        Interface.displayStdout(json.data.stdout, json.data.key);
+        Interface.Panel.displayStdout(json.data.stdout, json.data.key);
     }
 
     if (json.data.note) {
-        Editor.setAnnotations(json.data.note);
+        Interface.Editor.setAnnotations(json.data.note);
     }
 
 });
