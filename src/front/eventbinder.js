@@ -21,11 +21,11 @@ function bundEvents() {
     });
 
     $('#btn_storeTemplate').on('click', () => {
-        Storage.storeTemplate(Interface.Panel.getChosenLang(), Interface.Editor.getValue());
+        Storage.storeTemplate(Interface.getSelectedTask(), Interface.Editor.getValue());
     });
 
     $('#btn_loadTemplate').on('click', () => {
-        Interface.Editor.setValue(Storage.loadTemplate(Interface.Panel.getChosenLang()));
+        Interface.Editor.setValue(Storage.loadTemplate(Interface.getSelectedTask()));
     });
 
     $('#selector_codelang').change(() => {
@@ -49,9 +49,7 @@ function bundEvents() {
 
 function initialize() {
     Socket.getCatalog((allLangInfo) => {
-        for (let langInfo of allLangInfo)
-            Interface.Panel.addTask(langInfo);
-        Interface.Panel.rechooseLang();
+        Interface.appendTasks(allLangInfo);
     });
 }
 

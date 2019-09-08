@@ -36,13 +36,13 @@ $(() => {
 // _____________________________________________________
 // getter
 
-export function getChosenLang() {
+function getSelectedTask() { // TODO: moved TaskSelector
     return $('#selector_codelang option:selected').data('cmd');
 }
 
 
 export function gatherInfo() {
-    const cmd = getChosenLang();
+    const cmd = getSelectedTask();
     const options = {};
     $('#div_options > div')
         .filter((i, e) => ($(e).data('cmd') == cmd))
@@ -62,37 +62,6 @@ export function gatherInfo() {
 
 // _____________________________________________________
 // manipulate
-
-/**
- * cmd言語を選んだ状態にする
- * @param {*} cmd 
- */
-export function chooseLang(cmd) {
-    let dom = $('#selector_codelang option').filter((i, e) => ($(e).data('cmd') == cmd));
-    if (dom.length > 0)
-        dom.prop('selected', true);
-    else
-        m$('#selector_codelang').data('LazyChoiceCmd', cmd);
-
-    m$('#selector_codelang').change();
-}
-
-
-/**
- * addTask等によって言語関係を変更したら最後にこれを呼び出す
- */
-export function rechooseLang() {
-    const dom = m$('#selector_codelang');
-    const appVal = dom.data('LazyChoiceCmd');
-    if (appVal) {
-        dom.data('LazyChoiceCmd', null);
-        $('#selector_codelang option')
-            .filter((i, e) => ($(e).data('cmd') == appVal))
-            .prop('selected', true);
-    }
-    dom.change();
-}
-
 
 export function changeVisibleRecipes(cmd, lang) {
     $('#div_recipes > div').filter((i, e) => ($(e).data('cmd') == cmd)).removeClass('d-none');
@@ -115,77 +84,58 @@ export function displayStdout(text, id) { // TODO: ????
 // _____________________________________________________
 // setup
 
-
 const clickRecipeHandlers = [];
 export function addClickRecipeListener(handler) {
     clickRecipeHandlers.push(handler);
 }
 
 
-export function addTask(taskInfo) {
-    // TODO: 少し長いので分割する
 
-    // const langInfo = Languages.languages[taskInfo.language];
-
-    const category = taskInfo.category || 'default';
-
-    let optg = $('#selector_codelang optgroup[label="' + category + '"]');
-
-    if (optg.length === 0)
-        optg = $('<optgroup></optgroup>')
-            .attr('label', category)
-            .appendTo(m$('#selector_codelang'));
-
-    // selector
-    $('<option></option>')
-        .data('cmd', taskInfo.cmd)
-        .data('lang', taskInfo.language)
-        .text(taskInfo.language)
-        .appendTo(optg);
-
-    // recipes
-    {
-        const domc = $('<div></div>')
-            .data('cmd', taskInfo.cmd);
-        for (let name of Object.keys(taskInfo.recipes)) {
-            domc.append(
-                $('<button></button>')
-                    .addClass('btn btn-sm btn-primary')
-                    .text(name)
-                    .on('click', {
-                        recipe: name
-                    }, (e) => {
-                        const recipe = e.data.recipe;
-                        for (let h of clickRecipeHandlers)
-                            h(recipe);
-                    })
-            );
-        }
-        m$('#div_recipes').append(domc);
+function appendRecipes(taskInfo) {
+    const domc = $('<div></div>')
+        .data('cmd', taskInfo.cmd);
+    for (let name of Object.keys(taskInfo.recipes)) {
+        domc.append(
+            $('<button></button>')
+                .addClass('btn btn-sm btn-primary')
+                .text(name)
+                .on('click', {
+                    recipe: name
+                }, (e) => {
+                    const recipe = e.data.recipe;
+                    for (let h of clickRecipeHandlers)
+                        h(recipe);
+                })
+        );
     }
+    m$('#div_recipes').append(domc);
+}
 
-    // options
-    {
-        const domc = $('<div></div>').data('cmd', taskInfo.cmd);
-        for (let name in taskInfo.options) {
-            const dom = $('<select></select>')
-                .data('key', name)
-                .addClass('form-control form-control-sm')
-                .css('width', 'inherit');
-            for (let val of taskInfo.options[name])
-                dom.append(
-                    $('<option></option>')
-                        .text(val)
-                        .val(val)
-                );
-            domc.append(
-                $('<div></div>').addClass('keypair')
-                    .append($('<div></div>').addClass('key').text(name))
-                    .append(dom.addClass('val'))
+
+function appendTaskOptions(taskInfo) {
+    const domc = $('<div></div>').data('cmd', taskInfo.cmd);
+    for (let name in taskInfo.options) {
+        const dom = $('<select></select>')
+            .data('key', name)
+            .addClass('form-control form-control-sm')
+            .css('width', 'inherit');
+        for (let val of taskInfo.options[name])
+            dom.append(
+                $('<option></option>')
+                    .text(val)
+                    .val(val)
             );
-        }
-        m$('#div_options').append(domc);
+        domc.append(
+            $('<div></div>').addClass('keypair')
+                .append($('<div></div>').addClass('key').text(name))
+                .append(dom.addClass('val'))
+        );
     }
+    m$('#div_options').append(domc);
+}
 
 
+export function appendTask(taskInfo) { // TODO: appendTask
+    appendRecipes(taskInfo);
+    appendTaskOptions(taskInfo);
 }

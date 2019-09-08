@@ -39,7 +39,7 @@ export function restoreBackup() {
     Interface.Stdios.restoreStdin(json.txt_stdins);
     Interface.Editor.setValue(json.txt_code);
 
-    Interface.Panel.chooseLang(json.cmd);
+    Interface.TaskSelector.setSelectedTask(json.cmd);
 }
 
 
@@ -47,6 +47,6 @@ export function storeBackup() {
     Storage.storeBackupJson({
         txt_stdins: Interface.Stdios.dumpStdin(),
         txt_code: Interface.Editor.getValue(),
-        cmd: Interface.Panel.getChosenLang()
+        cmd: Interface.TaskSelector.getSelectedTask()
     });
 }
