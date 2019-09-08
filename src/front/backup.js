@@ -3,9 +3,9 @@
 // バックアップ機能
 
 const $ = require('jquery');
-const Editor = require('./aceditor');
-const Interface = require('./interface');
-const Stdios = require('./stdios');
+const Editor = require('./interface/aceditor');
+const Interface = require('./interface/panel');
+const Stdios = require('./interface/stdios');
 const Storage = require('./storage');
 
 

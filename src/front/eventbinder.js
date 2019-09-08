@@ -3,8 +3,8 @@
 // ボタン押下時の操作等のeventと初期化を記述する
 
 const $ = require('jquery');
-const Interface = require('./interface');
-const Editor = require('./aceditor');
+const Interface = require('./interface/panel');
+const Editor = require('./interface/aceditor');
 const Storage = require('./storage');
 const Socket = require('./socket');
 
