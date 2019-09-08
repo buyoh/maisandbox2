@@ -40,7 +40,7 @@ function bundEvents() {
     Interface.Panel.addClickRecipeListener((recipe) => {
         const info = Interface.Panel.gatherInfo();
         info.recipe = recipe;
-        Interface.Panel.clearResultLogs();
+        Interface.Results.clearResults();
         Socket.emitSubmit(info);
     });
 
@@ -63,7 +63,7 @@ Socket.addProgressListener((json) => {
     // console.log(json);
 
     if (json.type === 'halted') {
-        Interface.Panel.appendResultLog('halted', '', 'info');
+        Interface.Results.appendResult('halted', '', 'info');
         return;
     }
 
@@ -81,7 +81,7 @@ Socket.addProgressListener((json) => {
                 json.type === 'error' ? 'danger' :
                     'info';
 
-    Interface.Panel.appendResultLog(
+    Interface.Results.appendResult(
         json.data.commandName ? '[' + json.data.commandName + ']' + json.type : json.type,
         json.data, state, json.type === 'progress'
     );
