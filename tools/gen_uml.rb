@@ -51,6 +51,8 @@ paths = Dir.glob('./src/**/*js').select do |path|
   path['front/media'].nil? && !(path=~/back\/task\/(\w+)\.m?js$/ && $1 != 'cpp' && $1 != 'ruby')
 end.map(&method(:path_normalize)).map(&method(:force_ext))
 
+paths = paths.select{|path| path=~Regexp.compile(ARGV[0]) } if ARGV[0]
+
 requires = {}
 
 paths.each do |path|
