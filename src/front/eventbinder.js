@@ -14,33 +14,25 @@ $(() => {
 });
 
 
-function bundEvents() { // TODO: refactoring
+function bundEvents() {
 
-    $('#btn_halt').on('click', () => {
+    $('#btn_halt').on('click', () => { // TODO: インターフェース関連のどこかにListener実装
         Socket.emitHalt();
     });
 
-    $('#btn_storeTemplate').on('click', () => {
-        Storage.storeTemplate(Interface.getSelectedTask(), Interface.Editor.getValue());
+    $('#btn_storeTemplate').on('click', () => { // TODO: インターフェース関連のどこかにListener実装
+        Storage.storeTemplate(Interface.getSelectedTaskCmd(), Interface.Editor.getValue());
     });
 
-    $('#btn_loadTemplate').on('click', () => {
-        Interface.Editor.setValue(Storage.loadTemplate(Interface.getSelectedTask()));
+    $('#btn_loadTemplate').on('click', () => { // TODO: インターフェース関連のどこかにListener実装
+        Interface.Editor.setValue(Storage.loadTemplate(Interface.getSelectedTaskCmd()));
     });
 
-    $('#selector_codelang').change(() => {
-        let dom = $('#selector_codelang option:selected');
-        let cmd = dom.data('cmd');
-        let lang = dom.data('lang');
-        if (cmd === '') return;
-
-        Interface.LaunchPad.changeVisibleRecipes(cmd, lang);
-    });
-
-    Interface.LaunchPad.addClickRecipeListener((recipe) => {
+    Interface.LaunchPad.addLaunchRecipeListener((recipe) => {
         const info = Interface.gatherInfo();
         info.recipe = recipe;
         Interface.Results.clearResults();
+        Interface.Editor.clearAnnotations();
         Socket.emitSubmit(info);
     });
 

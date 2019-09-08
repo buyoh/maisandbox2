@@ -3,7 +3,6 @@
 // UI全体のwrapper，特に複数の部品に影響があるもの
 
 const $ = require('jquery');
-const Editor = require('./aceditor');
 
 
 // メモ化
@@ -19,7 +18,7 @@ function m$(html) {
 // _____________________________________________________
 // getter
 
-export function getOptionValues(cmd) { // TODO: moved TaskSelector
+export function getOptionValues(cmd) {
     const options = {};
     $('#div_options > div')
         .filter((i, e) => ($(e).data('cmd') == cmd))
@@ -35,12 +34,11 @@ export function getOptionValues(cmd) { // TODO: moved TaskSelector
 // _____________________________________________________
 // manipulate
 
-export function changeVisibleRecipes(cmd, lang) {
+export function changeVisibleRecipes(cmd) {
     $('#div_recipes > div').filter((i, e) => ($(e).data('cmd') == cmd)).removeClass('d-none');
     $('#div_recipes > div').filter((i, e) => ($(e).data('cmd') != cmd)).addClass('d-none');
     $('#div_options > div').filter((i, e) => ($(e).data('cmd') == cmd)).removeClass('d-none');
     $('#div_options > div').filter((i, e) => ($(e).data('cmd') != cmd)).addClass('d-none');
-    Editor.changeCodeLang(lang);
 }
 
 
@@ -48,7 +46,7 @@ export function changeVisibleRecipes(cmd, lang) {
 // setup
 
 const clickRecipeHandlers = [];
-export function addClickRecipeListener(handler) {
+export function addLaunchRecipeListener(handler) {
     clickRecipeHandlers.push(handler);
 }
 

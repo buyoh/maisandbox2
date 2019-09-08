@@ -18,9 +18,30 @@ function m$(html) {
 // _____________________________________________________
 // getter
 
-export function getSelectedTask() {
+export function getSelectedTaskCmd() {
     return $('#selector_codelang option:selected').data('cmd');
 }
+
+export function getSelectedTaskCmdLang() {
+    const dom = $('#selector_codelang option:selected');
+    return [dom.data('cmd'), dom.data('lang')];
+}
+
+
+// _____________________________________________________
+// events
+
+const changeEventHandlers = [];
+export function addChangeEventListener(handler) {
+    changeEventHandlers.push(handler);
+}
+
+// bind
+$(() => {
+    $('#selector_codelang').change(() => {
+        for (let h of changeEventHandlers) h();
+    });
+});
 
 
 // _____________________________________________________

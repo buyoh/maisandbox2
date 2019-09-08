@@ -47,6 +47,6 @@ export function storeBackup() {
     Storage.storeBackupJson({
         txt_stdins: Interface.Stdios.dumpStdin(),
         txt_code: Interface.Editor.getValue(),
-        cmd: Interface.TaskSelector.getSelectedTask()
+        cmd: Interface.TaskSelector.getSelectedTaskCmd()
     });
 }

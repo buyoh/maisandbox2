@@ -3,15 +3,13 @@
 // 実行ログを垂れ流す部分の実装
 
 const $ = require('jquery');
-const Editor = require('./aceditor');
 
 
 // _____________________________________________________
 // manipulate
 
-export function clearResults() { // TODO: onClearResults
+export function clearResults() {
     $('#div_resultlogs').empty();
-    Editor.clearAnnotations();
 }
 
 export function appendResult(title, message, classtype, isProgressing = false) {

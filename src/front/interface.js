@@ -9,6 +9,7 @@ export const Stdios = require('./interface/stdios');
 export const Results = require('./interface/results');
 export const TaskSelector = require('./interface/taskselector');
 
+
 // _____________________________________________________
 // common setup
 
@@ -23,13 +24,24 @@ $(() => {
             elem.setSelectionRange(pos + 1, pos + 1);
         }
     });
+    bindEvents();
 });
+
+
+function bindEvents() {
+    TaskSelector.addChangeEventListener(() => {
+        const [cmd, lang] = TaskSelector.getSelectedTaskCmdLang();
+        if (cmd === '') return;
+        LaunchPad.changeVisibleRecipes(cmd);
+        Editor.changeLanguage(lang);
+    });
+}
 
 // _____________________________________________________
 // 
 
 export function gatherInfo() {
-    const cmd = TaskSelector.getSelectedTask();
+    const cmd = TaskSelector.getSelectedTaskCmd();
     const options = LaunchPad.getOptionValues(cmd);
     return {
         txt_stdins: Stdios.getStdins(true),
@@ -39,7 +51,7 @@ export function gatherInfo() {
     };
 }
 
-export const getSelectedTask = TaskSelector.getSelectedTask;
+export const getSelectedTaskCmd = TaskSelector.getSelectedTaskCmd;
 
 export function appendTasks(taskInfos) {
     for (let taskInfo of taskInfos) {
