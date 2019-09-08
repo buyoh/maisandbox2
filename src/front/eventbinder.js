@@ -14,7 +14,7 @@ $(() => {
 });
 
 
-function bundEvents() {
+function bundEvents() { // TODO: refactoring
 
     $('#btn_halt').on('click', () => {
         Socket.emitHalt();
@@ -34,11 +34,11 @@ function bundEvents() {
         let lang = dom.data('lang');
         if (cmd === '') return;
 
-        Interface.Panel.changeVisibleRecipes(cmd, lang);
+        Interface.LaunchPad.changeVisibleRecipes(cmd, lang);
     });
 
-    Interface.Panel.addClickRecipeListener((recipe) => {
-        const info = Interface.Panel.gatherInfo();
+    Interface.LaunchPad.addClickRecipeListener((recipe) => {
+        const info = Interface.gatherInfo();
         info.recipe = recipe;
         Interface.Results.clearResults();
         Socket.emitSubmit(info);
@@ -70,7 +70,7 @@ Socket.addProgressListener((json) => {
             $('#div_resultlogs > div').first().find('.val')
                 .filter((i, e) => ($(e).data('key') == 'stdout'));
         if (d.length === 1)
-            Interface.Panel.displayStdout(d.text());
+            Interface.Stdios.displayStdout(d.text());
     }
 
     const state =
@@ -85,7 +85,7 @@ Socket.addProgressListener((json) => {
     );
 
     if (json.data && json.data.key) {
-        Interface.Panel.displayStdout(json.data.stdout, json.data.key);
+        Interface.Stdios.displayStdout(json.data.stdout, json.data.key);
     }
 
     if (json.data.note) {

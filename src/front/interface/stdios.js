@@ -59,8 +59,17 @@ export function appendField() {
     $('#div_stdios').append(generateDom());
 }
 
-export function clearField() {
+export function clearField() { // TODO: rename removeAllField
     $('#div_stdios').empty();
+}
+
+
+export function displayStdout(text, id) { // TODO: ????
+    if (id) {
+        const li = {};
+        li[id] = text;
+        setStdouts(li);
+    }
 }
 
 
