@@ -31,17 +31,11 @@ export function getSelectedTaskCmdLang() {
 // _____________________________________________________
 // events
 
-const changeEventHandlers = [];
-export function addChangeEventListener(handler) {
-    changeEventHandlers.push(handler);
-}
-
-// bind
-$(() => {
+export function onChangeSelector(handler) {
     $('#selector_codelang').change(() => {
-        for (let h of changeEventHandlers) h();
+        handler();
     });
-});
+}
 
 
 // _____________________________________________________

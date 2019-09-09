@@ -16,15 +16,15 @@ $(() => {
 
 function bundEvents() {
 
-    $('#btn_halt').on('click', () => { // TODO: インターフェース関連のどこかにListener実装
+    Interface.LaunchPad.onClickHalt(() => {
         Socket.emitHalt();
     });
 
-    $('#btn_storeTemplate').on('click', () => { // TODO: インターフェース関連のどこかにListener実装
+    Interface.EditPanel.onClickStoreTemplate(() => {
         Storage.storeTemplate(Interface.getSelectedTaskCmd(), Interface.Editor.getValue());
     });
 
-    $('#btn_loadTemplate').on('click', () => { // TODO: インターフェース関連のどこかにListener実装
+    Interface.EditPanel.onClickLoadTemplate(() => {
         Interface.Editor.setValue(Storage.loadTemplate(Interface.getSelectedTaskCmd()));
     });
 
@@ -83,5 +83,4 @@ Socket.addProgressListener((json) => {
     if (json.data.note) {
         Interface.Editor.setAnnotations(json.data.note);
     }
-
 });

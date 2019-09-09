@@ -8,6 +8,7 @@ export const LaunchPad = require('./interface/launchpad');
 export const Stdios = require('./interface/stdios');
 export const Results = require('./interface/results');
 export const TaskSelector = require('./interface/taskselector');
+export const EditPanel = require('./interface/editpanel');
 
 
 // _____________________________________________________
@@ -29,7 +30,7 @@ $(() => {
 
 
 function bindEvents() {
-    TaskSelector.addChangeEventListener(() => {
+    TaskSelector.onChangeSelector(() => {
         const [cmd, lang] = TaskSelector.getSelectedTaskCmdLang();
         if (cmd === '') return;
         LaunchPad.changeVisibleRecipes(cmd);

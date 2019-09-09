@@ -40,6 +40,7 @@ export function getValue() {
 }
 
 export function setValue(text) {
+    if (text === null) text = '';
     aceditor.setValue(text, -1);
 }
 

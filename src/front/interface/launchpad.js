@@ -30,6 +30,17 @@ export function getOptionValues(cmd) {
 }
 
 
+// _____________________________________________________
+// events
+
+export function onClickHalt(handler) {
+    $('#btn_halt').on('click', () => {
+        handler();
+    });
+}
+
+
+
 
 // _____________________________________________________
 // manipulate
