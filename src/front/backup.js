@@ -3,9 +3,7 @@
 // バックアップ機能
 
 const $ = require('jquery');
-const Editor = require('./aceditor');
 const Interface = require('./interface');
-const Stdios = require('./stdios');
 const Storage = require('./storage');
 
 
@@ -38,17 +36,17 @@ export function restoreBackup() {
     // 互換性のため
     if (!json.txt_stdins) json.txt_stdins = [json.txt_stdin];
 
-    Stdios.restoreStdin(json.txt_stdins);
-    Editor.setValue(json.txt_code);
+    Interface.Stdios.restoreStdin(json.txt_stdins);
+    Interface.Editor.setValue(json.txt_code);
 
-    Interface.chooseLang(json.cmd);
+    Interface.TaskSelector.setSelectedTask(json.cmd);
 }
 
 
 export function storeBackup() {
     Storage.storeBackupJson({
-        txt_stdins: Stdios.dumpStdin(),
-        txt_code: Editor.getValue(),
-        cmd: Interface.getChosenLang()
+        txt_stdins: Interface.Stdios.dumpStdin(),
+        txt_code: Interface.Editor.getValue(),
+        cmd: Interface.TaskSelector.getSelectedTaskCmd()
     });
 }

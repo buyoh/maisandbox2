@@ -59,8 +59,17 @@ export function appendField() {
     $('#div_stdios').append(generateDom());
 }
 
-export function clearField() {
+export function removeAllField() {
     $('#div_stdios').empty();
+}
+
+
+export function displayStdout(text, id) {
+    if (id) {
+        const li = {};
+        li[id] = text;
+        setStdouts(li);
+    }
 }
 
 
@@ -76,7 +85,7 @@ export function dumpStdin() {
 }
 
 export function restoreStdin(li) {
-    clearField();
+    removeAllField();
     for (let txt of li) {
         const d = generateDom();
         d.data('components').textareaStdin.val(txt);
