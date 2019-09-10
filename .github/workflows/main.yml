@@ -13,7 +13,7 @@ jobs:
       run: echo Hello, world!
     - name: install, build, test
       run: |
-        npm i -g babelify browserify mocha
+        sudo npm i -g babelify browserify mocha
         npm i
         npm run build
         npm run test
