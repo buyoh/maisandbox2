@@ -1,4 +1,4 @@
-name: CI
+name: CI-test
 
 on: [push, pull_request]
 
@@ -9,11 +9,16 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: install, build, test
+    - name: install tools
       run: |
-        npm i -g babelify browserify mocha
+        sudo npm i -g babelify browserify mocha eslint
+        sudo apt install ruby
         npm i
+    - name: eslint
+      run: |
+        npm run lint
+    - name: build, test
+      run: |
         npm run build
         npm run test
+
