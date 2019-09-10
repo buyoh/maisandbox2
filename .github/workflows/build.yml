@@ -1,9 +1,9 @@
 name: CI-build
 
-on: [push]
-push:
-  branches:
-  - master
+on:
+  push:
+    branches:
+    - master
 
 jobs:
   build:
@@ -36,5 +36,5 @@ jobs:
     - name: git push
       run: |
         git push origin HEAD:master
-        
+
 
