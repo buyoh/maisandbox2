@@ -31,3 +31,7 @@ jobs:
         git add .
         git commit -m 'build by Github Actions'
         fi
+    - name: git push
+      run: |
+        git push origin
+        
