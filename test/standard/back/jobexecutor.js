@@ -3,7 +3,7 @@ const assert = require('assert');
 /* eslint-env mocha */
 
 
-const testjs = require('../../../src/back/jobexecutor.js/index.js');
+const testjs = require('../../../src/back/jobexecutor.js');
 
 describe('[middle test] taskexecutor.js', () => {
 
