@@ -11,6 +11,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: install tools
       run: |
+        git config --global user.email "mai@ukibune.net"
+        git config --global user.name "mai bot-worker"
         sudo npm i -g babelify browserify mocha eslint
         sudo apt install ruby
         npm i
