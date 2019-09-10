@@ -17,7 +17,15 @@ jobs:
     - name: eslint
       run: |
         npm run lint
+        if [ `git diff | wc -l` -ne 0 ] ; then
+        git add .
+        git commit -m 'apply eslint by Github Actions'
+        fi
     - name: build, test
       run: |
         npm run build
         npm run test
+        if [ `git diff | wc -l` -ne 0 ] ; then
+        git add .
+        git commit -m 'build by Github Actions'
+        fi
