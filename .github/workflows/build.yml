@@ -35,5 +35,6 @@ jobs:
         fi
     - name: git push
       run: |
-        git push origin
+        git push origin HEAD:master
+        
 
