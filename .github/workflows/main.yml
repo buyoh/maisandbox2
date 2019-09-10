@@ -9,11 +9,12 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: install, build, test
+    - name: install tools
       run: |
         sudo npm i -g babelify browserify mocha
+        sudo apt install ruby
+    - name: build, test
+      run: |
         npm i
         npm run build
         npm run test
