@@ -31,9 +31,8 @@ jobs:
         npm run build
         if [ `git diff | wc -l` -ne 0 ] ; then
         git add .
-        git commit -m 'apply eslint by Github Actions'
+        git commit -m 'build by Github Actions'
         fi
     - uses: ad-m/github-push-action@master
       with:
-        repo-token: ${{ secrets.MYTOKEN }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
