@@ -2714,7 +2714,7 @@ WS.prototype.check = function () {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../transport":12,"buffer":59,"component-inherit":9,"debug":19,"engine.io-parser":22,"parseqs":30,"ws":58,"yeast":47}],18:[function(require,module,exports){
+},{"../transport":12,"buffer":63,"component-inherit":9,"debug":19,"engine.io-parser":22,"parseqs":30,"ws":62,"yeast":47}],18:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 
 var hasCORS = require('has-cors');
@@ -2952,7 +2952,7 @@ function localstorage() {
 }
 
 }).call(this,require('_process'))
-},{"./debug":20,"_process":61}],20:[function(require,module,exports){
+},{"./debug":20,"_process":65}],20:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -4241,7 +4241,7 @@ function hasBinary (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":59,"isarray":28}],26:[function(require,module,exports){
+},{"buffer":63,"isarray":28}],26:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -16174,7 +16174,7 @@ function url (uri, loc) {
 
 },{"debug":37,"parseuri":31}],37:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
-},{"./debug":38,"_process":61,"dup":19}],38:[function(require,module,exports){
+},{"./debug":38,"_process":65,"dup":19}],38:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
 },{"dup":20,"ms":39}],39:[function(require,module,exports){
 arguments[4][21][0].apply(exports,arguments)
@@ -16762,9 +16762,9 @@ function isBuf(obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":59}],43:[function(require,module,exports){
+},{"buffer":63}],43:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
-},{"./debug":44,"_process":61,"dup":19}],44:[function(require,module,exports){
+},{"./debug":44,"_process":65,"dup":19}],44:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
 },{"dup":20,"ms":45}],45:[function(require,module,exports){
 arguments[4][21][0].apply(exports,arguments)
@@ -16856,115 +16856,11 @@ module.exports = yeast;
 },{}],48:[function(require,module,exports){
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getValue = getValue;
-exports.setValue = setValue;
-exports.changeCodeLang = changeCodeLang;
-exports.setAnnotations = setAnnotations;
-exports.clearAnnotations = clearAnnotations;
-
-// _____________________________________________________
-// aceditor.js
-// ace部品の操作のwrapper
-var $ = require('jquery');
-
-var ace = require('ace-builds/src-min/ace');
-
-var Languages = require('./languages');
-
-var aceditor = null;
-var langInfo = {}; // _____________________________________________________
-// initialize
-
-$(function () {
-  ace.config.set('basePath', 'ext');
-  aceditor = ace.edit('aceditor');
-  ace.config.loadModule('ext/language_tools', function () {
-    aceditor.setTheme('ace/theme/monokai');
-    aceditor.getSession().setMode('ace/mode/ruby');
-    aceditor.setOptions({
-      enableBasicAutocompletion: true,
-      enableSnippets: true,
-      enableLiveAutocompletion: true
-    });
-    aceditor.setShowInvisibles(true);
-    aceditor.setFontSize(14);
-
-    var snippetManager = ace.require('ace/snippets').snippetManager;
-
-    ace.config.loadModule('ace/snippets/javascript', function (mod) {
-      snippetManager.files.javascript = mod;
-      mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
-      snippetManager.register(mod.snippets, mod.scope);
-    });
-    ace.config.loadModule('ace/snippets/c_cpp', function (mod) {
-      snippetManager.files.c_cpp = mod;
-      mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
-      mod.snippets.push({
-        'content': 'repeat(${1:i}, ${2:N}) {\n\t$3\n}',
-        'name': 'repeat',
-        'tabTrigger': 'repeat'
-      });
-      snippetManager.register(mod.snippets, mod.scope);
-    });
-  });
-  $('#aceditorEdge').on('onresize', function () {
-    aceditor.resize();
-  });
-}); // _____________________________________________________
-// getter / setter
-
-function getValue() {
-  return aceditor.getValue();
-}
-
-function setValue(text) {
-  aceditor.setValue(text, -1);
-} // _____________________________________________________
-// interface
-
-
-function changeCodeLang(lang) {
-  var info = Languages.languages[lang];
-  if (!info) info = Languages.languages['default'];
-  var s = aceditor.getSession();
-  s.setMode('ace/mode/' + info.editor);
-  s.setTabSize(info.tabwidth);
-}
-/**
- * 
- * @param {{text:String, row:Number, column:Number, type: "error" | "warning" | "information"}} json 
- */
-
-
-function setAnnotations(json) {
-  aceditor.getSession().setAnnotations(json);
-}
-
-function clearAnnotations() {
-  aceditor.getSession().clearAnnotations();
-}
-
-},{"./languages":53,"ace-builds/src-min/ace":1,"jquery":29}],49:[function(require,module,exports){
-"use strict";
-
-require('jquery');
-
 require('./eventbinder');
-
-require('./interface');
-
-require('./aceditor');
-
-require('./storage');
-
-require('./socket');
 
 require('./backup');
 
-},{"./aceditor":48,"./backup":50,"./eventbinder":51,"./interface":52,"./socket":54,"./storage":56,"jquery":29}],50:[function(require,module,exports){
+},{"./backup":49,"./eventbinder":50}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16978,11 +16874,7 @@ exports.storeBackup = storeBackup;
 // バックアップ機能
 var $ = require('jquery');
 
-var Editor = require('./aceditor');
-
 var Interface = require('./interface');
-
-var Stdios = require('./stdios');
 
 var Storage = require('./storage'); // _____________________________________________________
 // initialize
@@ -17007,20 +16899,20 @@ function restoreBackup() {
   if (!json) return; // 互換性のため
 
   if (!json.txt_stdins) json.txt_stdins = [json.txt_stdin];
-  Stdios.restoreStdin(json.txt_stdins);
-  Editor.setValue(json.txt_code);
-  Interface.chooseLang(json.cmd);
+  Interface.Stdios.restoreStdin(json.txt_stdins);
+  Interface.Editor.setValue(json.txt_code);
+  Interface.TaskSelector.setSelectedTask(json.cmd);
 }
 
 function storeBackup() {
   Storage.storeBackupJson({
-    txt_stdins: Stdios.dumpStdin(),
-    txt_code: Editor.getValue(),
-    cmd: Interface.getChosenLang()
+    txt_stdins: Interface.Stdios.dumpStdin(),
+    txt_code: Interface.Editor.getValue(),
+    cmd: Interface.TaskSelector.getSelectedTaskCmd()
   });
 }
 
-},{"./aceditor":48,"./interface":52,"./stdios":55,"./storage":56,"jquery":29}],51:[function(require,module,exports){
+},{"./interface":51,"./storage":60,"jquery":29}],50:[function(require,module,exports){
 "use strict";
 
 // _____________________________________________________
@@ -17029,8 +16921,6 @@ function storeBackup() {
 var $ = require('jquery');
 
 var Interface = require('./interface');
-
-var Editor = require('./aceditor');
 
 var Storage = require('./storage');
 
@@ -17042,35 +16932,390 @@ $(function () {
 });
 
 function bundEvents() {
-  $('#btn_halt').on('click', function () {
+  Interface.LaunchPad.onClickHalt(function () {
     Socket.emitHalt();
   });
-  $('#btn_storeTemplate').on('click', function () {
-    Storage.storeTemplate(Interface.getChosenLang(), Editor.getValue());
+  Interface.EditPanel.onClickStoreTemplate(function () {
+    Storage.storeTemplate(Interface.getSelectedTaskCmd(), Interface.Editor.getValue());
   });
-  $('#btn_loadTemplate').on('click', function () {
-    Editor.setValue(Storage.loadTemplate(Interface.getChosenLang()));
+  Interface.EditPanel.onClickLoadTemplate(function () {
+    Interface.Editor.setValue(Storage.loadTemplate(Interface.getSelectedTaskCmd()));
   });
-  $('#selector_codelang').change(function () {
-    var dom = $('#selector_codelang option:selected');
-    var cmd = dom.data('cmd');
-    var lang = dom.data('lang');
-    if (cmd === '') return;
-    Interface.changeVisibleRecipes(cmd, lang);
+  Interface.LaunchPad.addLaunchRecipeListener(function (recipe) {
+    var info = Interface.gatherInfo();
+    info.recipe = recipe;
+    Interface.Results.clearResults();
+    Interface.Editor.clearAnnotations();
+    Socket.emitSubmit(info);
   });
 }
 
 function initialize() {
   Socket.getCatalog(function (allLangInfo) {
-    // TODO: 言語ごとの配列にまとめる
+    Interface.appendTasks(allLangInfo);
+  });
+} // _____________________________________________________
+// socket
+// submitしたjobの状況がサーバから送られてくる
+
+
+Socket.addProgressListener(function (json) {
+  // console.log(json);
+  if (json.type === 'halted') {
+    Interface.Results.appendResult('halted', '', 'info');
+    return;
+  }
+
+  if (json.type === 'success') {
+    var d = $('#div_resultlogs > div').first().find('.val').filter(function (i, e) {
+      return $(e).data('key') == 'stdout';
+    });
+    if (d.length === 1) Interface.Stdios.displayStdout(d.text());
+  }
+
+  var state = json.type === 'continue' || json.type === 'success' ? 'success' : json.type === 'failed' ? 'warning' : json.type === 'error' ? 'danger' : 'info';
+  Interface.Results.appendResult(json.data.commandName ? '[' + json.data.commandName + ']' + json.type : json.type, json.data, state, json.type === 'progress');
+
+  if (json.data && json.data.key) {
+    Interface.Stdios.displayStdout(json.data.stdout, json.data.key);
+  }
+
+  if (json.data.note) {
+    Interface.Editor.setAnnotations(json.data.note);
+  }
+});
+
+},{"./interface":51,"./socket":59,"./storage":60,"jquery":29}],51:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.gatherInfo = gatherInfo;
+exports.appendTasks = appendTasks;
+exports.getSelectedTaskCmd = exports.EditPanel = exports.TaskSelector = exports.Results = exports.Stdios = exports.LaunchPad = exports.Editor = void 0;
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+// _____________________________________________________
+// interface.js
+// bundle of interfaces
+var $ = require('jquery');
+
+var Editor = require('./interface/aceditor');
+
+exports.Editor = Editor;
+
+var LaunchPad = require('./interface/launchpad');
+
+exports.LaunchPad = LaunchPad;
+
+var Stdios = require('./interface/stdios');
+
+exports.Stdios = Stdios;
+
+var Results = require('./interface/results');
+
+exports.Results = Results;
+
+var TaskSelector = require('./interface/taskselector');
+
+exports.TaskSelector = TaskSelector;
+
+var EditPanel = require('./interface/editpanel'); // _____________________________________________________
+// common setup
+
+
+exports.EditPanel = EditPanel;
+$(function () {
+  $('textarea.enabletabs').keydown(function (e) {
+    if (e.keyCode === 9) {
+      e.preventDefault(); // デフォルト動作の中止
+
+      var elem = e.target;
+      var val = elem.value;
+      var pos = elem.selectionStart;
+      elem.value = val.substr(0, pos) + '\t' + val.substr(pos, val.length);
+      elem.setSelectionRange(pos + 1, pos + 1);
+    }
+  });
+  bindEvents();
+});
+
+function bindEvents() {
+  TaskSelector.onChangeSelector(function () {
+    var _TaskSelector$getSele = TaskSelector.getSelectedTaskCmdLang(),
+        _TaskSelector$getSele2 = _slicedToArray(_TaskSelector$getSele, 2),
+        cmd = _TaskSelector$getSele2[0],
+        lang = _TaskSelector$getSele2[1];
+
+    if (cmd === '') return;
+    LaunchPad.changeVisibleRecipes(cmd);
+    Editor.changeLanguage(lang);
+  });
+} // _____________________________________________________
+// 
+
+
+function gatherInfo() {
+  var cmd = TaskSelector.getSelectedTaskCmd();
+  var options = LaunchPad.getOptionValues(cmd);
+  return {
+    txt_stdins: Stdios.getStdins(true),
+    txt_code: Editor.getValue(),
+    cmd: cmd,
+    options: options
+  };
+}
+
+var getSelectedTaskCmd = TaskSelector.getSelectedTaskCmd;
+exports.getSelectedTaskCmd = getSelectedTaskCmd;
+
+function appendTasks(taskInfos) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = taskInfos[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var taskInfo = _step.value;
+      TaskSelector.appendTask(taskInfo);
+      LaunchPad.appendTask(taskInfo);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+        _iterator["return"]();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  TaskSelector.pullSelectedTask();
+}
+
+},{"./interface/aceditor":52,"./interface/editpanel":53,"./interface/launchpad":54,"./interface/results":55,"./interface/stdios":56,"./interface/taskselector":57,"jquery":29}],52:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getValue = getValue;
+exports.setValue = setValue;
+exports.changeLanguage = changeLanguage;
+exports.setAnnotations = setAnnotations;
+exports.clearAnnotations = clearAnnotations;
+
+// _____________________________________________________
+// aceditor.js
+// ace部品の操作のwrapper
+var $ = require('jquery');
+
+var ace = require('ace-builds/src-min/ace');
+
+var Languages = require('./../languages');
+
+var aceditor = null; // const langInfo = {};
+// _____________________________________________________
+// initialize
+
+$(function () {
+  ace.config.set('basePath', '/ext');
+  aceditor = ace.edit('aceditor');
+  aceditor.setTheme('ace/theme/monokai');
+  aceditor.getSession().setMode('ace/mode/ruby');
+  aceditor.setOptions({
+    enableBasicAutocompletion: true,
+    //enableSnippets: true,
+    enableLiveAutocompletion: true
+  });
+  aceditor.setShowInvisibles(true);
+  aceditor.setFontSize(14);
+  $('#aceditorEdge').on('onresize', function () {
+    aceditor.resize();
+  });
+}); // _____________________________________________________
+// getter / setter
+
+function getValue() {
+  return aceditor.getValue();
+}
+
+function setValue(text) {
+  if (text === null) text = '';
+  aceditor.setValue(text, -1);
+} // _____________________________________________________
+// interface
+
+
+function changeLanguage(lang) {
+  var info = Languages.languages[lang];
+  if (!info) info = Languages.languages['default'];
+  var s = aceditor.getSession();
+  s.setMode('ace/mode/' + info.editor);
+  s.setTabSize(info.tabwidth);
+}
+/**
+ * 
+ * @param {{text:String, row:Number, column:Number, type: "error" | "warning" | "information"}} json 
+ */
+
+
+function setAnnotations(json) {
+  aceditor.getSession().setAnnotations(json);
+}
+
+function clearAnnotations() {
+  aceditor.getSession().clearAnnotations();
+}
+
+},{"./../languages":58,"ace-builds/src-min/ace":1,"jquery":29}],53:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.onClickStoreTemplate = onClickStoreTemplate;
+exports.onClickLoadTemplate = onClickLoadTemplate;
+
+// _____________________________________________________
+// editpanel.js
+// aceditorの外側にある編集ボタンの機能など。
+var $ = require('jquery'); // _____________________________________________________
+// events
+
+
+function onClickStoreTemplate(handler) {
+  $('#btn_storeTemplate').on('click', function () {
+    handler();
+  });
+}
+
+function onClickLoadTemplate(handler) {
+  $('#btn_loadTemplate').on('click', function () {
+    handler();
+  });
+}
+
+},{"jquery":29}],54:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getOptionValues = getOptionValues;
+exports.onClickHalt = onClickHalt;
+exports.changeVisibleRecipes = changeVisibleRecipes;
+exports.addLaunchRecipeListener = addLaunchRecipeListener;
+exports.appendTask = appendTask;
+
+// _____________________________________________________
+// interface.js
+// UI全体のwrapper，特に複数の部品に影響があるもの
+var $ = require('jquery'); // メモ化
+
+
+var _m_memorized = {};
+
+function m$(html) {
+  return _m_memorized[html] ? _m_memorized[html] : _m_memorized[html] = $(html);
+} // _____________________________________________________
+// getter
+
+
+function getOptionValues(cmd) {
+  var options = {};
+  $('#div_options > div').filter(function (i, e) {
+    return $(e).data('cmd') == cmd;
+  }).find('select').each(function (i, e) {
+    options[$(e).data('key')] = $(e).val();
+  });
+  return options;
+} // _____________________________________________________
+// events
+
+
+function onClickHalt(handler) {
+  $('#btn_halt').on('click', function () {
+    handler();
+  });
+} // _____________________________________________________
+// manipulate
+
+
+function changeVisibleRecipes(cmd) {
+  $('#div_recipes > div').filter(function (i, e) {
+    return $(e).data('cmd') == cmd;
+  }).removeClass('d-none');
+  $('#div_recipes > div').filter(function (i, e) {
+    return $(e).data('cmd') != cmd;
+  }).addClass('d-none');
+  $('#div_options > div').filter(function (i, e) {
+    return $(e).data('cmd') == cmd;
+  }).removeClass('d-none');
+  $('#div_options > div').filter(function (i, e) {
+    return $(e).data('cmd') != cmd;
+  }).addClass('d-none');
+} // _____________________________________________________
+// setup
+
+
+var clickRecipeHandlers = [];
+
+function addLaunchRecipeListener(handler) {
+  clickRecipeHandlers.push(handler);
+}
+
+function appendTask(taskInfo) {
+  appendRecipes(taskInfo);
+  appendTaskOptions(taskInfo);
+}
+
+function appendRecipes(taskInfo) {
+  var domc = $('<div></div>').data('cmd', taskInfo.cmd);
+
+  for (var _i = 0, _Object$keys = Object.keys(taskInfo.recipes); _i < _Object$keys.length; _i++) {
+    var name = _Object$keys[_i];
+    domc.append($('<button></button>').addClass('btn btn-sm btn-primary').text(name).on('click', {
+      recipe: name
+    }, function (e) {
+      var recipe = e.data.recipe;
+
+      for (var _i2 = 0, _clickRecipeHandlers = clickRecipeHandlers; _i2 < _clickRecipeHandlers.length; _i2++) {
+        var h = _clickRecipeHandlers[_i2];
+        h(recipe);
+      }
+    }));
+  }
+
+  m$('#div_recipes').append(domc);
+}
+
+function appendTaskOptions(taskInfo) {
+  var domc = $('<div></div>').data('cmd', taskInfo.cmd);
+
+  for (var name in taskInfo.options) {
+    var dom = $('<select></select>').data('key', name).addClass('form-control form-control-sm').css('width', 'inherit');
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
 
     try {
-      for (var _iterator = allLangInfo[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var langInfo = _step.value;
-        Interface.addLanguage(langInfo);
+      for (var _iterator = taskInfo.options[name][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var val = _step.value;
+        dom.append($('<option></option>').text(val).val(val));
       }
     } catch (err) {
       _didIteratorError = true;
@@ -17087,194 +17332,35 @@ function initialize() {
       }
     }
 
-    Interface.rechooseLang();
-  });
-} // _____________________________________________________
-// socket
-// submitしたtaskの状況がサーバから送られてくる
-
-
-Socket.addProgressListener(function (json) {
-  // console.log(json);
-  if (json.type === 'halted') {
-    Interface.appendResultLog('halted', '', 'info');
-    return;
+    domc.append($('<div></div>').addClass('keypair').append($('<div></div>').addClass('key').text(name)).append(dom.addClass('val')));
   }
 
-  if (json.type === 'success') {
-    var d = $('#div_resultlogs > div').first().find('.val').filter(function (i, e) {
-      return $(e).data('key') == 'stdout';
-    });
-    if (d.length === 1) Interface.displayStdout(d.text());
-  }
+  m$('#div_options').append(domc);
+}
 
-  var state = json.type === 'continue' || json.type === 'success' ? 'success' : json.type === 'failed' ? 'warning' : json.type === 'error' ? 'danger' : 'info';
-  Interface.appendResultLog(json.data.taskName ? '[' + json.data.taskName + ']' + json.type : json.type, json.data, state, json.type === 'progress');
-
-  if (json.data && json.data.key) {
-    Interface.displayStdout(json.data.stdout, json.data.key);
-  }
-
-  if (json.data.note) {
-    Editor.setAnnotations(json.data.note);
-  }
-});
-
-},{"./aceditor":48,"./interface":52,"./socket":54,"./storage":56,"jquery":29}],52:[function(require,module,exports){
+},{"jquery":29}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getChosenLang = getChosenLang;
-exports.gatherInfo = gatherInfo;
-exports.chooseLang = chooseLang;
-exports.rechooseLang = rechooseLang;
-exports.changeVisibleRecipes = changeVisibleRecipes;
-exports.displayStdout = displayStdout;
-exports.clearResultLogs = clearResultLogs;
-exports.appendResultLog = appendResultLog;
-exports.addLanguage = addLanguage;
+exports.clearResults = clearResults;
+exports.appendResult = appendResult;
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // _____________________________________________________
-// interface.js
-// UI全体のwrapper，特に複数の部品に影響があるもの
-var $ = require('jquery');
-
-var Editor = require('./aceditor');
-
-var Stdios = require('./stdios');
-
-var Socket = require('./socket');
-
-var Languages = require('./languages'); // メモ化
-
-
-var _m_memorized = {};
-
-function m$(html) {
-  return _m_memorized[html] ? _m_memorized[html] : _m_memorized[html] = $(html);
-} // _____________________________________________________
-// initialize
-
-
-$(function () {
-  $('textarea.enabletabs').keydown(function (e) {
-    if (e.keyCode === 9) {
-      e.preventDefault(); // デフォルト動作の中止
-
-      var elem = e.target;
-      var val = elem.value;
-      var pos = elem.selectionStart;
-      elem.value = val.substr(0, pos) + '\t' + val.substr(pos, val.length);
-      elem.setSelectionRange(pos + 1, pos + 1);
-    }
-  });
-}); // _____________________________________________________
-// getter
-
-function getChosenLang() {
-  return $('#selector_codelang option:selected').data('cmd');
-}
-
-function gatherInfo() {
-  var cmd = getChosenLang();
-  var options = {};
-  $('#div_options > div').filter(function (i, e) {
-    return $(e).data('cmd') == cmd;
-  }).find('select').each(function (i, e) {
-    options[$(e).data('key')] = $(e).val();
-  });
-  return {
-    txt_stdin: Stdios.getStdinLegacy(),
-    // TODO: remove
-    txt_stdins: Stdios.getStdins(true),
-    txt_code: Editor.getValue(),
-    cmd: cmd,
-    options: options
-  }; // timelimit:   $("#input_timeout").val()
-
-  /*
-  var flgDisableCleaning = $("#disableCleaning:checked").val();
-  var flagWAll = $("#flagWAll:checked").val();
-  var macro = $("#input_macro").val();
-  var source = $("#selector_sourcechooser").val();
-  var sourcepath = $("#input_filepath").val();
-  var filestdin = $('#chk_filestdin:checked').val();
-  var stdinpath = $('#input_stdinpath').val();
-  */
-} // _____________________________________________________
+// results.js
+// 実行ログを垂れ流す部分の実装
+var $ = require('jquery'); // _____________________________________________________
 // manipulate
 
-/**
- * cmd言語を選んだ状態にする
- * @param {*} cmd 
- */
 
-
-function chooseLang(cmd) {
-  var dom = $('#selector_codelang option').filter(function (i, e) {
-    return $(e).data('cmd') == cmd;
-  });
-  if (dom.length > 0) dom.prop('selected', true);else m$('#selector_codelang').data('LazyChoiceCmd', cmd);
-  m$('#selector_codelang').change();
-}
-/**
- * addLanguage等によって言語関係を変更したら最後にこれを呼び出す
- */
-
-
-function rechooseLang() {
-  var dom = m$('#selector_codelang');
-  var appVal = dom.data('LazyChoiceCmd');
-
-  if (appVal) {
-    dom.data('LazyChoiceCmd', null);
-    $('#selector_codelang option').filter(function (i, e) {
-      return $(e).data('cmd') == appVal;
-    }).prop('selected', true);
-  }
-
-  dom.change();
-}
-
-function changeVisibleRecipes(cmd, lang) {
-  $('#div_recipes > div').filter(function (i, e) {
-    return $(e).data('cmd') == cmd;
-  }).removeClass('d-none');
-  $('#div_recipes > div').filter(function (i, e) {
-    return $(e).data('cmd') != cmd;
-  }).addClass('d-none');
-  $('#div_options > div').filter(function (i, e) {
-    return $(e).data('cmd') == cmd;
-  }).removeClass('d-none');
-  $('#div_options > div').filter(function (i, e) {
-    return $(e).data('cmd') != cmd;
-  }).addClass('d-none');
-  Editor.changeCodeLang(lang);
-}
-
-function displayStdout(text) {
-  var id = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-  if (id) {
-    var li = {};
-    li[id] = text;
-    Stdios.setStdouts(li);
-  } else Stdios.setStdoutLegacy(text);
-} // export function displayStderr(message){
-//     $("#div_stderr").text(message);
-// }
-
-
-function clearResultLogs() {
+function clearResults() {
   $('#div_resultlogs').empty();
-  Editor.clearAnnotations();
 }
 
-function appendResultLog(title, message, classtype) {
+function appendResult(title, message, classtype) {
   var isProgressing = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
   if ($('#div_resultlogs > div').first().data('isprog')) {
@@ -17307,74 +17393,6 @@ function appendResultLog(title, message, classtype) {
 
   bindToggler('click', titledom, bodydom);
   $('#div_resultlogs').prepend($('<div></div>').addClass('resultLog').data('isprog', isProgressing).append(titledom).append(bodydom));
-} // _____________________________________________________
-// setup
-
-
-function addLanguage(taskInfo) {
-  // TODO: Languageではなく、Task
-  // TODO: 少し長いので分割する
-  // const langInfo = Languages.languages[taskInfo.language];
-  var category = taskInfo.category || 'default';
-  var optg = $('#selector_codelang optgroup[label="' + category + '"]');
-  if (optg.length === 0) optg = $('<optgroup></optgroup>').attr('label', category).appendTo(m$('#selector_codelang')); // selector
-
-  $('<option></option>').data('cmd', taskInfo.cmd).data('lang', taskInfo.language).text(taskInfo.language).appendTo(optg); // recipes
-
-  {
-    var domc = $('<div></div>').data('cmd', taskInfo.cmd);
-
-    for (var name in taskInfo.recipes) {
-      // note: langInfo.recipes[name] の情報を使っていない・保持していない
-      domc.append($('<button></button>').addClass('btn btn-sm btn-primary').text(name).on('click', {
-        recipe: name
-      }, function (e) {
-        // todo: refactoring(eventbinderがやるべき)
-        var recipe = e.data.recipe;
-        var info = gatherInfo();
-        info.recipe = recipe;
-        clearResultLogs();
-        Socket.emitSubmit(info);
-      }));
-    }
-
-    m$('#div_recipes').append(domc);
-  } // options
-
-  {
-    var _domc = $('<div></div>').data('cmd', taskInfo.cmd);
-
-    for (var _name in taskInfo.options) {
-      var dom = $('<select></select>').data('key', _name).addClass('form-control form-control-sm').css('width', 'inherit');
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = taskInfo.options[_name][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var val = _step.value;
-          dom.append($('<option></option>').text(val).val(val));
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-            _iterator["return"]();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      _domc.append($('<div></div>').addClass('keypair').append($('<div></div>').addClass('key').text(_name)).append(dom.addClass('val')));
-    }
-
-    m$('#div_options').append(_domc);
-  }
 } // _____________________________________________________
 // (internal)
 
@@ -17419,116 +17437,17 @@ function copyDomToClipboard(dom) {
   document.execCommand('copy');
 }
 
-},{"./aceditor":48,"./languages":53,"./socket":54,"./stdios":55,"jquery":29}],53:[function(require,module,exports){
-"use strict";
-
-// _____________________________________________________
-// language.js
-// 言語情報を記載する
-exports.languages = {
-  'C++': {
-    editor: 'c_cpp',
-    tabWidth: 2
-  },
-  'Ruby': {
-    editor: 'ruby',
-    tabWidth: 2
-  },
-  'Python': {
-    editor: 'python',
-    tabWidth: 4
-  },
-  'JavaScript': {
-    editor: 'javascript',
-    tabWidth: 4
-  },
-  'Kotlin': {
-    editor: 'kotlin',
-    tabWidth: 4
-  },
-  'Go': {
-    editor: 'golang',
-    tabWidth: 4
-  },
-  'Rust': {
-    editor: 'rust',
-    tabWidth: 4
-  },
-  'shell': {
-    editor: 'sh',
-    tabWidth: 4
-  },
-  'cLay': {
-    editor: 'c_cpp',
-    tabWidth: 2
-  },
-  // otherwise
-  'default': {
-    editor: 'text',
-    tabWidth: 4
-  }
-};
-
-},{}],54:[function(require,module,exports){
+},{"jquery":29}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getCatalog = getCatalog;
-exports.emitHalt = emitHalt;
-exports.emitSubmit = emitSubmit;
-exports.addProgressListener = addProgressListener;
-
-// _____________________________________________________
-// socket.js
-// サーバ通信操作のwrapper
-var io = require('socket.io-client');
-
-var socket = io.connect();
-var progressListener = [];
-socket.on('s2c_progress', function (json) {
-  for (var _i = 0, _progressListener = progressListener; _i < _progressListener.length; _i++) {
-    var f = _progressListener[_i];
-    f(json);
-  }
-}); // _____________________________________________________
-// getter
-
-function getCatalog(callback) {
-  socket.emit('c2s_getCatalog', callback);
-} // _____________________________________________________
-// emitter
-
-
-function emitHalt() {
-  socket.emit('c2s_halt');
-}
-
-function emitSubmit(info) {
-  socket.emit('c2s_submit', info);
-} // _____________________________________________________
-// listener
-
-
-function addProgressListener(listener) {
-  progressListener.push(listener);
-}
-
-},{"socket.io-client":32}],55:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getStdinLegacy = getStdinLegacy;
-exports.setStdinLegacy = setStdinLegacy;
-exports.getStdoutLegacy = getStdoutLegacy;
-exports.setStdoutLegacy = setStdoutLegacy;
 exports.getStdins = getStdins;
 exports.setStdouts = setStdouts;
 exports.appendField = appendField;
-exports.clearField = clearField;
+exports.removeAllField = removeAllField;
+exports.displayStdout = displayStdout;
 exports.dumpStdin = dumpStdin;
 exports.restoreStdin = restoreStdin;
 
@@ -17554,22 +17473,6 @@ $(function () {
   });
 }); // _____________________________________________________
 // getter / setter
-
-function getStdinLegacy() {
-  return $('#div_stdios > div').eq(0).data('components').textareaStdin.val();
-}
-
-function setStdinLegacy(text) {
-  return $('#div_stdios > div').eq(0).data('components').textareaStdin.val(text);
-}
-
-function getStdoutLegacy() {
-  return $('#div_stdios > div').eq(0).data('components').textareaStdout.val();
-}
-
-function setStdoutLegacy(text) {
-  return $('#div_stdios > div').eq(0).data('components').textareaStdout.val(text);
-}
 
 function getStdins() {
   var visibleonly = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
@@ -17602,8 +17505,16 @@ function appendField() {
   $('#div_stdios').append(generateDom());
 }
 
-function clearField() {
+function removeAllField() {
   $('#div_stdios').empty();
+}
+
+function displayStdout(text, id) {
+  if (id) {
+    var li = {};
+    li[id] = text;
+    setStdouts(li);
+  }
 } // _____________________________________________________
 // backup
 
@@ -17617,7 +17528,7 @@ function dumpStdin() {
 }
 
 function restoreStdin(li) {
-  clearField();
+  removeAllField();
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
@@ -17681,7 +17592,201 @@ function closeField(components) {
   components.dom.remove();
 }
 
-},{"jquery":29}],56:[function(require,module,exports){
+},{"jquery":29}],57:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getSelectedTaskCmd = getSelectedTaskCmd;
+exports.getSelectedTaskCmdLang = getSelectedTaskCmdLang;
+exports.onChangeSelector = onChangeSelector;
+exports.setSelectedTask = setSelectedTask;
+exports.appendTask = appendTask;
+exports.pullSelectedTask = pullSelectedTask;
+
+// _____________________________________________________
+// .js
+// UI全体のwrapper，特に複数の部品に影響があるもの
+var $ = require('jquery'); // メモ化
+
+
+var _m_memorized = {};
+
+function m$(html) {
+  return _m_memorized[html] ? _m_memorized[html] : _m_memorized[html] = $(html);
+} // _____________________________________________________
+// getter
+
+
+function getSelectedTaskCmd() {
+  return $('#selector_codelang option:selected').data('cmd');
+}
+
+function getSelectedTaskCmdLang() {
+  var dom = $('#selector_codelang option:selected');
+  return [dom.data('cmd'), dom.data('lang')];
+} // _____________________________________________________
+// events
+
+
+function onChangeSelector(handler) {
+  $('#selector_codelang').change(function () {
+    handler();
+  });
+} // _____________________________________________________
+// manipulate
+
+/**
+ * cmd言語を選んだ状態にする
+ * @param {*} cmd 
+ */
+
+
+function setSelectedTask(cmd) {
+  var dom = $('#selector_codelang option').filter(function (i, e) {
+    return $(e).data('cmd') == cmd;
+  });
+
+  if (dom.length > 0) {
+    dom.prop('selected', true); // 存在するなら、それを選ぶ
+
+    m$('#selector_codelang').data('LazyChoiceCmd', null);
+  } else m$('#selector_codelang').data('LazyChoiceCmd', cmd); // 存在しないなら、保存しておく
+
+
+  m$('#selector_codelang').change();
+}
+
+function appendTask(taskInfo) {
+  var category = taskInfo.category || 'default';
+  var optg = getCategoryOptgroup(category);
+  $('<option></option>').data('cmd', taskInfo.cmd).data('lang', taskInfo.language).text(taskInfo.language).appendTo(optg);
+}
+/**
+ * appendTask等によって言語関係を変更したら最後にこれを呼び出す
+ */
+
+
+function pullSelectedTask() {
+  var dom = m$('#selector_codelang');
+  var appVal = dom.data('LazyChoiceCmd');
+
+  if (appVal) {
+    dom.data('LazyChoiceCmd', null);
+    $('#selector_codelang option').filter(function (i, e) {
+      return $(e).data('cmd') == appVal;
+    }).prop('selected', true);
+  }
+
+  dom.change();
+} // _____________________________________________________
+// internal
+
+
+function getCategoryOptgroup(category) {
+  var optg = $('#selector_codelang optgroup[label="' + category + '"]');
+  if (optg.length === 0) optg = $('<optgroup></optgroup>').attr('label', category).appendTo(m$('#selector_codelang'));
+  return optg;
+}
+
+},{"jquery":29}],58:[function(require,module,exports){
+"use strict";
+
+// _____________________________________________________
+// language.js
+// 言語情報を記載する
+exports.languages = {
+  'C++': {
+    editor: 'c_cpp',
+    tabWidth: 2
+  },
+  'Ruby': {
+    editor: 'ruby',
+    tabWidth: 2
+  },
+  'Python': {
+    editor: 'python',
+    tabWidth: 4
+  },
+  'JavaScript': {
+    editor: 'javascript',
+    tabWidth: 4
+  },
+  'Kotlin': {
+    editor: 'kotlin',
+    tabWidth: 4
+  },
+  'Go': {
+    editor: 'golang',
+    tabWidth: 4
+  },
+  'Rust': {
+    editor: 'rust',
+    tabWidth: 4
+  },
+  'shell': {
+    editor: 'sh',
+    tabWidth: 4
+  },
+  'cLay': {
+    editor: 'c_cpp',
+    tabWidth: 2
+  },
+  // otherwise
+  'default': {
+    editor: 'text',
+    tabWidth: 4
+  }
+};
+
+},{}],59:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getCatalog = getCatalog;
+exports.emitHalt = emitHalt;
+exports.emitSubmit = emitSubmit;
+exports.addProgressListener = addProgressListener;
+
+// _____________________________________________________
+// socket.js
+// サーバ通信操作のwrapper
+var io = require('socket.io-client');
+
+var socket = io.connect();
+var progressListener = [];
+socket.on('s2c_progress', function (json) {
+  for (var _i = 0, _progressListener = progressListener; _i < _progressListener.length; _i++) {
+    var f = _progressListener[_i];
+    f(json);
+  }
+}); // _____________________________________________________
+// getter
+
+function getCatalog(callback) {
+  socket.emit('c2s_getCatalog', callback);
+} // _____________________________________________________
+// emitter
+
+
+function emitHalt() {
+  socket.emit('c2s_halt');
+}
+
+function emitSubmit(info) {
+  socket.emit('c2s_submit', info);
+} // _____________________________________________________
+// listener
+
+
+function addProgressListener(listener) {
+  progressListener.push(listener);
+}
+
+},{"socket.io-client":32}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17723,7 +17828,7 @@ function loadTemplate(lang) {
   return val ? val : null;
 }
 
-},{}],57:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -17791,7 +17896,8 @@ function toByteArray (b64) {
     ? validLen - 4
     : validLen
 
-  for (var i = 0; i < len; i += 4) {
+  var i
+  for (i = 0; i < len; i += 4) {
     tmp =
       (revLookup[b64.charCodeAt(i)] << 18) |
       (revLookup[b64.charCodeAt(i + 1)] << 12) |
@@ -17876,9 +17982,9 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],58:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 
-},{}],59:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -17892,6 +17998,10 @@ function fromByteArray (uint8) {
 
 var base64 = require('base64-js')
 var ieee754 = require('ieee754')
+var customInspectSymbol =
+  (typeof Symbol === 'function' && typeof Symbol.for === 'function')
+    ? Symbol.for('nodejs.util.inspect.custom')
+    : null
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -17928,7 +18038,9 @@ function typedArraySupport () {
   // Can typed array instances can be augmented?
   try {
     var arr = new Uint8Array(1)
-    arr.__proto__ = { __proto__: Uint8Array.prototype, foo: function () { return 42 } }
+    var proto = { foo: function () { return 42 } }
+    Object.setPrototypeOf(proto, Uint8Array.prototype)
+    Object.setPrototypeOf(arr, proto)
     return arr.foo() === 42
   } catch (e) {
     return false
@@ -17957,7 +18069,7 @@ function createBuffer (length) {
   }
   // Return an augmented `Uint8Array` instance
   var buf = new Uint8Array(length)
-  buf.__proto__ = Buffer.prototype
+  Object.setPrototypeOf(buf, Buffer.prototype)
   return buf
 }
 
@@ -18007,7 +18119,7 @@ function from (value, encodingOrOffset, length) {
   }
 
   if (value == null) {
-    throw TypeError(
+    throw new TypeError(
       'The first argument must be one of type string, Buffer, ArrayBuffer, Array, ' +
       'or Array-like Object. Received type ' + (typeof value)
     )
@@ -18059,8 +18171,8 @@ Buffer.from = function (value, encodingOrOffset, length) {
 
 // Note: Change prototype *after* Buffer.from is defined to workaround Chrome bug:
 // https://github.com/feross/buffer/pull/148
-Buffer.prototype.__proto__ = Uint8Array.prototype
-Buffer.__proto__ = Uint8Array
+Object.setPrototypeOf(Buffer.prototype, Uint8Array.prototype)
+Object.setPrototypeOf(Buffer, Uint8Array)
 
 function assertSize (size) {
   if (typeof size !== 'number') {
@@ -18164,7 +18276,8 @@ function fromArrayBuffer (array, byteOffset, length) {
   }
 
   // Return an augmented `Uint8Array` instance
-  buf.__proto__ = Buffer.prototype
+  Object.setPrototypeOf(buf, Buffer.prototype)
+
   return buf
 }
 
@@ -18486,6 +18599,9 @@ Buffer.prototype.inspect = function inspect () {
   if (this.length > max) str += ' ... '
   return '<Buffer ' + str + '>'
 }
+if (customInspectSymbol) {
+  Buffer.prototype[customInspectSymbol] = Buffer.prototype.inspect
+}
 
 Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
   if (isInstance(target, Uint8Array)) {
@@ -18611,7 +18727,7 @@ function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
         return Uint8Array.prototype.lastIndexOf.call(buffer, val, byteOffset)
       }
     }
-    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
+    return arrayIndexOf(buffer, [val], byteOffset, encoding, dir)
   }
 
   throw new TypeError('val must be string, number or Buffer')
@@ -18940,7 +19056,7 @@ function hexSlice (buf, start, end) {
 
   var out = ''
   for (var i = start; i < end; ++i) {
-    out += toHex(buf[i])
+    out += hexSliceLookupTable[buf[i]]
   }
   return out
 }
@@ -18977,7 +19093,8 @@ Buffer.prototype.slice = function slice (start, end) {
 
   var newBuf = this.subarray(start, end)
   // Return an augmented `Uint8Array` instance
-  newBuf.__proto__ = Buffer.prototype
+  Object.setPrototypeOf(newBuf, Buffer.prototype)
+
   return newBuf
 }
 
@@ -19466,6 +19583,8 @@ Buffer.prototype.fill = function fill (val, start, end, encoding) {
     }
   } else if (typeof val === 'number') {
     val = val & 255
+  } else if (typeof val === 'boolean') {
+    val = Number(val)
   }
 
   // Invalid ranges are not set to a default, so can range check early.
@@ -19521,11 +19640,6 @@ function base64clean (str) {
     str = str + '='
   }
   return str
-}
-
-function toHex (n) {
-  if (n < 16) return '0' + n.toString(16)
-  return n.toString(16)
 }
 
 function utf8ToBytes (string, units) {
@@ -19658,8 +19772,22 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
+// Create lookup table for `toString('hex')`
+// See: https://github.com/feross/buffer/issues/219
+var hexSliceLookupTable = (function () {
+  var alphabet = '0123456789abcdef'
+  var table = new Array(256)
+  for (var i = 0; i < 16; ++i) {
+    var i16 = i * 16
+    for (var j = 0; j < 16; ++j) {
+      table[i16 + j] = alphabet[i] + alphabet[j]
+    }
+  }
+  return table
+})()
+
 }).call(this,require("buffer").Buffer)
-},{"base64-js":57,"buffer":59,"ieee754":60}],60:[function(require,module,exports){
+},{"base64-js":61,"buffer":63,"ieee754":64}],64:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -19745,7 +19873,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],61:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -19931,4 +20059,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[49]);
+},{}]},{},[48]);

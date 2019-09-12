@@ -1,0 +1,39 @@
+name: CI-build
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@master
+    - name: install tools
+      run: |
+        git config --global user.email "mai@ukibune.net"
+        git config --global user.name "mai bot-worker"
+        sudo npm i -g babelify browserify mocha eslint
+        sudo apt install ruby
+        npm i
+    - name: eslint
+      run: |
+        npm run lint
+        if [ `git diff | wc -l` -ne 0 ] ; then
+        git add .
+        git commit -m 'apply eslint by Github Actions'
+        fi
+    - name: build
+      run: |
+        npm run build
+        if [ `git diff | wc -l` -ne 0 ] ; then
+        git add .
+        git commit -m 'apply eslint by Github Actions'
+        fi
+    - uses: ad-m/github-push-action@master
+      with:
+        repo-token: ${{ secrets.MYTOKEN }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -29,19 +29,6 @@ $(() => {
 // _____________________________________________________
 // getter / setter
 
-export function getStdinLegacy() {
-    return $('#div_stdios > div').eq(0).data('components').textareaStdin.val();
-}
-export function setStdinLegacy(text) {
-    return $('#div_stdios > div').eq(0).data('components').textareaStdin.val(text);
-}
-export function getStdoutLegacy() {
-    return $('#div_stdios > div').eq(0).data('components').textareaStdout.val();
-}
-export function setStdoutLegacy(text) {
-    return $('#div_stdios > div').eq(0).data('components').textareaStdout.val(text);
-}
-
 export function getStdins(visibleonly = true) {
     const li = {};
     $('#div_stdios > div').each((i, e) => {
@@ -72,8 +59,17 @@ export function appendField() {
     $('#div_stdios').append(generateDom());
 }
 
-export function clearField() {
+export function removeAllField() {
     $('#div_stdios').empty();
+}
+
+
+export function displayStdout(text, id) {
+    if (id) {
+        const li = {};
+        li[id] = text;
+        setStdouts(li);
+    }
 }
 
 
@@ -89,7 +85,7 @@ export function dumpStdin() {
 }
 
 export function restoreStdin(li) {
-    clearField();
+    removeAllField();
     for (let txt of li) {
         const d = generateDom();
         d.data('components').textareaStdin.val(txt);

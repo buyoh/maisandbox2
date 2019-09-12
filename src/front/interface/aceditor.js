@@ -4,10 +4,10 @@
 
 const $ = require('jquery');
 let ace = require('ace-builds/src-min/ace');
-const Languages = require('./languages');
+const Languages = require('./../languages');
 
 let aceditor = null;
-const langInfo = {};
+// const langInfo = {};
 
 // _____________________________________________________
 // initialize
@@ -63,6 +63,7 @@ export function getValue() {
 }
 
 export function setValue(text) {
+    if (text === null) text = '';
     aceditor.setValue(text, -1);
 }
 
@@ -70,7 +71,7 @@ export function setValue(text) {
 // _____________________________________________________
 // interface
 
-export function changeCodeLang(lang) {
+export function changeLanguage(lang) {
     let info = Languages.languages[lang];
     if (!info)
         info = Languages.languages['default'];

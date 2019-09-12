@@ -3,9 +3,9 @@
  * 
  * @param {JSON} json 
  */
-exports.checkTaskSubmission = function(json) {
-    // TODO:
-    // TODO: (stdins)等に不正なファイル名送信があった場合にその項目を消す．
+exports.checkTaskSubmission = function (json) {
+    // Not Implemented
+    // (stdins)等に不正なファイル名送信があった場合にその項目を消す．
     return true;
 };
 
@@ -13,8 +13,8 @@ exports.checkTaskSubmission = function(json) {
  * 
  * @param {JSON} json 
  */
-exports.checkTaskExecution = function(json) {
-    // TODO:
+exports.checkTaskExecution = function (json) {
+    // Not Implemented
     return true;
 };
 

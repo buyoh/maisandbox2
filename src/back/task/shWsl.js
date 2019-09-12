@@ -15,10 +15,10 @@ exports.options = {};
 
 exports.recipes = {
     'run': {
-        tasks: ['setupAll', 'run']
+        script: ['setupAll', 'run']
     },
     'run(no update)': {
-        tasks: ['setupIO', 'run']
+        script: ['setupIO', 'run']
     }
 };
 

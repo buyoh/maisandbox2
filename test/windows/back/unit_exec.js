@@ -84,10 +84,10 @@ describe('test of exec.js', () => {
     });
 
     // bashにpipeは使えない(?)
-    it("rubyの実行結果が取得出来る(exec, bash)", (done) => {
-        testjs.exec("bash -c 'ruby -e \"p 8+1\"'", (err, stdout, stderr) => {
+    it('rubyの実行結果が取得出来る(exec, bash)', (done) => {
+        testjs.exec('bash -c \'ruby -e "p 8+1"\'', (err, stdout, stderr) => {
             assert.equal(!!err, false);
-            assert.equal(stdout.trim(), "9");
+            assert.equal(stdout.trim(), '9');
             assert.equal(stderr.toString().length, 0);
             done();
         });
@@ -154,16 +154,16 @@ describe('test of exec.js', () => {
     });
 
 
-    it("標準入出力を伴う実行が出来る(exec_buff)", (done) => {
-        process.chdir("./temp");
-        fs.writeFileSync("./test.rb", "s=gets.chomp;puts s+'#out';STDERR.puts s+'#err'");
-        testjs.exec_buff("ruby", ["./test.rb"], "hello", (err, code, signal, stdout, stderr) => {
-            assert.equal(err, null, "success");
-            assert.equal(code, 0, "exitcode == 0");
-            assert.equal(stdout.toString().trim(), "hello#out", "check stdout");
-            assert.equal(stderr.toString().trim(), "hello#err", "check stderr");
+    it('標準入出力を伴う実行が出来る(exec_buff)', (done) => {
+        process.chdir('./temp');
+        fs.writeFileSync('./test.rb', 's=gets.chomp;puts s+\'#out\';STDERR.puts s+\'#err\'');
+        testjs.exec_buff('ruby', ['./test.rb'], 'hello', (err, code, signal, stdout, stderr) => {
+            assert.equal(err, null, 'success');
+            assert.equal(code, 0, 'exitcode == 0');
+            assert.equal(stdout.toString().trim(), 'hello#out', 'check stdout');
+            assert.equal(stderr.toString().trim(), 'hello#err', 'check stderr');
 
-            process.chdir("../");
+            process.chdir('../');
             done();
         });
     });

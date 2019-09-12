@@ -4,7 +4,7 @@ const Logger = require('./../../logger');
 /**
  * export default したい
  */
-exports.generateDefaultTasks = function(codeExtension) {
+exports.generateDefaultTasks = function (codeExtension) {
     return {
         /** */
         info: {
@@ -16,14 +16,14 @@ exports.generateDefaultTasks = function(codeExtension) {
         options: {},
         recipes: {
             'compile > run': {
-                tasks: ['setupAll', 'compile', 'run']
+                script: ['setupAll', 'compile', 'run']
             },
             'run(no update)': {
-                tasks: ['setupIO', 'run']
+                script: ['setupIO', 'run']
             }
         },
         command: {
-            setupAll: function(task, callback) {
+            setupAll: function (task, callback) {
                 const files = [{
                     path: 'code.' + codeExtension,
                     data: task.json.txt_code
@@ -48,7 +48,7 @@ exports.generateDefaultTasks = function(codeExtension) {
                     });
                 });
             },
-            setupIO: function(task, callback) {
+            setupIO: function (task, callback) {
                 const files = [{
                     path: 'stdin.txt',
                     data: task.json.txt_stdin

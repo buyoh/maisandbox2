@@ -19,10 +19,10 @@ exports.options = options;
 
 exports.recipes = {
     'convert > compile > run': {
-        tasks: ['setupAll', 'convert', 'compile', 'run']
+        script: ['setupAll', 'convert', 'compile', 'run']
     },
     'run(no update)': {
-        tasks: ['setupIO', 'run']
+        script: ['setupIO', 'run']
     }
 };
 

@@ -4,7 +4,6 @@
 
 const $ = require('jquery');
 const Interface = require('./interface');
-const Editor = require('./aceditor');
 const Storage = require('./storage');
 const Socket = require('./socket');
 
@@ -17,49 +16,44 @@ $(() => {
 
 function bundEvents() {
 
-    $('#btn_halt').on('click', () => {
+    Interface.LaunchPad.onClickHalt(() => {
         Socket.emitHalt();
     });
 
-    $('#btn_storeTemplate').on('click', () => {
-        Storage.storeTemplate(Interface.getChosenLang(), Editor.getValue());
+    Interface.EditPanel.onClickStoreTemplate(() => {
+        Storage.storeTemplate(Interface.getSelectedTaskCmd(), Interface.Editor.getValue());
     });
 
-    $('#btn_loadTemplate').on('click', () => {
-        Editor.setValue(Storage.loadTemplate(Interface.getChosenLang()));
+    Interface.EditPanel.onClickLoadTemplate(() => {
+        Interface.Editor.setValue(Storage.loadTemplate(Interface.getSelectedTaskCmd()));
     });
 
-    $('#selector_codelang').change(() => {
-        let dom = $('#selector_codelang option:selected');
-        let cmd = dom.data('cmd');
-        let lang = dom.data('lang');
-        if (cmd === '') return;
-
-        Interface.changeVisibleRecipes(cmd, lang);
+    Interface.LaunchPad.addLaunchRecipeListener((recipe) => {
+        const info = Interface.gatherInfo();
+        info.recipe = recipe;
+        Interface.Results.clearResults();
+        Interface.Editor.clearAnnotations();
+        Socket.emitSubmit(info);
     });
 
 }
 
 
 function initialize() {
-
     Socket.getCatalog((allLangInfo) => {
-        // TODO: 言語ごとの配列にまとめる
-        for (let langInfo of allLangInfo)
-            Interface.addLanguage(langInfo);
-        Interface.rechooseLang();
+        Interface.appendTasks(allLangInfo);
     });
 }
 
 // _____________________________________________________
 // socket
 
-// submitしたtaskの状況がサーバから送られてくる
+// submitしたjobの状況がサーバから送られてくる
 Socket.addProgressListener((json) => {
     // console.log(json);
 
     if (json.type === 'halted') {
-        Interface.appendResultLog('halted', '', 'info');
+        Interface.Results.appendResult('halted', '', 'info');
         return;
     }
 
@@ -68,7 +62,7 @@ Socket.addProgressListener((json) => {
             $('#div_resultlogs > div').first().find('.val')
                 .filter((i, e) => ($(e).data('key') == 'stdout'));
         if (d.length === 1)
-            Interface.displayStdout(d.text());
+            Interface.Stdios.displayStdout(d.text());
     }
 
     const state =
@@ -77,17 +71,16 @@ Socket.addProgressListener((json) => {
                 json.type === 'error' ? 'danger' :
                     'info';
 
-    Interface.appendResultLog(
-        json.data.taskName ? '[' + json.data.taskName + ']' + json.type : json.type,
+    Interface.Results.appendResult(
+        json.data.commandName ? '[' + json.data.commandName + ']' + json.type : json.type,
         json.data, state, json.type === 'progress'
     );
 
     if (json.data && json.data.key) {
-        Interface.displayStdout(json.data.stdout, json.data.key);
+        Interface.Stdios.displayStdout(json.data.stdout, json.data.key);
     }
 
     if (json.data.note) {
-        Editor.setAnnotations(json.data.note);
+        Interface.Editor.setAnnotations(json.data.note);
     }
-
 });

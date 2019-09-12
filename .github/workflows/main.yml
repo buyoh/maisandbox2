@@ -1,0 +1,24 @@
+name: CI-test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: install tools
+      run: |
+        sudo npm i -g babelify browserify mocha eslint
+        sudo apt install ruby
+        npm i
+    - name: eslint
+      run: |
+        npm run lint
+    - name: build, test
+      run: |
+        npm run build
+        npm run test
+
