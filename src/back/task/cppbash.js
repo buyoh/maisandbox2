@@ -76,8 +76,8 @@ exports.command = {
                 let killer = myexec.spawn_fileio(
                     'bash', ['-c', param],
                     null, null, null, {
-                    cwd: cwdir
-                },
+                        cwd: cwdir
+                    },
                     (code, json) => {
                         DefaultTask.util.promiseResultResponser(json, cwdir, callback, pickupInformations)
                             .then(() => {
@@ -111,8 +111,8 @@ exports.command = {
                     let killer = myexec.spawn_fileio(
                         'bash', ['-c', './code.out < ./' + nameStdin + ' 1> ./' + nameStdout + ' 2> ./' + nameStderr],
                         null, null, null, {
-                        cwd: cwdir
-                    },
+                            cwd: cwdir
+                        },
                         (code, json) => {
                             resolve(json);
                         }

@@ -74,8 +74,8 @@ exports.command = {
                 let killer = myexec.spawn_fileio(
                     'g++', param,
                     null, cwdir + '/stdout.txt', cwdir + '/stderr.txt', {
-                    cwd: cwdir
-                },
+                        cwd: cwdir
+                    },
                     (code, json) => {
                         DefaultTask.util.promiseResultResponser(json, cwdir, callback, pickupInformations)
                             .then(() => {
@@ -109,8 +109,8 @@ exports.command = {
                     let killer = myexec.spawn_fileio(
                         './code.out', [],
                         cwdir + '/' + nameStdin, cwdir + '/' + nameStdout, cwdir + '/' + nameStderr, {
-                        cwd: cwdir
-                    },
+                            cwd: cwdir
+                        },
                         (code, json) => {
                             resolve(json);
                         }

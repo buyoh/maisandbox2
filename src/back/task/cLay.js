@@ -78,11 +78,11 @@ exports.command = {
                 let killer = myexec.spawn_fileio(
                     'g++', param,
                     null, cwdir + '/stdout.txt', cwdir + '/stderr.txt', {
-                    env: {
-                        PATH: FileWrapper.cygwinEnvPath
+                        env: {
+                            PATH: FileWrapper.cygwinEnvPath
+                        },
+                        cwd: cwdir
                     },
-                    cwd: cwdir
-                },
                     (code, json) => {
                         DefaultTask.util.promiseResultResponser(json, cwdir, callback)
                             .then(() => {
@@ -116,11 +116,11 @@ exports.command = {
                     let killer = myexec.spawn_fileio(
                         './code.out', [],
                         cwdir + '/' + nameStdin, cwdir + '/' + nameStdout, cwdir + '/' + nameStderr, {
-                        env: {
-                            PATH: FileWrapper.cygwinEnvPath
+                            env: {
+                                PATH: FileWrapper.cygwinEnvPath
+                            },
+                            cwd: cwdir
                         },
-                        cwd: cwdir
-                    },
                         (code, json) => {
                             resolve(json);
                         }
