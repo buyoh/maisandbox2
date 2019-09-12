@@ -28,25 +28,20 @@ $(() => {
         aceditor.setFontSize(14);
 
         const snippetManager = ace.require('ace/snippets').snippetManager;
-        ace.config.loadModule('ace/snippets/javascript', (mod) => {
-            snippetManager.files.javascript = mod;
-
-            mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
-            snippetManager.register(mod.snippets, mod.scope);
-        });
-        ace.config.loadModule('ace/snippets/c_cpp', (mod) => {
-            snippetManager.files.c_cpp = mod;
-
-            mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
-            mod.snippets.push(
-                {
-                    'content': 'repeat(${1:i}, ${2:N}) {\n\t$3\n}',
-                    'name': 'repeat',
-                    'tabTrigger': 'repeat'
-                }
-            );
-            snippetManager.register(mod.snippets, mod.scope);
-        });
+        for (let edt of Object.keys(Object.values(Languages.languages).reduce((a, e) => (a[e.editor] = true, a), ({})))) {
+            ace.config.loadModule('ace/snippets/' + edt, (mod) => {
+                snippetManager.files[edt] = mod;
+                mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
+                $.getJSON('snippets/' + edt + '.json').done((json) => {
+                    console.log(json);
+                    mod.snippets = mod.snippets.concat(json);
+                }).fail(() => {
+                    console.log(edt, 'fail');
+                    return false;
+                });
+                snippetManager.register(mod.snippets, mod.scope);
+            });
+        }
     });
 
     $('#aceditorEdge').on('onresize', () => {

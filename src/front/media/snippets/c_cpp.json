@@ -1,0 +1,12 @@
+[
+    {
+        "content": "repeat(${1:i}, ${2:N}) {\n\t$3\n}",
+        "name": "repeat",
+        "tabTrigger": "repeat"
+    },
+    {
+        "content": "int ${1:x}; scanner >> ${1:x};",
+        "name": "intscan",
+        "tabTrigger": "intscan"
+    }
+]
