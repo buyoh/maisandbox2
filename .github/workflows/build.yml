@@ -33,7 +33,6 @@ jobs:
         git add .
         git commit -m 'apply eslint by Github Actions'
         fi
-    - name: git push
-      uses: ad-m/github-push-action@master
-      env:
-        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: ad-m/github-push-action@master
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
