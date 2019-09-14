@@ -1,0 +1,17 @@
+[
+    {
+        "content": "def bye(msg); puts msg.to_s; exit; end",
+        "name": "def bye(msg)",
+        "tabTrigger": "\\defbye"
+    },
+    {
+        "content": "((${1:cons}) ? \"Yes\" : \"No\")",
+        "name": "Yes, No",
+        "tabTrigger": "\\YesNo"
+    },
+    {
+        "content": "((${1:cons}) ? \"YES\" : \"NO\")",
+        "name": "YES, NO",
+        "tabTrigger": "\\YESNO"
+    }
+]

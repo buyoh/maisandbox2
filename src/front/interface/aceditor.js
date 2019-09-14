@@ -31,6 +31,7 @@ $(() => {
         for (let edt of Object.keys(Object.values(Languages.languages).reduce((a, e) => (a[e.editor] = true, a), ({})))) {
             ace.config.loadModule('ace/snippets/' + edt, (mod) => {
                 snippetManager.files[edt] = mod;
+                mod.snippets = [];
                 // disable default snippets
                 // mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
                 $.getJSON('snippets/' + edt + '.json').done((json) => {
