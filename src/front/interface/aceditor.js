@@ -31,14 +31,11 @@ $(() => {
         for (let edt of Object.keys(Object.values(Languages.languages).reduce((a, e) => (a[e.editor] = true, a), ({})))) {
             ace.config.loadModule('ace/snippets/' + edt, (mod) => {
                 snippetManager.files[edt] = mod;
-                mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
+                // disable default snippets
+                // mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
                 $.getJSON('snippets/' + edt + '.json').done((json) => {
-                    console.log(json);
                     mod.snippets = mod.snippets.concat(json);
-                }).fail(() => {
-                    console.log(edt, 'fail');
-                    return false;
-                });
+                }).fail(() => { });
                 snippetManager.register(mod.snippets, mod.scope);
             });
         }
