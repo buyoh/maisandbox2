@@ -17132,17 +17132,41 @@ var aceditor = null; // const langInfo = {};
 // initialize
 
 $(function () {
-  ace.config.set('basePath', '/ext');
+  ace.config.set('basePath', 'ext');
   aceditor = ace.edit('aceditor');
-  aceditor.setTheme('ace/theme/monokai');
-  aceditor.getSession().setMode('ace/mode/ruby');
-  aceditor.setOptions({
-    enableBasicAutocompletion: true,
-    //enableSnippets: true,
-    enableLiveAutocompletion: true
+  ace.config.loadModule('ext/language_tools', function () {
+    aceditor.setTheme('ace/theme/monokai');
+    aceditor.getSession().setMode('ace/mode/ruby');
+    aceditor.setOptions({
+      enableBasicAutocompletion: true,
+      enableSnippets: true,
+      enableLiveAutocompletion: true
+    });
+    aceditor.setShowInvisibles(true);
+    aceditor.setFontSize(14);
+
+    var snippetManager = ace.require('ace/snippets').snippetManager;
+
+    var _loop = function _loop() {
+      var edt = _Object$keys[_i];
+      ace.config.loadModule('ace/snippets/' + edt, function (mod) {
+        snippetManager.files[edt] = mod;
+        mod.snippets = []; // disable default snippets
+        // mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
+
+        $.getJSON('snippets/' + edt + '.json').done(function (json) {
+          mod.snippets = mod.snippets.concat(json);
+        }).fail(function () {});
+        snippetManager.register(mod.snippets, mod.scope);
+      });
+    };
+
+    for (var _i = 0, _Object$keys = Object.keys(Object.values(Languages.languages).reduce(function (a, e) {
+      return a[e.editor] = true, a;
+    }, {})); _i < _Object$keys.length; _i++) {
+      _loop();
+    }
   });
-  aceditor.setShowInvisibles(true);
-  aceditor.setFontSize(14);
   $('#aceditorEdge').on('onresize', function () {
     aceditor.resize();
   });
