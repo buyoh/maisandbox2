@@ -43,12 +43,12 @@ exports.server = http.createServer((request, response) => {
     // 該当するファイルを探す
     try {
         const cnt = fs.readFileSync(path, 'utf-8');
-        response.writeHead(200, {'Content-Type': mimeTypes.lookup(request.url)});
+        response.writeHead(200, { 'Content-Type': mimeTypes.lookup(request.url) });
         response.end(cnt);
         console.error('requested: lookup ' + path + ' => ok');
     } catch (err) {
         response.statusCode = 404;
-        response.end('404');
+        response.end('');
         console.error('requested: lookup ' + path + ' => ng');
     }
 

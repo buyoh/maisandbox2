@@ -14,17 +14,33 @@ let aceditor = null;
 
 
 $(() => {
-    ace.config.set('basePath', '/ext');
+    ace.config.set('basePath', 'ext');
     aceditor = ace.edit('aceditor');
-    aceditor.setTheme('ace/theme/monokai');
-    aceditor.getSession().setMode('ace/mode/ruby');
-    aceditor.setOptions({
-        enableBasicAutocompletion: true,
-        //enableSnippets: true,
-        enableLiveAutocompletion: true
+    ace.config.loadModule('ext/language_tools', () => {
+        aceditor.setTheme('ace/theme/monokai');
+        aceditor.getSession().setMode('ace/mode/ruby');
+        aceditor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
+        });
+        aceditor.setShowInvisibles(true);
+        aceditor.setFontSize(14);
+
+        const snippetManager = ace.require('ace/snippets').snippetManager;
+        for (let edt of Object.keys(Object.values(Languages.languages).reduce((a, e) => (a[e.editor] = true, a), ({})))) {
+            ace.config.loadModule('ace/snippets/' + edt, (mod) => {
+                snippetManager.files[edt] = mod;
+                mod.snippets = [];
+                // disable default snippets
+                // mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
+                $.getJSON('snippets/' + edt + '.json').done((json) => {
+                    mod.snippets = mod.snippets.concat(json);
+                }).fail(() => { });
+                snippetManager.register(mod.snippets, mod.scope);
+            });
+        }
     });
-    aceditor.setShowInvisibles(true);
-    aceditor.setFontSize(14);
 
     $('#aceditorEdge').on('onresize', () => {
         aceditor.resize();
