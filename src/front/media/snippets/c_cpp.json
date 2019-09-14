@@ -1,27 +1,27 @@
 [
     {
         "content": "repeat(${1:i}, ${2:N}) {\n\t$3\n}",
-        "name": "repeat",
-        "tabTrigger": "\\repeat"
+        "name": "repi",
+        "tabTrigger": "repi"
     },
     {
         "content": "int ${1:x}; scanner >> ${1:x};",
         "name": "intscan",
-        "tabTrigger": "\\intscan"
+        "tabTrigger": "intscan"
     },
     {
         "content": "queue<${1:int}> que;\nque.push(${2:start});\nwhile(!que.empty()) {\n\tauto p = que.front(); que.pop();\n};",
         "name": "bfs",
-        "tabTrigger": "\\bfs"
+        "tabTrigger": "bfs"
     },
     {
         "content": "((${1:cons}) ? \"Yes\" : \"No\")",
         "name": "Yes, No",
-        "tabTrigger": "\\YesNo"
+        "tabTrigger": "YesNo"
     },
     {
         "content": "((${1:cons}) ? \"YES\" : \"NO\")",
         "name": "YES, NO",
-        "tabTrigger": "\\YESNO"
+        "tabTrigger": "YESNO"
     }
 ]
