@@ -39,21 +39,6 @@
                         </div>
                     </div>
                 </div>
-                <!--
-            <div>
-                <ul id="div_tablist" class="nav nav-tabs" style="margin-bottom:1px; margin-left:5px;">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" onclick="switchTab($(this))">
-                            tab1
-                            <button type="button" class="close" onclick="closeTab($(this));return false">&times;</button>
-                        </a>
-                    </li>
-                    <li class="nav-item" id="div_tablist_add">
-                        <a class="nav-link" href="#" onclick="buttonCreateNewTab()">&plus;</a>
-                    </li>
-                </ul>
-            </div>
-            -->
                 <div id="aceditorEdge" style="border:solid 2px #888; margin:4px;">
                     <div id="aceditor" style="height:500px;"></div>
                 </div>
@@ -107,8 +92,64 @@
         <hr>
 
     </div>
-    <p>Rubyで日本語を使う:<code>puts gets.force_encoding("UTF-8")</code></p>
-    <p><button id="btn_forcebackup" class="btn btn-sm btn-primary">force backup</button></p>
+    <div class="border">
+        <p>Rubyで日本語を使う:<code>puts gets.force_encoding("UTF-8")</code></p>
+        <p>
+            <button id="btn_forcebackup" class="btn btn-sm btn-primary">force backup</button>
+        </p>
+    </div>
+    <div class="border">
+        <div>Configulation</div>
+        <div>
+            <div>Language: <output>C++</output></div>
+            <div class="inline-box">
+                <div class="title">tabspace</div>
+                <div class="body">
+                    <select>
+                        <option>2</option>
+                        <option>4</option>
+                        <option>8</option>
+                    </select>
+                </div>
+            </div>
+            <div class="multiline-box">
+                <div class="title">Snippet</div>
+                <div class="body">
+                    <div>
+                        <div>S1</div>
+                        <div>S2</div>
+                        <div>S3</div>
+                    </div>
+                    <div>
+                        <div class="inline-box">
+                            <div class="title">name</div>
+                            <div class="body"><input type="text"></div>
+                        </div>
+                        <div class="inline-box">
+                            <div class="title">trigger</div>
+                            <div class="body"><input type="text"></div>
+                        </div>
+                        <div class="multiline-box">
+                            <div class="title">snippet</div>
+                            <div class="body">
+                                <textarea></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div>Share config</div>
+                <div>
+                    <button>export</button>
+                    <button>import</button>
+                    <textarea></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 
     <div style="margin-top:2000px;"></div>
 
