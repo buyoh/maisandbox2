@@ -98,60 +98,73 @@
             <button id="btn_forcebackup" class="btn btn-sm btn-primary">force backup</button>
         </p>
     </div>
-    <div class="border">
-        <div>Configulation</div>
+    <div class="">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Configuration</h4>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                    card's content.</p>
+            </div>
+        </div>
+        <div></div>
         <div>
             <div>Language: <output>C++</output></div>
-            <div class="inline-box">
-                <div class="title">tabspace</div>
-                <div class="body">
-                    <select>
-                        <option>2</option>
-                        <option>4</option>
-                        <option>8</option>
-                    </select>
+            <div class="d-flex flex-wrap">
+                <div class="border">
+                    <span>tabspace</span>
+                    <span>
+                        <select class="form-control form-control-sm" style="display:inline-block; width: auto;">
+                            <option>2</option>
+                            <option>4</option>
+                            <option>8</option>
+                        </select></span>
                 </div>
             </div>
             <div class="multiline-box">
                 <div class="title">Snippet</div>
                 <div class="body">
-                    <div>
-                        <div>S1</div>
-                        <div>S2</div>
-                        <div>S3</div>
-                    </div>
-                    <div>
-                        <div class="inline-box">
-                            <div class="title">name</div>
-                            <div class="body"><input type="text"></div>
+                    <div class="container row">
+                        <div class="col-sm list-group">
+                            <div class="list-group-item">S1</div>
+                            <div class="list-group-item">S2</div>
+                            <div class="list-group-item">S3</div>
+                            </select>
                         </div>
-                        <div class="inline-box">
-                            <div class="title">trigger</div>
-                            <div class="body"><input type="text"></div>
-                        </div>
-                        <div class="multiline-box">
-                            <div class="title">snippet</div>
-                            <div class="body">
-                                <textarea></textarea>
+                        <div class="col-sm">
+                            <div class="inline-box">
+                                <div class="title">name</div>
+                                <div class="body"><input type="text" class="form-control form-control-sm"></div>
+                            </div>
+                            <div class="inline-box">
+                                <div class="title">trigger</div>
+                                <div class="body"><input type="text" class="form-control form-control-sm"></div>
+                            </div>
+                            <div class="multiline-box">
+                                <div class="title">snippet</div>
+                                <div class="body">
+                                    <textarea class="textarea enabletabs"></textarea>
+                                </div>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-primary">update</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div>
-                <div>Share config</div>
                 <div>
-                    <button>export</button>
-                    <button>import</button>
-                    <textarea></textarea>
+                    <div>Share config</div>
+                    <div>
+                        <button>export</button>
+                        <button>import</button>
+                        <textarea></textarea>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
 
-    <div style="margin-top:2000px;"></div>
+        <div style="margin-top:2000px;"></div>
 
 </body>
 
