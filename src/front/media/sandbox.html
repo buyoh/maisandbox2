@@ -124,7 +124,7 @@
                 <div class="title">Snippet</div>
                 <div class="body">
                     <div class="container row">
-                        <div class="col-sm list-group">
+                        <div id="div_snippet_list" class="col-sm list-group">
                             <div class="list-group-item">S1</div>
                             <div class="list-group-item">S2</div>
                             <div class="list-group-item">S3</div>
@@ -133,20 +133,22 @@
                         <div class="col-sm">
                             <div class="inline-box">
                                 <div class="title">name</div>
-                                <div class="body"><input type="text" class="form-control form-control-sm"></div>
+                                <div class="body"><input type="text" id="text_snippet_name"
+                                        class="form-control form-control-sm"></div>
                             </div>
                             <div class="inline-box">
                                 <div class="title">trigger</div>
-                                <div class="body"><input type="text" class="form-control form-control-sm"></div>
+                                <div class="body"><input type="text" id="text_snippet_trigger"
+                                        class="form-control form-control-sm"></div>
                             </div>
                             <div class="multiline-box">
                                 <div class="title">snippet</div>
                                 <div class="body">
-                                    <textarea class="textarea enabletabs"></textarea>
+                                    <textarea id="text_snippet_multiline" class="textarea enabletabs"></textarea>
                                 </div>
                             </div>
                             <div>
-                                <button class="btn btn-sm btn-primary">update</button>
+                                <button id="btn_snippet_update" class="btn btn-sm btn-primary">update</button>
                             </div>
                         </div>
                     </div>
