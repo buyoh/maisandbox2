@@ -18,6 +18,16 @@ const States = {
             color: 'success',
             text: 'connected'
         }
+    },
+    backup: {
+        undefined: {
+            color: 'dark',
+            text: 'autosaved(never)'
+        },
+        saved: {
+            color: 'light',
+            text: 'autosaved(never)'
+        }
     }
 };
 
@@ -44,7 +54,7 @@ $(() => {
 // _____________________________________________________
 // manipulate
 
-export function setState(badge, state) {
+export function setState(badge, state, customText = null) {
     if (!States[badge] || !States[badge][state]) {
         console.error('Interface.Indicator.setState unknown pair (' + badge + ', ' + state + ')');
     }
@@ -53,7 +63,7 @@ export function setState(badge, state) {
         createdDoms[badge]
             .removeClass('badge-' + States[badge][setted[badge]].color)
             .addClass('badge-' + s.color)
-            .text(s.text);
+            .text(customText ? customText : s.text);
     }
     setted[badge] = state;
 }
