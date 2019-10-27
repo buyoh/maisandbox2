@@ -28,15 +28,19 @@ $(() => {
         aceditor.setFontSize(14);
 
         const snippetManager = ace.require('ace/snippets').snippetManager;
-        for (let edt of Object.keys(Object.values(Languages.languages).reduce((a, e) => (a[e.editor] = true, a), ({})))) {
+        for (let edt of Object.keys(
+            Object.values(Languages.languages)
+                .reduce((a, e) => (a[e.editor] = true, a), ({})))) {
             ace.config.loadModule('ace/snippets/' + edt, (mod) => {
                 snippetManager.files[edt] = mod;
                 mod.snippets = [];
                 // disable default snippets
                 // mod.snippets = snippetManager.parseSnippetFile(mod.snippetText);
-                $.getJSON('snippets/' + edt + '.json').done((json) => {
-                    mod.snippets = mod.snippets.concat(json);
-                }).fail(() => { });
+                $.getJSON('snippets/' + edt + '.json')
+                    .done((json) => {
+                        mod.snippets = mod.snippets.concat(json);
+                    })
+                    .fail(() => { });
                 snippetManager.register(mod.snippets, mod.scope);
             });
         }
@@ -66,16 +70,16 @@ export function setValue(text) {
 
 export function changeLanguage(lang) {
     let info = Languages.languages[lang];
-    if (!info)
-        info = Languages.languages['default'];
+    if (!info) info = Languages.languages['default'];
     const s = aceditor.getSession();
     s.setMode('ace/mode/' + info.editor);
     s.setTabSize(info.tabwidth);
 }
 
 /**
- * 
- * @param {{text:String, row:Number, column:Number, type: "error" | "warning" | "information"}} json 
+ *
+ * @param {{text:String, row:Number, column:Number, type: "error" | "warning" |
+ *     "information"}} json
  */
 export function setAnnotations(json) {
     aceditor.getSession().setAnnotations(json);

@@ -9,6 +9,7 @@ export const Stdios = require('./interface/stdios');
 export const Results = require('./interface/results');
 export const TaskSelector = require('./interface/taskselector');
 export const EditPanel = require('./interface/editpanel');
+export const Indicator = require('./interface/indicator');
 
 
 // _____________________________________________________

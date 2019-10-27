@@ -1,172 +1,108 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="ja">
 
 <head>
-    <title>sandbox</title>
+  <title>sandbox</title>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script src="_/bundle.js" defer></script>
-    <script src="ext/ext-language_tools.js" defer></script>
-    <script src="ext/mode-snippets.js" defer></script>
-    <link rel="stylesheet" href="ext/slate_bootstrap.min.css" />
-    <link rel="stylesheet" href="sandbox.css" />
+  <script src="_/bundle.js" defer></script>
+  <script src="ext/ext-language_tools.js" defer></script>
+  <script src="ext/mode-snippets.js" defer></script>
+  <link rel="stylesheet" href="ext/slate_bootstrap.min.css" />
+  <link rel="stylesheet" href="sandbox.css" />
 
 </head>
 
 <body>
 
-    <div class="border">
-        <div class="border" style="padding:10px;">
-            <h2>Sandbox</h2>
-        </div>
+  <div class="border">
+    <div id="header" class="border" style="padding:10px;">
+      <h1 class="title" style="float:left;">Sandbox</h1>
+      <ul style="float:right;" id="indicators">
+      </ul>
+      <div style="clear: both"></div>
+    </div>
+    <div>
+      <!--  class="border flexboxRow" -->
+      <div class="border flexcontainer flexboxCol">
         <div>
-            <!--  class="border flexboxRow" -->
-            <div class="border flexcontainer flexboxCol">
-                <div>
-                    Code
-                    <div style="display:inline-block;margin:4px 4px 4px 40px;">
-                        <select id="selector_codelang" class="form-control form-control-sm"></select>
-                    </div>
-                    <div style="display:inline-block;" id="div_storageselector">
-                        <div class="border_lr" style="display:inline-block; margin:2px 2px 4px 12px;">
-                            <buton class="btn btn-primary btn-sm" id="btn_storeTemplate" style="width:3em;">&utrif;
-                            </buton>
-                            <buton class="btn btn-primary btn-sm" id="btn_loadTemplate" style="width:5em;">&dtrif;
-                            </buton>
-                        </div>
-                    </div>
-                </div>
-                <div id="aceditorEdge" style="border:solid 2px #888; margin:4px;">
-                    <div id="aceditor" style="height:500px;"></div>
-                </div>
-                <!-- <textarea id="editcode" class="flexcontainer" rows=18></textarea> -->
+          <div style="display:inline-block;margin:4px 4px 4px 40px;">
+            <select id="selector_codelang" class="form-control form-control-sm"></select>
+          </div>
+          <div style="display:inline-block;" id="div_storageselector">
+            <div class="border_lr" style="display:inline-block; margin:2px 2px 4px 12px;">
+              <buton class="btn btn-primary btn-sm" id="btn_storeTemplate" style="width:3em;">&utrif;
+              </buton>
+              <buton class="btn btn-primary btn-sm" id="btn_loadTemplate" style="width:5em;">&dtrif;
+              </buton>
             </div>
+          </div>
         </div>
-        <div class="border">
-            <div id="div_stdios">
-                <div class="flexboxRow hiddenTemplate">
-                    <div class="Stdios_Tools border">
-                        <button class="btn btn-sm btn-primary" style="width: 30px;" title="minify">±</button>
-                        <button class="btn btn-sm btn-danger" style="width: 30px;" title="close">X</button>
-                    </div>
-                    <div class="Stdios_DivStdin border resizeableFlexContainer_left flexboxCol">
-                        <div>Stdin</div>
-                        <textarea class="flexcontainer textarea enabletabs" rows="12" title="stdin"></textarea>
-                    </div>
-                    <div class="Stdios_DivStdout border resizeableFlexContainer_right flexboxCol">
-                        <div>Stdout</div>
-                        <textarea class="flexcontainer textarea enabletabs" title="stdout"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div id="div_stdioctrl" class="border">
-                <button id="btn_appendstdio" class="btn btn-sm btn-primary">append</button>
-            </div>
+        <div id="aceditorEdge" style="border:solid 2px #888; margin:4px;">
+          <div id="aceditor" style="height:500px;"></div>
         </div>
-        <div class="border">
-            <div>
-                <!--
+        <!-- <textarea id="editcode" class="flexcontainer" rows=18></textarea> -->
+      </div>
+    </div>
+    <div class="border">
+      <div id="div_stdios">
+        <div class="flexboxRow hiddenTemplate">
+          <div class="Stdios_Tools border">
+            <button class="btn btn-sm btn-primary" style="width: 30px;" title="minify">±</button>
+            <button class="btn btn-sm btn-danger" style="width: 30px;" title="close">X</button>
+          </div>
+          <div class="Stdios_DivStdin border resizeableFlexContainer_left flexboxCol">
+            <div>Stdin</div>
+            <textarea class="flexcontainer textarea enabletabs" rows="12" title="stdin"></textarea>
+          </div>
+          <div class="Stdios_DivStdout border resizeableFlexContainer_right flexboxCol">
+            <div>Stdout</div>
+            <textarea class="flexcontainer textarea enabletabs" title="stdout"></textarea>
+          </div>
+        </div>
+      </div>
+      <div id="div_stdioctrl" class="border">
+        <button id="btn_appendstdio" class="btn btn-sm btn-primary">append</button>
+      </div>
+    </div>
+    <div class="border">
+      <div>
+        <!--
             <div style="display:inline-block;margin:4px 4px 4px 40px;">
                 Timeout(sec)<input type="text" class="form-control form-control-sm" value="3" id="input_timeout">
             </div>
             -->
-                <div id="div_recipes" style="display:inline-block;margin:4px 4px 4px 40px;">
-                </div>
-                <div id="div_options" style="display:inline-block;margin:4px 4px 4px 40px;">
-                </div>
-                <div style="display:inline-block;margin:4px 4px 4px 40px;">
-                    <button class="btn btn-primary" id="btn_halt">halt</button>
-                    <!--
+        <div id="div_recipes" style="display:inline-block;margin:4px 4px 4px 40px;">
+        </div>
+        <div id="div_options" style="display:inline-block;margin:4px 4px 4px 40px;">
+        </div>
+        <div style="display:inline-block;margin:4px 4px 4px 40px;">
+          <button class="btn btn-primary" id="btn_halt">halt</button>
+          <!--
                 <label>mergeStdoutStderr<input type="checkbox" class="form-check-input" id="mergeOutErr"></label>
                 -->
-                </div>
-            </div>
         </div>
-        <div class="border" style="min-height: 300px;">
-            <div>resultLogs</div>
-            <div id="div_resultlogs"></div>
-        </div>
-        <hr>
-
+      </div>
     </div>
-    <div class="border">
-        <p>Rubyで日本語を使う:<code>puts gets.force_encoding("UTF-8")</code></p>
-        <p>
-            <button id="btn_forcebackup" class="btn btn-sm btn-primary">force backup</button>
-        </p>
+    <div class="border" style="min-height: 300px;">
+      <div>resultLogs</div>
+      <div id="div_resultlogs"></div>
     </div>
-    <div class="">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Configuration</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                    card's content.</p>
-            </div>
-        </div>
-        <div></div>
-        <div>
-            <div>Language: <output>C++</output></div>
-            <div class="d-flex flex-wrap">
-                <div class="border">
-                    <span>tabspace</span>
-                    <span>
-                        <select class="form-control form-control-sm" style="display:inline-block; width: auto;">
-                            <option>2</option>
-                            <option>4</option>
-                            <option>8</option>
-                        </select></span>
-                </div>
-            </div>
-            <div class="multiline-box">
-                <div class="title">Snippet</div>
-                <div class="body">
-                    <div class="container row">
-                        <div id="div_snippet_list" class="col-sm list-group">
-                            <div class="list-group-item">S1</div>
-                            <div class="list-group-item">S2</div>
-                            <div class="list-group-item">S3</div>
-                            </select>
-                        </div>
-                        <div class="col-sm">
-                            <div class="inline-box">
-                                <div class="title">name</div>
-                                <div class="body"><input type="text" id="text_snippet_name"
-                                        class="form-control form-control-sm"></div>
-                            </div>
-                            <div class="inline-box">
-                                <div class="title">trigger</div>
-                                <div class="body"><input type="text" id="text_snippet_trigger"
-                                        class="form-control form-control-sm"></div>
-                            </div>
-                            <div class="multiline-box">
-                                <div class="title">snippet</div>
-                                <div class="body">
-                                    <textarea id="text_snippet_multiline" class="textarea enabletabs"></textarea>
-                                </div>
-                            </div>
-                            <div>
-                                <button id="btn_snippet_update" class="btn btn-sm btn-primary">update</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div>Share config</div>
-                    <div>
-                        <button>export</button>
-                        <button>import</button>
-                        <textarea></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <hr>
+
+  </div>
+  <div class="border">
+    <p>Rubyで日本語を使う:<code>puts gets.force_encoding("UTF-8")</code></p>
+    <p>
+      <button id="btn_forcebackup" class="btn btn-sm btn-primary">force backup</button>
+    </p>
+  </div>
 
 
-
-        <div style="margin-top:2000px;"></div>
+  <div style="margin-top:2000px;"></div>
 
 </body>
 

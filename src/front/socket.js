@@ -4,12 +4,6 @@
 
 const io = require('socket.io-client');
 const socket = io.connect();
-const progressListener = [];
-
-socket.on('s2c_progress', (json) => {
-    for (let f of progressListener)
-        f(json);
-});
 
 
 // _____________________________________________________
@@ -36,5 +30,13 @@ export function emitSubmit(info) {
 // listener
 
 export function addProgressListener(listener) {
-    progressListener.push(listener);
+    socket.on('s2c_progress', listener);
+}
+
+export function onConnect(callback) {
+    socket.on('connect', callback);
+}
+
+export function onDisconnect(callback) {
+    socket.on('disconnect', callback);
 }

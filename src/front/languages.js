@@ -40,8 +40,5 @@ exports.languages = {
         tabWidth: 2,
     },
     // otherwise
-    'default': {
-        editor: 'text',
-        tabWidth: 4
-    }
+    'default': {editor: 'text', tabWidth: 4}
 };
