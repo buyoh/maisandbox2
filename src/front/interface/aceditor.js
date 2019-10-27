@@ -7,18 +7,28 @@ let ace = require('ace-builds/src-min/ace');
 const Languages = require('./../languages');
 
 let aceditor = null;
-// const langInfo = {};
+let settings = Languages.default;
 
 // _____________________________________________________
 // initialize
 
+function applySettings() {
+    const s = aceditor.getSession();
+    s.setMode('ace/mode/' + settings.editor);
+    s.setTabSize(settings.tabWidth);
+}
+
+function initialized() {
+    applySettings();
+}
 
 $(() => {
     ace.config.set('basePath', 'ext');
     aceditor = ace.edit('aceditor');
     ace.config.loadModule('ext/language_tools', () => {
+        console.log(aceditor.getSession().getMode());
         aceditor.setTheme('ace/theme/monokai');
-        aceditor.getSession().setMode('ace/mode/ruby');
+        console.log(aceditor.getSession().getMode());
         aceditor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
@@ -28,6 +38,7 @@ $(() => {
         aceditor.setFontSize(14);
 
         const snippetManager = ace.require('ace/snippets').snippetManager;
+        let nJobs = 0;
         for (let edt of Object.keys(
             Object.values(Languages.languages)
                 .reduce((a, e) => (a[e.editor] = true, a), ({})))) {
@@ -40,9 +51,13 @@ $(() => {
                     .done((json) => {
                         mod.snippets = mod.snippets.concat(json);
                     })
-                    .fail(() => { });
-                snippetManager.register(mod.snippets, mod.scope);
+                    .fail(() => { })
+                    .always(() => {
+                        snippetManager.register(mod.snippets, mod.scope);
+                        if (--nJobs == 0) initialized();
+                    });
             });
+            ++nJobs;
         }
     });
 
@@ -71,9 +86,8 @@ export function setValue(text) {
 export function changeLanguage(lang) {
     let info = Languages.languages[lang];
     if (!info) info = Languages.languages['default'];
-    const s = aceditor.getSession();
-    s.setMode('ace/mode/' + info.editor);
-    s.setTabSize(info.tabwidth);
+    settings = info;
+    applySettings();
 }
 
 /**
