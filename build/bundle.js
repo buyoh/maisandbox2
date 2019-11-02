@@ -2556,7 +2556,7 @@ WS.prototype.check = function () {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"../transport":11,"buffer":65,"component-inherit":8,"debug":19,"engine.io-parser":22,"parseqs":30,"ws":64,"yeast":49}],17:[function(require,module,exports){
+},{"../transport":11,"buffer":66,"component-inherit":8,"debug":19,"engine.io-parser":22,"parseqs":30,"ws":65,"yeast":49}],17:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 
 var hasCORS = require('has-cors');
@@ -3028,7 +3028,7 @@ formatters.j = function (v) {
 };
 
 }).call(this,require('_process'))
-},{"./common":20,"_process":67}],20:[function(require,module,exports){
+},{"./common":20,"_process":68}],20:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -4368,7 +4368,7 @@ function hasBinary (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":65,"isarray":26}],26:[function(require,module,exports){
+},{"buffer":66,"isarray":26}],26:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
@@ -16303,7 +16303,7 @@ function url (uri, loc) {
 arguments[4][18][0].apply(exports,arguments)
 },{"dup":18}],38:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
-},{"./common":39,"_process":67,"dup":19}],39:[function(require,module,exports){
+},{"./common":39,"_process":68,"dup":19}],39:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
 },{"dup":20,"ms":41}],40:[function(require,module,exports){
 arguments[4][26][0].apply(exports,arguments)
@@ -16893,7 +16893,7 @@ function isBuf(obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":65}],45:[function(require,module,exports){
+},{"buffer":66}],45:[function(require,module,exports){
 (function (process){
 /**
  * This is the web browser implementation of `debug()`.
@@ -17092,7 +17092,7 @@ function localstorage() {
 }
 
 }).call(this,require('_process'))
-},{"./debug":46,"_process":67}],46:[function(require,module,exports){
+},{"./debug":46,"_process":68}],46:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -17615,9 +17615,12 @@ function storeBackup() {
     txt_code: Interface.Editor.getValue(),
     cmd: Interface.TaskSelector.getSelectedTaskCmd()
   });
+  var d = new Date();
+  var f = '' + d.getHours() + ':' + d.getMinutes();
+  Interface.Indicator.setState('backup', 'saved', 'autosaved(' + f + ')');
 }
 
-},{"./interface":53,"./storage":62,"jquery":29}],52:[function(require,module,exports){
+},{"./interface":53,"./storage":63,"jquery":29}],52:[function(require,module,exports){
 "use strict";
 
 // _____________________________________________________
@@ -17661,8 +17664,14 @@ function initialize() {
   });
 } // _____________________________________________________
 // socket
-// submitしたjobの状況がサーバから送られてくる
 
+
+Socket.onConnect(function () {
+  Interface.Indicator.setState('connection', 'connected');
+});
+Socket.onDisconnect(function () {
+  Interface.Indicator.setState('connection', 'disconnected');
+}); // submitしたjobの状況がサーバから送られてくる
 
 Socket.addProgressListener(function (json) {
   // console.log(json);
@@ -17690,7 +17699,7 @@ Socket.addProgressListener(function (json) {
   }
 });
 
-},{"./interface":53,"./socket":61,"./storage":62,"jquery":29}],53:[function(require,module,exports){
+},{"./interface":53,"./socket":62,"./storage":63,"jquery":29}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17698,7 +17707,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.gatherInfo = gatherInfo;
 exports.appendTasks = appendTasks;
-exports.getSelectedTaskCmd = exports.EditPanel = exports.TaskSelector = exports.Results = exports.Stdios = exports.LaunchPad = exports.Editor = void 0;
+exports.getSelectedTaskCmd = exports.Indicator = exports.EditPanel = exports.TaskSelector = exports.Results = exports.Stdios = exports.LaunchPad = exports.Editor = void 0;
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
@@ -17733,11 +17742,15 @@ var TaskSelector = require('./interface/taskselector');
 
 exports.TaskSelector = TaskSelector;
 
-var EditPanel = require('./interface/editpanel'); // _____________________________________________________
+var EditPanel = require('./interface/editpanel');
+
+exports.EditPanel = EditPanel;
+
+var Indicator = require('./interface/indicator'); // _____________________________________________________
 // common setup
 
 
-exports.EditPanel = EditPanel;
+exports.Indicator = Indicator;
 $(function () {
   $('textarea.enabletabs').keydown(function (e) {
     if (e.keyCode === 9) {
@@ -17811,7 +17824,7 @@ function appendTasks(taskInfos) {
   TaskSelector.pullSelectedTask();
 }
 
-},{"./interface/aceditor":54,"./interface/editpanel":55,"./interface/launchpad":56,"./interface/results":57,"./interface/stdios":58,"./interface/taskselector":59,"jquery":29}],54:[function(require,module,exports){
+},{"./interface/aceditor":54,"./interface/editpanel":55,"./interface/indicator":56,"./interface/launchpad":57,"./interface/results":58,"./interface/stdios":59,"./interface/taskselector":60,"jquery":29}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17832,16 +17845,27 @@ var ace = require('ace-builds/src-min/ace');
 
 var Languages = require('./../languages');
 
-var aceditor = null; // const langInfo = {};
-// _____________________________________________________
+var aceditor = null;
+var settings = Languages["default"]; // _____________________________________________________
 // initialize
+
+function applySettings() {
+  var s = aceditor.getSession();
+  s.setMode('ace/mode/' + settings.editor);
+  s.setTabSize(settings.tabWidth);
+}
+
+function initialized() {
+  applySettings();
+}
 
 $(function () {
   ace.config.set('basePath', 'ext');
   aceditor = ace.edit('aceditor');
   ace.config.loadModule('ext/language_tools', function () {
+    console.log(aceditor.getSession().getMode());
     aceditor.setTheme('ace/theme/monokai');
-    aceditor.getSession().setMode('ace/mode/ruby');
+    console.log(aceditor.getSession().getMode());
     aceditor.setOptions({
       enableBasicAutocompletion: true,
       enableSnippets: true,
@@ -17852,6 +17876,8 @@ $(function () {
 
     var snippetManager = ace.require('ace/snippets').snippetManager;
 
+    var nJobs = 0;
+
     var _loop = function _loop() {
       var edt = _Object$keys[_i];
       ace.config.loadModule('ace/snippets/' + edt, function (mod) {
@@ -17861,9 +17887,12 @@ $(function () {
 
         $.getJSON('snippets/' + edt + '.json').done(function (json) {
           mod.snippets = mod.snippets.concat(json);
-        }).fail(function () {});
-        snippetManager.register(mod.snippets, mod.scope);
+        }).fail(function () {}).always(function () {
+          snippetManager.register(mod.snippets, mod.scope);
+          if (--nJobs == 0) initialized();
+        });
       });
+      ++nJobs;
     };
 
     for (var _i = 0, _Object$keys = Object.keys(Object.values(Languages.languages).reduce(function (a, e) {
@@ -17892,13 +17921,13 @@ function setValue(text) {
 function changeLanguage(lang) {
   var info = Languages.languages[lang];
   if (!info) info = Languages.languages['default'];
-  var s = aceditor.getSession();
-  s.setMode('ace/mode/' + info.editor);
-  s.setTabSize(info.tabwidth);
+  settings = info;
+  applySettings();
 }
 /**
- * 
- * @param {{text:String, row:Number, column:Number, type: "error" | "warning" | "information"}} json 
+ *
+ * @param {{text:String, row:Number, column:Number, type: "error" | "warning" |
+ *     "information"}} json
  */
 
 
@@ -17910,7 +17939,7 @@ function clearAnnotations() {
   aceditor.getSession().clearAnnotations();
 }
 
-},{"./../languages":60,"ace-builds/src-min/ace":1,"jquery":29}],55:[function(require,module,exports){
+},{"./../languages":61,"ace-builds/src-min/ace":1,"jquery":29}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17939,6 +17968,74 @@ function onClickLoadTemplate(handler) {
 }
 
 },{"jquery":29}],56:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.setState = setState;
+
+// _____________________________________________________
+// indicator.js
+// ステータスの表示
+var $ = require('jquery');
+
+var States = {
+  connection: {
+    undefined: {
+      color: 'dark',
+      text: '...'
+    },
+    disconnected: {
+      color: 'danger',
+      text: 'disconnected'
+    },
+    connected: {
+      color: 'success',
+      text: 'connected'
+    }
+  },
+  backup: {
+    undefined: {
+      color: 'dark',
+      text: 'autosaved(never)'
+    },
+    saved: {
+      color: 'light',
+      text: 'autosaved(never)'
+    }
+  }
+};
+var createdDoms = {};
+var setted = {}; // _____________________________________________________
+// initialize
+
+$(function () {
+  var pdom = $('#indicators');
+
+  for (var i in States) {
+    var s = States[i][setted[i]];
+    createdDoms[i] = $('<li></li>').css('display', 'inline-block').addClass('badge').addClass('badge-' + s.color).text(s.text).appendTo(pdom);
+  }
+}); // _____________________________________________________
+// manipulate
+
+function setState(badge, state) {
+  var customText = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+  if (!States[badge] || !States[badge][state]) {
+    console.error('Interface.Indicator.setState unknown pair (' + badge + ', ' + state + ')');
+  }
+
+  if (createdDoms[badge]) {
+    var s = States[badge][state];
+    createdDoms[badge].removeClass('badge-' + States[badge][setted[badge]].color).addClass('badge-' + s.color).text(customText ? customText : s.text);
+  }
+
+  setted[badge] = state;
+}
+
+},{"jquery":29}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18085,7 +18182,7 @@ function appendTaskOptions(taskInfo) {
   m$('#div_options').append(domc);
 }
 
-},{"jquery":29}],57:[function(require,module,exports){
+},{"jquery":29}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18145,9 +18242,9 @@ function appendResult(title, message, classtype) {
 
 /**
  * buttondom を event すると class をトグルする
- * @param {string} event 
- * @param {JQuery} buttondom 
- * @param {JQuery} hiddendom 
+ * @param {string} event
+ * @param {JQuery} buttondom
+ * @param {JQuery} hiddendom
  */
 
 
@@ -18184,7 +18281,7 @@ function copyDomToClipboard(dom) {
   document.execCommand('copy');
 }
 
-},{"jquery":29}],58:[function(require,module,exports){
+},{"jquery":29}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18339,7 +18436,7 @@ function closeField(components) {
   components.dom.remove();
 }
 
-},{"jquery":29}],59:[function(require,module,exports){
+},{"jquery":29}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18437,7 +18534,7 @@ function getCategoryOptgroup(category) {
   return optg;
 }
 
-},{"jquery":29}],60:[function(require,module,exports){
+},{"jquery":29}],61:[function(require,module,exports){
 "use strict";
 
 // _____________________________________________________
@@ -18487,7 +18584,7 @@ exports.languages = {
   }
 };
 
-},{}],61:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18497,39 +18594,15 @@ exports.getCatalog = getCatalog;
 exports.emitHalt = emitHalt;
 exports.emitSubmit = emitSubmit;
 exports.addProgressListener = addProgressListener;
+exports.onConnect = onConnect;
+exports.onDisconnect = onDisconnect;
 
 // _____________________________________________________
 // socket.js
 // サーバ通信操作のwrapper
 var io = require('socket.io-client');
 
-var socket = io.connect();
-var progressListener = [];
-socket.on('s2c_progress', function (json) {
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = progressListener[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var f = _step.value;
-      f(json);
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-        _iterator["return"]();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-}); // _____________________________________________________
+var socket = io.connect(); // _____________________________________________________
 // getter
 
 function getCatalog(callback) {
@@ -18549,10 +18622,18 @@ function emitSubmit(info) {
 
 
 function addProgressListener(listener) {
-  progressListener.push(listener);
+  socket.on('s2c_progress', listener);
 }
 
-},{"socket.io-client":32}],62:[function(require,module,exports){
+function onConnect(callback) {
+  socket.on('connect', callback);
+}
+
+function onDisconnect(callback) {
+  socket.on('disconnect', callback);
+}
+
+},{"socket.io-client":32}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18594,7 +18675,7 @@ function loadTemplate(lang) {
   return val ? val : null;
 }
 
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -18748,9 +18829,9 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],64:[function(require,module,exports){
-
 },{}],65:[function(require,module,exports){
+
+},{}],66:[function(require,module,exports){
 (function (Buffer){
 /*!
  * The buffer module from node.js, for the browser.
@@ -20553,7 +20634,7 @@ var hexSliceLookupTable = (function () {
 })()
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":63,"buffer":65,"ieee754":66}],66:[function(require,module,exports){
+},{"base64-js":64,"buffer":66,"ieee754":67}],67:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -20639,7 +20720,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
