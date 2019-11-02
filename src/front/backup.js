@@ -49,4 +49,8 @@ export function storeBackup() {
         txt_code: Interface.Editor.getValue(),
         cmd: Interface.TaskSelector.getSelectedTaskCmd()
     });
+
+    const d = new Date();
+    const f = '' + d.getHours() + ':' + d.getMinutes();
+    Interface.Indicator.setState('backup', 'saved', 'autosaved(' + f + ')');
 }

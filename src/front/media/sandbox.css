@@ -1,150 +1,156 @@
 
 /* --------- base --------- */
 body{
-	font-family: "メイリオ", Meiryo, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro";
-	/*margin-left:auto;*/
-	/*margin-right:auto;*/
+  font-family: "メイリオ", Meiryo, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro";
+  /*margin-left:auto;*/
+  /*margin-right:auto;*/
     background-color:#222;
-	color:#EEE;
-	margin: 10px;
+  color:#EEE;
+  margin: 10px;
 }
 
 
-/* --------- component --------- */
+/* --------- util component --------- */
 input,select{
     background-color:#444;
 }
 
 textarea.textarea{
-	display: block;
-	width:auto;
-	height:auto;
-	overflow-x: scroll;
-	overflow-y: scroll;
-	font-family: monospace;
-	line-height: initial;
-	resize:none;
-	white-space: pre;
-	tab-size: 4 ;
-	background-color:#222;
-	color: #DDD;
+  display: block;
+  width:auto;
+  height:auto;
+  overflow-x: scroll;
+  overflow-y: scroll;
+  font-family: monospace;
+  line-height: initial;
+  resize:none;
+  white-space: pre;
+  tab-size: 4 ;
+  background-color:#222;
+  color: #DDD;
 }
 
 hr{
-	color: #777; 
+  color: #777; 
 }
 pre{
-	color: #EEE;
+  color: #EEE;
 }
 
 
 /* --------- flex --------- */
 .flexboxRow{
-	display: flex;
-	flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 .flexboxCol{
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .flexcontainer{
-	flex: 1;
+  flex: 1;
 }
 
 .resizeableFlexContainer_left{
-	flex: 0 0 auto;
-	resize: both;
-	overflow: hidden;
+  flex: 0 0 auto;
+  resize: both;
+  overflow: hidden;
 }
 .resizeableFlexContainer_right{
-	flex: 1 1 auto;
-	resize: none;
-	overflow: hidden;
-	height: auto;
+  flex: 1 1 auto;
+  resize: none;
+  overflow: hidden;
+  height: auto;
 }
 
 
 /* --------- visual --------- */
 .border{
-	margin:2px;
-	border-width: 2px;
-	border-style: solid;
-	border-color: #777;
-	border-radius: 5px;
-	padding:1px;
+  margin:2px;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #777;
+  border-radius: 5px;
+  padding:1px;
 }
 
 .border_lr{
-	margin:2px;
-	border-width: 0px 2px;
-	border-style: none solid;
-	border-color: #777;
-	padding:1px;
+  margin:2px;
+  border-width: 0px 2px;
+  border-style: none solid;
+  border-color: #777;
+  padding:1px;
 }
 
 .hidden{
-	display: none;
+  display: none;
 }
 
 
 /* --------- box --------- */
 .resultLog{
-	margin-bottom: 3px;
+  margin-bottom: 3px;
 }
 
 .resultLog .title{
-	width: 50%;
-	border-radius: 3px;
-	padding: 4px;
+  width: 50%;
+  border-radius: 3px;
+  padding: 4px;
 }
 .resultLog .body{
-	border-radius: 3px;
-	padding: 4px;
+  border-radius: 3px;
+  padding: 4px;
 }
 
 .keypair{
-	display: inline-block;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #777;
-	padding: 1px;
-	margin: 2px 4px;
+  display: inline-block;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #777;
+  padding: 1px;
+  margin: 2px 4px;
 }
 
 .keypair > .key{
-	display: inline-block;
-	
-	border-width: 1px;
-	border-style: solid;
-	border-color: #777;
-	margin-right: 2px;
-	padding: 1px 6px;
+  display: inline-block;
+  
+  border-width: 1px;
+  border-style: solid;
+  border-color: #777;
+  margin-right: 2px;
+  padding: 1px 6px;
 }
 
 .keypair > .val{
-	display: inline-block;
-	
-	padding: 1px 6px;
+  display: inline-block;
+  
+  padding: 1px 6px;
 }
 
 
 /* --------- components --------- */
 
+#header .title {
+  font-size: x-large;
+  
+}
+
 .Stdios_Tools{
-	flex: 0 0 30px;
+  flex: 0 0 30px;
 }
 .Stdios_Tools.minified{
-	flex: 0 0 auto;
+  flex: 0 0 auto;
 }
 .Stdios_DivStdin.minified{
-	display: none;
+  display: none;
 }
 .Stdios_DivStdout.minified{
-	display: none;
+  display: none;
 }
 
 /* --------- tag --------- */
 .hiddenTemplate{
-	display: none;
+  display: none;
 }
+

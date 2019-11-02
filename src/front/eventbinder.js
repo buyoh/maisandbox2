@@ -48,6 +48,14 @@ function initialize() {
 // _____________________________________________________
 // socket
 
+Socket.onConnect(() => {
+    Interface.Indicator.setState('connection', 'connected');
+});
+
+Socket.onDisconnect(() => {
+    Interface.Indicator.setState('connection', 'disconnected');
+});
+
 // submitしたjobの状況がサーバから送られてくる
 Socket.addProgressListener((json) => {
     // console.log(json);
