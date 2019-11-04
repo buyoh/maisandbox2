@@ -1,0 +1,68 @@
+{
+    "info": {
+        "language": "C++",
+        "category": "default"
+    },
+    "options": {
+        "optimization": [
+            "-O2",
+            "-O3"
+        ],
+        "std": [
+            "-std=gnu++14",
+            "-std=gnu++17",
+            "-std=c++14",
+            "-std=c++17"
+        ]
+    },
+    "recipes": {
+        "compile > run": {
+            "script": [
+                "setupAll",
+                "compile",
+                "run"
+            ]
+        },
+        "run(no update)": {
+            "script": [
+                "setupIO",
+                "run"
+            ]
+        }
+    },
+    "commands": {
+        "setupAll": "default",
+        "setupIO": "default",
+        "compile": {
+            "for": "once",
+            "actions": [
+                {
+                    "cmd": "exec",
+                    "args": [
+                        "g++",
+                        "./code.cpp",
+                        "-o",
+                        "./code.out",
+                        "$optimization",
+                        "$std"
+                    ]
+                }
+            ]
+        },
+        "run": {
+            "for": "eachcase",
+            "actions": [
+                {
+                    "cmd": ""
+                    "args": [
+                        "./code.out"
+                    ],
+                    "stdin": "#path_stdin",
+                    "stdout": "#pipe_stdout",
+                    "stderr": "#pipe_stderr"
+                }
+            ]
+        }
+    },
+    "warningpicker": {}
+}
