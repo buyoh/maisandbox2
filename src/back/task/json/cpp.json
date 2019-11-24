@@ -53,10 +53,8 @@
             "for": "eachcase",
             "actions": [
                 {
-                    "cmd": ""
-                    "args": [
-                        "./code.out"
-                    ],
+                    "cmd": "./code.out",
+                    "args": [],
                     "stdin": "#path_stdin",
                     "stdout": "#pipe_stdout",
                     "stderr": "#pipe_stderr"
