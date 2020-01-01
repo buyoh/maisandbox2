@@ -1,11 +1,15 @@
 // かり
 
-const fs = require('fs');
+let Exec = require('./util/exec');
+let FileWrapper = require('./util/filewrapper');
+let DefaultTask = require('./util/default').generateDefaultTasks('cpp');
 
-const Exec = require('./util/exec');
-const FileWrapper = require('./util/filewrapper');
-const DefaultTask = require('./util/default').generateDefaultTasks('cpp');
 
+function requireDI(_Exec, _FileWrapper, _DefaultTask) {
+    Exec = _Exec;
+    FileWrapper = _FileWrapper;
+    DefaultTask = _DefaultTask;
+}
 
 function replaceArgument(elem, task) {
     if (!elem) return elem;
@@ -73,9 +77,8 @@ function parseActions(actions) {
     };
 }
 
-fs.readFile('cpp.json', (err, data) => {
-    if (err) return;
-    const json = JSON.parse(data);
+function convert(json) {
+
     if (!json.info.language) throw new Error('info.language is empty');
     if (!json.info.category) throw new Error('info.category is empty');
     exports.info = json.info;
@@ -91,4 +94,4 @@ fs.readFile('cpp.json', (err, data) => {
         }
 
     }
-});
+}
