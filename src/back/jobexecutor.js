@@ -1,6 +1,6 @@
 
 const Importer = require('./taskimporter');
-
+const Impl = require('./impl/jobexecutor');
 
 /**
  * タスクを追加，実行する
@@ -12,9 +12,9 @@ exports.pushJob = function (json, callback) {
         json: json,
         callback: callback
     };
-    if (json.recipe === undefined) {
-        job.callback.call(null, 'error', {
-            reason: 'unknown recipe'
+    if (!json.recipe || !Importer.isValid(json.cmd, json.recipe)) {
+        job.callback('error', {
+            reason: 'invalid recipe'
         }, true);
         return;
     }
@@ -26,43 +26,10 @@ exports.pushJob = function (json, callback) {
 
 function runJobRecipe(job) {
     const langTask = Importer.tasks[job.json.cmd];
-    if (langTask === undefined) {
-        job.callback.call(null, 'error', {
-            reason: 'unknown cmd'
-        }, true);
-        return;
-    }
     const recipe = langTask.recipes[job.json.recipe];
-    if (recipe === undefined) {
-        job.callback.call(null, 'error', {
-            reason: 'unknown recipe'
-        }, true);
-        return;
-    }
 
     job.uniqueName = job.json.socketid + '/' + job.json.cmd;
 
-    const accepted = [];
+    Impl.runJobRecipe(job, recipe.script, langTask.command, job.callback);
 
-    const process = function (scriptIndex) {
-        if (scriptIndex >= recipe.script.length) {
-            job.callback.call(null, 'success', {}, true);
-            return;
-        }
-        if (!langTask.command[recipe.script[scriptIndex]]) {
-            job.callback.call(null, 'error', {
-                reason: 'not found the task[' + recipe.script[scriptIndex] + ']'
-            }, true);
-            return;
-        }
-        langTask.command[recipe.script[scriptIndex]](job, (msg, json = {}) => {
-            json.commandName = recipe.script[scriptIndex];
-            job.callback.call(null, msg, json);
-            if (msg == 'continue' && !accepted[scriptIndex]) {
-                accepted[scriptIndex] = true;
-                process(scriptIndex + 1);
-            }
-        });
-    };
-    process(0);
 }
