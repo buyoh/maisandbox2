@@ -80,7 +80,7 @@ end
 
 requires.each do |com, reqs|
   reqs.each do |req|
-    puts "#{symbolize(com)} -up-> #{symbolize(req)}"
+    puts "#{symbolize(com)} <-down- #{symbolize(req)}"
   end
 end
 
