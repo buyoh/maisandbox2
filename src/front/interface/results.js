@@ -17,7 +17,7 @@ export function appendResult(title, message, classtype, isProgressing = false) {
         $('#div_resultlogs > div').first().remove();
     }
     const titledom =
-      $('<div></div>').text(title).addClass('alert-' + classtype + ' title');
+        $('<div></div>').text(title).addClass('alert-' + classtype + ' title');
     const bodydom = $('<div></div>').addClass('body').addClass('d-none');
 
     if (typeof message === 'object') {
@@ -36,7 +36,7 @@ export function appendResult(title, message, classtype, isProgressing = false) {
                 bindToggler('click', keydom1, valdom);
                 bindCopyButton('click', keydom2, valdom);
                 const keydom =
-            $('<div></div>').addClass('key').append(keydom1).append(keydom2);
+                    $('<div></div>').addClass('key').append(keydom1).append(keydom2);
                 bodydom.append(keydom).append(valdom);
                 bodydom.append(keydom).append(valdom);
             } else {
@@ -75,7 +75,7 @@ export function appendResult(title, message, classtype, isProgressing = false) {
 function bindToggler(
     event, buttondom, hiddendom, buttondomClass = '',
     hiddendomClass = 'd-none') {
-    buttondom.on(event, {fr: buttondom, to: hiddendom}, (e) => {
+    buttondom.on(event, { fr: buttondom, to: hiddendom }, (e) => {
         $(e.data.fr).toggleClass(buttondomClass);
         $(e.data.to).toggleClass(hiddendomClass);
     });
@@ -83,7 +83,7 @@ function bindToggler(
 
 
 function bindCopyButton(event, buttondom, textdom) {
-    buttondom.on(event, {tg: textdom}, (e) => {
+    buttondom.on(event, { tg: textdom }, (e) => {
         copyTextToClipboard($(e.data.tg).text());
     });
 }

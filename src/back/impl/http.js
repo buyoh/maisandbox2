@@ -2,7 +2,7 @@ const fs = require('fs');
 const mine_types = require('mime-types');
 
 
-export function rewritePath(url) {
+function rewritePath(url) {
     // testable
     if (url.match(/\.\./))
         return null;
@@ -28,9 +28,11 @@ function readFile(path, callback) {
     fs.readFile(path, { encoding: 'utf-8' }, callback);
 }
 
-export class HttpResponser {
-    constructor() {
-        this.readFile = readFile;
+
+class HttpResponser {
+    constructor(_readFile = readFile, _getHeader = getHeader) {
+        this.readFile = _readFile;
+        this.getHeader = _getHeader;
     }
 
     handle(request, response) {
@@ -60,7 +62,7 @@ export class HttpResponser {
                 // console.error('requested: lookup ' + path + ' => ng');
             }
             else {
-                response.writeHead(200, getHeader(request.url));
+                response.writeHead(200, this.getHeader(request.url));
                 response.end(data);
                 // console.error('requested: lookup ' + path + ' => ok');
             }
@@ -68,3 +70,6 @@ export class HttpResponser {
 
     }
 }
+
+exports.rewritePath = rewritePath;
+exports.HttpResponser = HttpResponser;

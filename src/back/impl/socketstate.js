@@ -7,17 +7,20 @@ let TaskImporter;
  */
 let JobExecutor;
 
-export function DI(_TaskImporter, _JobExecutor) {
+
+function DI(_TaskImporter, _JobExecutor) {
     TaskImporter = _TaskImporter;
     JobExecutor = _JobExecutor;
 }
 
-export class ConnectionState {
 
-    constructor(_emitter) {
+class ConnectionState {
+
+    constructor(_emitter, _socketid) {
         this.emitter = _emitter;
         this.auth = true;
         this.killer = null;
+        this.socketid = _socketid;
     }
 
     //
@@ -47,7 +50,7 @@ export class ConnectionState {
         if (!this.isAuthorized()) return;
         this.kill();
 
-        data.socketid = this.socket.id;
+        data.socketid = this.socketid;
         JobExecutor.pushJob(data, (type, json) => {
             if (json.killer !== undefined) {
                 this.killer = json.killer;
@@ -62,3 +65,7 @@ export class ConnectionState {
         this.kill();
     }
 }
+
+
+exports.DI = DI;
+exports.ConnectionState = ConnectionState;

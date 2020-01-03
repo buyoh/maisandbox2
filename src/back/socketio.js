@@ -3,16 +3,19 @@ const Logger = require('./logger');
 const SocketState = require('./socketstate');
 const SocketEmitter = require('./socketemitter');
 
-export function setup(server) {
+exports.setup = function (server) {
     socketio.listen(server).sockets.on('connection', (socket) => {
         Logger.log('join ' + socket.id);
 
-        const state = new SocketState.ConnectionState(new SocketEmitter.Emitter(socket));
+        const state = new SocketState.ConnectionState(
+            new SocketEmitter.Emitter(socket),
+            socket.id
+        );
 
-        socket.on('disconnect', state.handleDisconnect);
-        socket.on('c2s_getCatalog', state.handleGetCatalog);
-        socket.on('c2s_submit', state.handleSubmmit);
-        socket.on('c2s_halt', state.handleHalt);
+        socket.on('disconnect', (...a) => state.handleDisconnect(...a));
+        socket.on('c2s_getCatalog', (...a) => state.handleGetCatalog(...a));
+        socket.on('c2s_submit', (...a) => state.handleSubmmit(...a));
+        socket.on('c2s_halt', (...a) => state.handleHalt(...a));
 
         // テスト用
         socket.on('c2s_echo', (data) => {
@@ -23,4 +26,4 @@ export function setup(server) {
         });
 
     });
-}
+};

@@ -24,7 +24,7 @@ let readdir = readdirImpl;
  * @param {string} path 
  * @param {(err: NodeJS.ErrnoException)=>void} callback 
  */
-export function removeRecursive(path, callback) {
+function removeRecursive(path, callback) {
     isDirectory(path, (err, isDir) => {
         if (err) {
             callback(err);
@@ -59,3 +59,6 @@ export function removeRecursive(path, callback) {
         });
     });
 }
+
+
+exports.removeRecursive = removeRecursive;

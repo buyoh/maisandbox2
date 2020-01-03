@@ -3,7 +3,7 @@ function partial(string, sep) {
     return [a.shift(), a.join(sep)];
 }
 
-export function parseArgs(argv) {
+function parseArgs(argv) {
     const args = {};
     for (let i = 2; i < argv.length; ++i) {
         const e = argv[i];
@@ -18,3 +18,5 @@ export function parseArgs(argv) {
     }
     return args;
 }
+
+exports.parseArgs = parseArgs;

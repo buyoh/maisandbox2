@@ -4,7 +4,7 @@ const argv = require('./argv');
 const defaultSettings = {
     portno: 11450,
     hostname: 'localhost',
-    loglevel: 1
+    loglevel: 4
 };
 
 exports.settings = (() => {

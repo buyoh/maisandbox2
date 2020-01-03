@@ -1,4 +1,4 @@
-export class Emitter {
+class Emitter {
     constructor(_socket) {
         this.socket = _socket;
     }
@@ -14,3 +14,5 @@ export class Emitter {
         this.socket.emit('s2c_echo', { msg });
     }
 }
+
+exports.Emitter = Emitter;

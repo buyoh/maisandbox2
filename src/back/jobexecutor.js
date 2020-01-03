@@ -1,4 +1,3 @@
-
 const Importer = require('./taskimporter');
 const Impl = require('./impl/jobexecutor');
 
@@ -7,7 +6,7 @@ const Impl = require('./impl/jobexecutor');
  * @param {JSON} json 
  * @param {(type:String, json:JSON) => boolean} callback 何か成功する度に呼び出す
  */
-exports.pushJob = function (json, callback) {
+function pushJob(json, callback) {
     const job = {
         json: json,
         callback: callback
@@ -21,7 +20,7 @@ exports.pushJob = function (json, callback) {
     setTimeout((t) => {
         runJobRecipe(t);
     }, 0, job);
-};
+}
 
 
 function runJobRecipe(job) {
@@ -33,3 +32,6 @@ function runJobRecipe(job) {
     Impl.runJobRecipe(job, recipe.script, langTask.command, job.callback);
 
 }
+
+
+exports.pushJob = pushJob;

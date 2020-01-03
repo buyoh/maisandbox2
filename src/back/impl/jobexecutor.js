@@ -1,10 +1,11 @@
-export function validateRecipe(script, commandList) {
+function validateRecipe(script, commandList) {
     for (let s of script) {
         if (!commandList[s]) return false;
     }
 }
 
-export function runJobRecipe(job, script, commandList, callback) {
+
+function runJobRecipe(job, script, commandList, callback) {
 
     const accepted = [];
 
@@ -24,3 +25,6 @@ export function runJobRecipe(job, script, commandList, callback) {
     };
     process(0);
 }
+
+exports.validateRecipe = validateRecipe;
+exports.runJobRecipe = runJobRecipe;
