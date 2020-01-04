@@ -1,4 +1,5 @@
-const settings = require('./settings').settings;
+const Settings = require('./settings');
+const settings = Settings.settings;
 
 let enableLog = settings.loglevel >= 4;
 let enableInfo = settings.loglevel >= 3;

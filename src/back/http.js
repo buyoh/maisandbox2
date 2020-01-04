@@ -1,10 +1,11 @@
 const http = require('http');
+const File = require('./file');
 const Impl = require('./impl/http');
+Impl.DI(File);
 
 function setup(portno, hostname) {
-    const hr = new Impl.HttpResponser();
     return http
-        .createServer((req, res) => hr.handle(req, res))
+        .createServer((req, res) => Impl.handleHttp(req, res))
         .listen(portno, hostname);
 }
 

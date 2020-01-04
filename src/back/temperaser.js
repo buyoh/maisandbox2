@@ -1,5 +1,5 @@
 const fs = require('fs');
-const Impl = require('./impl/temperaser');
+const FileUtil = require('./fileutil');
 
 // temperaser を実行する周期
 const interval = 1000 * 60 * 60 * 2;
@@ -18,7 +18,7 @@ function loop() {
             fs.stat('./temp/' + file, (err, stat) => {
                 if (err) return;
                 if (stat.atimeMs + lifeTime < time) {
-                    Impl.removeRecursive('./temp/' + file, (err) => {
+                    FileUtil.removeRecursive('./temp/' + file, (err) => {
                         if (err) console.error('removeRecursive: ' + err);
                     });
                 }

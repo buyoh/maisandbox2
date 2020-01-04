@@ -1,5 +1,13 @@
-const fs = require('fs');
 const mine_types = require('mime-types');
+
+/**
+ * @type import("../file")
+ */
+let File;
+
+exports.DI = function (_File) {
+    File = _File;
+};
 
 
 function rewritePath(url) {
@@ -24,52 +32,31 @@ function getHeader(url) {
 }
 
 
-function readFile(path, callback) {
-    fs.readFile(path, { encoding: 'utf-8' }, callback);
-}
 
+function handleHttp(request, response) {
+    request.on('error', () => {
+        response.statusCode = 400;
+        response.end('400');
+    });
+    response.on('error', () => {
+    });
 
-class HttpResponser {
-    constructor(_readFile = readFile, _getHeader = getHeader) {
-        this.readFile = _readFile;
-        this.getHeader = _getHeader;
+    const path = rewritePath(request.url);
+
+    if (!path) {
+        response.statusCode = 403;
+        response.end('403');
+        return;
     }
 
-    handle(request, response) {
-        request.on('error', () => {
-            // console.error(e);
-            response.statusCode = 400;
-            response.end('400');
-        });
-        response.on('error', () => {
-            // console.error(e);
-        });
-
-        // console.error('requested: ' + request.url);
-
-        const path = rewritePath(request.url);
-
-        if (!path) {
-            response.statusCode = 403;
-            response.end('403');
-            return;
-        }
-
-        this.readFile(path, (err, data) => {
-            if (err) {
-                response.statusCode = 404;
-                response.end('');
-                // console.error('requested: lookup ' + path + ' => ng');
-            }
-            else {
-                response.writeHead(200, this.getHeader(request.url));
-                response.end(data);
-                // console.error('requested: lookup ' + path + ' => ok');
-            }
-        });
-
-    }
+    File.readFile(path).then((data) => {
+        response.writeHead(200, getHeader(request.url));
+        response.end(data);
+    }).catch(() => {
+        response.statusCode = 404;
+        response.end('');
+    });
 }
 
 exports.rewritePath = rewritePath;
-exports.HttpResponser = HttpResponser;
+exports.handleHttp = handleHttp;

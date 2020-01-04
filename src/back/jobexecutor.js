@@ -7,7 +7,7 @@ const Impl = require('./impl/jobexecutor');
  * @param {(type:String, json:JSON) => boolean} callback 何か成功する度に呼び出す
  */
 function pushJob(json, callback) {
-    const job = {
+    const job = { // TODO: refactor me
         json: json,
         callback: callback
     };

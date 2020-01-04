@@ -1,5 +1,4 @@
-
-const argv = require('./argv');
+const Argv = require('./argv');
 
 const defaultSettings = {
     portno: 11450,
@@ -10,8 +9,8 @@ const defaultSettings = {
 exports.settings = (() => {
     const settings = Object.assign({}, defaultSettings);
 
-    if (argv['--port']) settings.portno = parseInt(argv['--port']);
-    if (argv['--log']) settings.loglevel = parseInt(argv['--log']); // 0=nolog, 1=erroronly, 4=all
+    if (Argv['--port']) settings.portno = parseInt(Argv['--port']);
+    if (Argv['--log']) settings.loglevel = parseInt(Argv['--log']); // 0=nolog, 1=erroronly, 4=all
 
     return settings;
 })();
