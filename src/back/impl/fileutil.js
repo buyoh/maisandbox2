@@ -7,7 +7,7 @@ exports.DI = function (_File) {
 };
 
 function removeRecursive(path) {
-    return File.check(path).then((isFile, isDir) =>
+    return File.check(path).then(([, isDir]) =>
         (!isDir) ?
             File.unlink(path) :
             File.listdir(path).then((files) =>

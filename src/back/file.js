@@ -1,9 +1,15 @@
 const fs = require('fs');
 
+function stat(path) {
+    return new Promise((resolve, reject) => {
+        fs.stat(path, (err, stat) => err ? reject(err) : resolve(stat));
+    });
+}
+
 function check(path) {
     return new Promise((resolve) => {
         fs.stat(path, (err, stat) =>
-            resolve(!err && stat.isFile(), !err && stat.isDirectory(), err)
+            resolve([!err && stat.isFile(), !err && stat.isDirectory(), err])
         );
     });
 }
@@ -20,7 +26,7 @@ function rmdir(path) {
 
 function listdir(path) {
     return new Promise((resolve, reject) =>
-        fs.readdir(path, (dir, err) => err ? reject(err) : resolve(dir)));
+        fs.readdir(path, (err, dir) => err ? reject(err) : resolve(dir)));
 }
 
 function readFile(path) {
@@ -28,6 +34,7 @@ function readFile(path) {
         fs.readFile(path, { encoding: 'utf-8' }, (err, data) => err ? reject(err) : resolve(data)));
 }
 
+exports.stat = stat;
 exports.check = check;
 exports.unlink = unlink;
 exports.rmdir = rmdir;
