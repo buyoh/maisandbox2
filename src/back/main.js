@@ -1,3 +1,3 @@
 
 require('./temperaser');
-require('./server.js');
+require('./server');
