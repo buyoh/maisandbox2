@@ -1,70 +1,28 @@
-const fs = require('fs');
+const File = require('./file');
+const FileUtil = require('./fileutil');
+const Logger = require('./logger');
 
 // temperaser を実行する周期
 const interval = 1000 * 60 * 60 * 2;
 // もし ./temp 上に lifeTime msec 以上アクセスされていないファイルがあれば，削除する
-const lifeTime = 1000 * 60 * 60 * 2;
-
-setTimeout(loop, 0);
-
-/**
- * ファイルまたはフォルダを(再帰的に)削除
- * @param {string} path 
- * @param {(err: NodeJS.ErrnoException)=>void} callback 
- */
-function removeRecursive(path, callback) {
-    fs.stat(path, (err, stat) => {
-        if (err) {
-            callback(err);
-            return;
-        }
-        if (!stat.isDirectory()) {
-            fs.unlink(path, callback);
-            return;
-        }
-        fs.readdir(path, (err, files) => {
-            if (err) {
-                callback(err);
-                return;
-            }
-            let remain = files.length;
-            if (remain == 0) {
-                fs.rmdir(path, callback);
-                return;
-            }
-            for (let file of files) {
-                removeRecursive(path + '/' + file, (err) => {
-                    if (err) {
-                        if (remain >= 0)
-                            callback(err), // 2つ以上のエラーを送信しない
-                            remain = -1;
-                        return;
-                    }
-                    if (--remain == 0)
-                        fs.rmdir(path, callback);
-                });
-            }
-        });
-    });
-}
+const lifeTime = 20000;//1000 * 60 * 60 * 2;
 
 
 function loop() {
     const time = (new Date).getTime();
 
-    fs.readdir('./temp', (err, files) => {
-        if (err) return;
-        for (let file of files) {
-            fs.stat('./temp/' + file, (err, stat) => {
-                if (err) return;
-                if (stat.atimeMs + lifeTime < time) {
-                    removeRecursive('./temp/' + file, (err) => {
-                        if (err) console.error('removeRecursive: ' + err);
-                    });
-                }
-            });
-        }
-    });
+    File.listdir('./temp').then((files) =>
+        Promise.all(files.map((file) =>
+            File.stat('./temp/' + file).then((stat) =>
+                (lifeTime < time - stat.atimeMs) ?
+                    FileUtil.removeRecursive('./temp/' + file)
+                        .then(() => Logger.log('temperaser: remove ' + file)) :
+                    Promise.resolve()
+            )
+        ))
+    ).catch((err) => Logger.error('temperaser(error): ', err));
 
     setTimeout(loop, interval);
 }
+
+setTimeout(loop, 0);

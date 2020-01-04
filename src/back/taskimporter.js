@@ -37,3 +37,7 @@ exports.allLangInfo = (() => {
     }
     return a;
 })();
+
+exports.isValid = function (cmd, recipe) {
+    return tasks[cmd] && tasks[cmd].recipes[recipe];
+};
