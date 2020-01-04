@@ -7,11 +7,10 @@ let TaskImporter;
  */
 let JobExecutor;
 
-
-function DI(_TaskImporter, _JobExecutor) {
+exports.DI = function (_TaskImporter, _JobExecutor) {
     TaskImporter = _TaskImporter;
     JobExecutor = _JobExecutor;
-}
+};
 
 
 class ConnectionState {
@@ -67,5 +66,4 @@ class ConnectionState {
 }
 
 
-exports.DI = DI;
 exports.ConnectionState = ConnectionState;
