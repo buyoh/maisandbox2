@@ -1,11 +1,9 @@
-name: CI-build
+name: CI-update-npm
 
-# on:
-#   push:
-#     branches:
-#     - master
-    
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - master
 
 jobs:
   build:
