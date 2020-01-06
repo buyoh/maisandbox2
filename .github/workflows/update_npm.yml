@@ -1,0 +1,32 @@
+name: CI-update-npm
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@master
+    - name: install tools
+      run: |
+        git config --global user.email "mai@ukibune.net"
+        git config --global user.name "mai bot-worker"
+        sudo npm i -g npm
+        npm i
+    - name: build
+      run: |
+        npm update
+        if [ `git diff | wc -l` -ne 0 ] ; then
+        git add package-lock.json
+        git add package.json
+        git commit -m 'update npm by Github Actions'
+        fi
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
