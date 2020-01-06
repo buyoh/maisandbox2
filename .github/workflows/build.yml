@@ -16,7 +16,7 @@ jobs:
       run: |
         git config --global user.email "mai@ukibune.net"
         git config --global user.name "mai bot-worker"
-        sudo npm i -g babelify browserify mocha eslint
+        sudo npm i -g npm babelify browserify mocha eslint
         sudo apt install ruby
         npm i
     - name: eslint
