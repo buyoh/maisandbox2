@@ -56,8 +56,8 @@
                     "cmd": "./code.out",
                     "args": [],
                     "stdin": "#path_stdin",
-                    "stdout": "#pipe_stdout",
-                    "stderr": "#pipe_stderr"
+                    "stdout": "#path_stdout",
+                    "stderr": "#path_stderr"
                 }
             ]
         }

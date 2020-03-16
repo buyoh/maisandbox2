@@ -7,39 +7,38 @@ const FileWrapper = require('./util/filewrapper');
 const DefaultTask = require('./util/default').generateDefaultTasks('cpp');
 
 
-function replaceArgument(elem, task) {
+function replaceArgument(elem, task, opt) {
     if (!elem) return elem;
     if (elem[0] === '$') {
         return task.json.options[elem.substr(1, -1)];
     }
     else if (elem[0] === '#') {
-        return '';
+        return opt[elem.substr(1, -1)];
     }
     else return elem;
 }
 
-// TODO: task, cwdir, callback ってどうやって渡すんや
+// opt.env
+// task.pickupInformations
 
-// return (task, cwdir, callback) => Promise
+// return (task, opt, cwdir, callback) => Promise
 function parseAction(action) {
     if (action.cmd === 'exec') {
-        return (task, cwdir, callback) => {
+        return (task, opt, cwdir, callback) => {
             return new Promise((resolve, reject) => {
                 const param = action.args.map(e => replaceArgument(e, task));
 
-                const fin = action.stdin ? cwdir + replaceArgument(action.stdin, task) : null;
-                const fout = action.stdout ? cwdir + replaceArgument(action.stdout, task) : null;
-                const ferr = action.stderr ? cwdir + replaceArgument(action.stderr, task) : null;
+                const fin = action.stdin ? cwdir + replaceArgument(action.stdin, task, opt) : null;
+                const fout = action.stdout ? cwdir + replaceArgument(action.stdout, task, opt) : null;
+                const ferr = action.stderr ? cwdir + replaceArgument(action.stderr, task, opt) : null;
 
                 let killer = Exec.spawn_fileio(
                     action.cmd, param, fin, fout, ferr, {
-                    // env: {
-                    //     PATH: FileWrapper.cygwinEnvPath
-                    // },
+                        env: opt.env, //     PATH: FileWrapper.cygwinEnvPath
                         cwd: cwdir
                     },
                     (code, json) => {
-                        DefaultTask.util.promiseResultResponser(json, cwdir, callback, pickupInformations)
+                        DefaultTask.util.promiseResultResponser(json, cwdir, callback, task.pickupInformations)
                             .then(() => (code === 0) ? resolve() : reject());
                     }
                 );
@@ -60,16 +59,17 @@ function parseAction(action) {
 
 // TODO: solve eachcase
 
-// return (task, callback) => Promise
+// return (task, opt, callback) => Promise
 function parseActions(actions) {
     const pp = actions.map((a) => parseActions(a));
-    return (task, callback) => {
+    return (task, opt, callback) => {
         const cwdir = FileWrapper.getTempDirName(task.uniqueName);
         // construct Promise
-        const promise = pp.reduce((p, action) => (p.then(action(task, cwdir, callback))), Promise.resolve());
+        const promise = pp.reduce((p, action) => (p.then(action(task, opt, cwdir, callback))), Promise.resolve());
         promise.catch((e) => {
             DefaultTask.util.errorHandler(e, callback);
         });
+        // TODO: return promise?
     };
 }
 
