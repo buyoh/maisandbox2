@@ -3,7 +3,6 @@
     "eslint.options": {
         "configFile": ".eslintrc.json"
     },
-    "eslint.autoFixOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     }
