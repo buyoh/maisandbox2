@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo echo -e '#!/bin/sh\ncd' `pwd` '&& npm run start' > /opt/launch_maisandbox.sh
 sudo chmod 0755 /opt/launch_maisandbox.sh
 
@@ -17,3 +19,4 @@ sudo systemctl list-unit-files --type=service | grep maisandbox
 sudo systemctl enable maisandbox
 sudo systemctl start maisandbox
 sudo systemctl list-unit-files --type=service | grep maisandbox
+sudo systemctl daemon-reload
