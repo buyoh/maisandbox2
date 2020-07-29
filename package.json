@@ -16,8 +16,8 @@
   "author": "",
   "license": "Unlicense",
   "dependencies": {
-    "ace-builds": "^1.4.11",
-    "engine.io": "^3.4.1",
+    "ace-builds": "^1.4.12",
+    "engine.io": "^3.4.2",
     "jquery": "^3.5.1",
     "jsdom": "^15.2.1",
     "location": "0.0.1",
@@ -30,13 +30,13 @@
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
     "babelify": "^10.0.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^13.0.1",
-    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^9.2.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1"
